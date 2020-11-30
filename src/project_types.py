@@ -113,17 +113,25 @@ class PayoutConfiguration(Generic[ActionType, PredictionType]):
     # Agent = Agent[ActionType, PredictionType]
     # f 
     @abstractmethod
-    def calculate_payouts(self, 
-            bets: Dict[Agent, WeightedBet], 
+    def calculate_payouts_from_losses(self,
+            bets:  Dict[Agent, WeightedBet],
             losses: LossLookup[ActionType, PredictionType]) \
             -> Dict[Agent, float]:
         ...
 
+    # L
     @abstractmethod
     def calculate_loss(self,
-            predictions: Dict[ActionType, WeightedBet],
+            predictions: Dict[ActionType, Dict[Agent, WeightedBet]],
             actual: float) -> LossLookup[ActionType, PredictionType]:
         ...
+
+    @abstractmethod
+    def calculate_payouts(self,
+            predictions: Dict[ActionType, Dict[Agent, WeightedBet]],
+            actual:  float) -> Dict[Agent, float]:
+        ...
+
 
 @dataclass(frozen=True)
 class SystemConfiguration(Generic[ActionType, BetAggregationType, PredictionType]):
