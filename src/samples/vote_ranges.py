@@ -1,4 +1,4 @@
-from project_types import VoteRange
+from src.project_types import VoteRange
 
 
 class BinaryVoteRange(VoteRange):
