@@ -1,9 +1,9 @@
-.. CSCI 3081W Grading Scripts documentation master file, created by
+.. Voting Is All You Need documentation master file, created by
    sphinx-quickstart on Mon Nov 23 16:07:59 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to CSCI 3081W Grading Scripts's documentation!
+Welcome to Voting Is All You Need's documentation!
 ======================================================
 
 .. toctree::
