@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import NamedTuple, Generic, TypeVar, Dict, List, Optional, Union, Iterable
 
+
+@dataclass(frozen=True)
 class Action:
     description: Optional[str]
 
@@ -12,7 +15,7 @@ ActionType = TypeVar("ActionType", bound=Action)
 
 VoteType = TypeVar("VoteType") # V
 
-Prediction = Union[float, List[float]]
+Prediction = Union[float, List[float]]PredictionType, 
 PredictionType = TypeVar("PredictionType", bound=Prediction)
 
 ActionSpaceType = TypeVar("ActionSpaceType", bound=Iterable[Action])
