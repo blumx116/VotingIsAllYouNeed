@@ -7,6 +7,7 @@ class Action:
     description: Optional[str]
 
 class VoteRange(ABC):
+    @abstractmethod
     def contains(self, value: float) -> bool:
         ...
 
