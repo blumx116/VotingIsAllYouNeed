@@ -5,3 +5,4 @@ __pycache__
 .vscode
 bin
 .idea
+docs/build
