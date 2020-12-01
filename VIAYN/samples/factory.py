@@ -39,7 +39,7 @@ class EnvFactory:
 
     Returns
     -------
-    Envioronment
+    Environment
         created environment based on spec
     """
 
