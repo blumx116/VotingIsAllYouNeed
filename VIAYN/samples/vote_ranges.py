@@ -1,5 +1,4 @@
-from src.project_types import VoteRange
-
+from VIAYN.project_types import VoteRange
 
 class BinaryVoteRange(VoteRange):
     def contains(self, value: float) -> bool:

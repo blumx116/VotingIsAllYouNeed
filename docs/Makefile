@@ -22,5 +22,5 @@ clean:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	./clean.sh
-	sphinx-apidoc -f -o ./source ../src
+	sphinx-apidoc -f -o ./source ../VIAYN
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

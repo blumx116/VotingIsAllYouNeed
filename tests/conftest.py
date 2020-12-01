@@ -9,9 +9,7 @@ import sys
 from os.path import dirname, abspath
 import pytest
 
-mainRepo=abspath(dirname(dirname(abspath(__file__))))
-sys.path.append(f"{mainRepo}/src")
-import project_types # pylint: disable=import-error
+import VIAYN.project_types # pylint: disable=import-error
 
 @pytest.fixture
 def example_people_data():

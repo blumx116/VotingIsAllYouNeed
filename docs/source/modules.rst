@@ -1,7 +1,7 @@
-src
-===
+VIAYN
+=====
 
 .. toctree::
    :maxdepth: 4
 
-   project_types
+   VIAYN
