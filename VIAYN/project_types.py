@@ -91,6 +91,7 @@ class LossLookup(Generic[ActionType]):
 
 class VotingConfiguration(ABC):
     vote_range: VoteRange
+    n_agents: int
 
     @abstractmethod
     def aggregate_votes(self,
@@ -98,13 +99,16 @@ class VotingConfiguration(ABC):
         ...
 
     @abstractmethod
-    def max_possible_vote_total(self,
-            n_agents: int) -> float:
+    def set_n_agents(self,
+            n_agents: int) -> None:
+        self.n_agents = n_agents
+
+    @abstractmethod
+    def max_possible_vote_total(self) -> float:
         ...
 
     @abstractmethod
-    def min_possible_vote_total(self,
-            n_agents: int) -> float:
+    def min_possible_vote_total(self) -> float:
         ...
 
 
