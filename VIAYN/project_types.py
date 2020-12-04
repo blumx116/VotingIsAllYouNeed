@@ -131,6 +131,10 @@ class VotingConfiguration(ABC):
         """
         ...
 
+    @staticmethod
+    def is_valid_prediction(
+            prediction: List[float])-> bool:
+        ...
 
 class PolicyConfiguration(Generic[ActionType, BetAggregationType], ABC):
     # WeightedBet = WeightedBet[ActionType]
@@ -154,7 +158,6 @@ class PolicyConfiguration(Generic[ActionType, BetAggregationType], ABC):
 class PayoutConfiguration(Generic[ActionType]):
     # WeightedBet = WeightedBet[ActionType]
     # Agent = Agent[ActionType, StateType]
-    # f 
     @abstractmethod
     def calculate_payouts_from_losses(self,
             bets:  Dict[Agent, WeightedBet],
@@ -174,6 +177,14 @@ class PayoutConfiguration(Generic[ActionType]):
             predictions: Dict[ActionType, Dict[Agent, WeightedBet]],
             actual:  float) -> Dict[Agent, float]:
         ...
+
+    @staticmethod
+    def _is_valid_bet_(bet: List[float]) -> bool:
+        bet_at_timestep: float
+        for bet_at_timestep in bet:
+            if not (0 <= bet_at_timestep <= 1):
+                return False
+        return True
 
 
 @dataclass(frozen=True)

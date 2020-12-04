@@ -22,47 +22,38 @@ class BettingMechanism(ABC):
     def bet(self, state: StateType, action: ActionType, money: float) -> ActionBet:
         ...
 
-    @staticmethod
-    def _is_valid_bet_(bet: List[float]) -> bool:
-        bet_at_timestep: float
-        for bet_at_timestep in bet:
-            if not (0 <= bet_at_timestep <= 1):
-                return False
-        return True
-
-    @staticmethod
-    def _is_valid_prediction_(
-            prediction: List[float],
-            minimum: Optional[Callable[[int], float]] = None,
-            maximum: Optional[Callable[[int], float]] = None) -> bool:
-        for dt, prediction in enumerate(prediction):
-            if minimum is not None and prediction < minimum(dt):
-                return False
-            if maximum is not None and prediction > maximum(dt):
-                return False
-        return True
-
 class StaticBettingMechanism(BettingMechanism):
     def __init__(self,
             constant_bet: List[float],
-            constant_prediction: List[float],
-            min_possible_prediction: Callable[[], float] = None,
-            max_possible_prediction: Callable[[], float] = None):
+            constant_prediction: List[float]):
         for bet in self.constant_bet:
             assert 0 <= bet <= 1
         self.constant_bet: List[float] = constant_bet
         self.constant_prediction: List[float] = constant_prediction
-        self.min_possible_pred: Optional[Callable[[], float]] = min_possible_prediction
-        self.max_possible_pred: Optional[Callable[[], float]] = max_possible_prediction
 
     def bet(self, state: StateType, action: ActionType, money: float) -> ActionBet:
         prediction: List[float] = copy(self.constant_prediction)
         bet: List[float] = copy(self.constant_bet)
-        assert self._is_valid_bet_(bet)
-        assert self._is_valid_prediction(prediction,
-                minimum=self.min_possible_pred,
-                maximum=self.max_possible_pred)
         return ActionBet(bet=bet, prediction=prediction)
+
+class UniformBettingMechanism(BettingMechanism):
+    def __init__(self,
+            constant_bet: List[float],
+            tsteps_per_prediction: int,
+            min_possible_prediction: Callable[[], float],
+            max_possible_prediction: Callable[[], float],
+            random_seed: int = None):
+        self.tsteps_per_prediction: int = tsteps_per_prediction
+        self.constant_bet: List[float] = constant_bet
+        self.min_possible_prediction: Optional[Callable[[int], float]] = min_possible_prediction
+        self.max_possible_prediction: Optional[Callable[[int], float]] = max_possible_prediction
+
+
+    def bet(self, state: StateType, action: ActionType, money: float) -> ActionBet:
+        bet: List[float] = copy(self.constant_bet)
+        prediction: List[float] = \
+            []
+
 
 class StaticAgent(Agent):
     def __init__(self,
