@@ -17,7 +17,8 @@ class AgentFactory:
     'prediction': ActionBet(bet = [0.0], prediction = [0.0])
     'seed': float
     'N': integer specifying T (len of prediction)
-    'totalVotesBound': [float func,float func] max total votes
+    'totalVotesBound': (Callable[[int], float], Callable[[int], float)
+        min and max total votes
 
     Parameters
     ----------
