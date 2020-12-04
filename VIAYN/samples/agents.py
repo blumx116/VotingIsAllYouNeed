@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from copy import copy
 from typing import List, Callable, Optional
 
+import numpy as np
+
 from VIAYN.project_types import Agent, StateType, ActionType, ActionBet
 
 class VotingMechanism(ABC):
@@ -47,30 +49,13 @@ class UniformBettingMechanism(BettingMechanism):
         self.constant_bet: List[float] = constant_bet
         self.min_possible_prediction: Optional[Callable[[int], float]] = min_possible_prediction
         self.max_possible_prediction: Optional[Callable[[int], float]] = max_possible_prediction
+        self.random = np.random.RandomState(random_seed)
 
 
     def bet(self, state: StateType, action: ActionType, money: float) -> ActionBet:
         bet: List[float] = copy(self.constant_bet)
         prediction: List[float] = \
-            []
+            [self.random.uniform(low=self.min_possible_prediction(dt), high=self.max_possible_prediction(dt))
+                for dt in range(self.tsteps_per_prediction)]
+        return ActionBet(bet=bet, prediction=prediction)
 
-
-class StaticAgent(Agent):
-    def __init__(self,
-            bet_amount: List[float],
-            prediction: List[float],
-            vote_amount: float):
-
-        assert 0 <= bet_amount <= 1
-
-        self.bet_amount: List[float] = bet_amount
-        self.vote_amount: float = vote_amount
-        self.prediction: List[float] = prediction
-
-    def bet(self, state: StateType, action: ActionType, money: float) -> ActionBet:
-        return ActionBet(bet=self.bet_amount, prediction=self.prediction)
-
-    def vote(self, state: StateType) -> float:
-        return self.vote_amount
-
-class DumbAgentWithStaticVote
