@@ -7,6 +7,7 @@ from VIAYN.project_types import Agent, Environment,Dict
 from VIAYN.project_types import PolicyConfiguration, PayoutConfiguration, VotingConfiguration
 from typing import Any
 
+
 class AgentFactory:
     """
     Creates different types of Agents Based on dictionary specified
@@ -30,9 +31,9 @@ class AgentFactory:
     Agent
         created agent based on spec
     """
-
-    def create(self,spec: Dict[str,Any]) -> Agent:
+    def create(self, spec: Dict[str, Any]) -> Agent:
         return Agent()
+
 
 class EnvFactory:
     """
@@ -53,8 +54,9 @@ class EnvFactory:
         created environment based on spec
     """
 
-    def create(self,spec: Dict[str,Any]) -> Environment:
-        return Environment()
+    def create(self, spec: Dict[str, Any]) -> Environment:
+        ...
+
 
 class PayoutConfigFactory:
     """
@@ -74,8 +76,8 @@ class PayoutConfigFactory:
         created payout config based on spec
     """
 
-    def create(self,spec: Dict[str,Any]) -> PayoutConfiguration:
-        return PayoutConfiguration()
+    def create(self, spec: Dict[str, Any]) -> PayoutConfiguration:
+        ...
 
 
 class PolicyConfigFactory:
@@ -96,8 +98,9 @@ class PolicyConfigFactory:
         created policy config based on spec
     """
 
-    def create(self,spec: Dict[str,Any]) -> PolicyConfiguration:
-        return PolicyConfiguration()
+    def create(self, spec: Dict[str, Any]) -> PolicyConfiguration:
+        ...
+
 
 class VotingConfigFactory:
     """
@@ -117,5 +120,5 @@ class VotingConfigFactory:
         created voting config based on spec
     """
 
-    def create(self,spec: Dict[str,Any]) -> VotingConfiguration:
-        return VotingConfiguration()
+    def create(self, spec: Dict[str, Any]) -> VotingConfiguration:
+        ...
