@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from copy import copy
 from typing import List, Callable, Optional
 
 from VIAYN.project_types import Agent, StateType, ActionType, ActionBet
@@ -22,16 +23,24 @@ class BettingMechanism(ABC):
         ...
 
     @staticmethod
-    def _is_valid_bet_(self, bet: List[float]) -> bool:
-        for bet in self.constant_bet:
-            if not (0 <= bet <= 1):
+    def _is_valid_bet_(bet: List[float]) -> bool:
+        bet_at_timestep: float
+        for bet_at_timestep in bet:
+            if not (0 <= bet_at_timestep <= 1):
                 return False
         return True
 
     @staticmethod
-    def _is_valid_prediction(self,
+    def _is_valid_prediction_(
             prediction: List[float],
-            minimum):
+            minimum: Optional[Callable[[int], float]] = None,
+            maximum: Optional[Callable[[int], float]] = None) -> bool:
+        for dt, prediction in enumerate(prediction):
+            if minimum is not None and prediction < minimum(dt):
+                return False
+            if maximum is not None and prediction > maximum(dt):
+                return False
+        return True
 
 class StaticBettingMechanism(BettingMechanism):
     def __init__(self,
@@ -47,9 +56,13 @@ class StaticBettingMechanism(BettingMechanism):
         self.max_possible_pred: Optional[Callable[[], float]] = max_possible_prediction
 
     def bet(self, state: StateType, action: ActionType, money: float) -> ActionBet:
-        min_possible: Optional[float] = self.min_possible_pred() if self.min_possible_pred is not None else None
-        max_possible: Oo
-
+        prediction: List[float] = copy(self.constant_prediction)
+        bet: List[float] = copy(self.constant_bet)
+        assert self._is_valid_bet_(bet)
+        assert self._is_valid_prediction(prediction,
+                minimum=self.min_possible_pred,
+                maximum=self.max_possible_pred)
+        return ActionBet(bet=bet, prediction=prediction)
 
 class StaticAgent(Agent):
     def __init__(self,

@@ -104,11 +104,31 @@ class VotingConfiguration(ABC):
         self.n_agents = n_agents
 
     @abstractmethod
-    def max_possible_vote_total(self) -> float:
+    def max_possible_vote_total(self, dt: int = 0) -> float:
+        """
+
+        :param dt: int
+            Timestep offset from current timestep. Useful because
+            valid votes may change as number of agents is expected
+            to grow
+        :return: max: float
+            the maximum possible value that could be achieved if
+            all agents voted the maximum score
+        """
         ...
 
     @abstractmethod
-    def min_possible_vote_total(self) -> float:
+    def min_possible_vote_total(self, dt: int = 0) -> float:
+        """
+
+        :param  dt: int
+            Timestep offset from current timestep. Useful because
+            valid votes may change as number of agents is expected
+            to grow
+        :return: min: float
+            the minimum possible value that could be achieved if
+            all agents voted the minimum score
+        """
         ...
 
 
