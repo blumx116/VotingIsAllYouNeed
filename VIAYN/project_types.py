@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+# @Author: Carter.Blum
+# @Date:   2020-11-27 20:48:03
+# @Last Modified by:   Suhail.Alnahari
+# @Last Modified time: 2020-12-03 20:48:51
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional, Generic, TypeVar, List, Iterable, Dict
@@ -91,7 +97,9 @@ class LossLookup(Generic[ActionType]):
 
 class VotingConfiguration(ABC):
     vote_range: VoteRange
+
     n_agents: int
+
 
     @abstractmethod
     def aggregate_votes(self,
@@ -136,6 +144,7 @@ class VotingConfiguration(ABC):
             prediction: List[float])-> bool:
         ...
 
+
 class PolicyConfiguration(Generic[ActionType, BetAggregationType], ABC):
     # WeightedBet = WeightedBet[ActionType]
     @abstractmethod
@@ -158,6 +167,7 @@ class PolicyConfiguration(Generic[ActionType, BetAggregationType], ABC):
 class PayoutConfiguration(Generic[ActionType]):
     # WeightedBet = WeightedBet[ActionType]
     # Agent = Agent[ActionType, StateType]
+
     @abstractmethod
     def calculate_payouts_from_losses(self,
             bets:  Dict[Agent, WeightedBet],
