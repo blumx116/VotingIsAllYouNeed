@@ -2,54 +2,133 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-03 19:25:18
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-03 21:26:15
+# @Last Modified time: 2020-12-04 11:35:09
 
 
-from conftest import pytest, project_types,factory, vote_range
+from conftest import pytest, project_types,factory, vote_range,np
 
+def floatIsEqual(num1: float,num2: float) -> bool:
+    return abs(num1-num2) < 0.000001
 
-@pytest.mark.parametrize("AB, vote, money", [
-    (project_types.ActionBet([0.],[5.]) , 5.,10),
-    (project_types.ActionBet([0.],[4.]) , 5.,1),
-    (project_types.ActionBet([0.5],[1.]) , 5.,100),
-    (project_types.ActionBet([0.5],[0.]), 0,20),
-    (project_types.ActionBet([0.5],[2.]), 2,0),
-    (project_types.ActionBet([0.5],[2.]), 1,15),
-    (project_types.ActionBet([0.5],[7.]), 10,4),
-    (project_types.ActionBet([0.],[4.]), 9,2),
-    (project_types.ActionBet([0.],[2.]), 2,10),
-    (project_types.ActionBet([1],[5.]), 5,21),
-    (project_types.ActionBet([1.],[0.]), 0,6),    
+def test_constant_simple_agent_basic(constant_agent_config):
+    for AB,vote in constant_agent_config:
+        print(f"constant: {AB.bet} and {AB.prediction}, {vote}")
+        agent_fac = factory.AgentFactory()
+        env_factory = factory.EnvFactory()
+        agent = agent_fac.create({
+            'type':'constant',
+            'vote':vote,
+            'prediction':AB})
+        env = env_factory.create({})
+        for _ in range(100):
+            assert(agent.vote(state) == vote)
+            for j in env.actions():
+                state = env.state()
+                action_bet = agent.bet(state,j,1)
+                assert(
+                    len(action_bet.bet) == len(AB.bet)
+                )
+                assert(
+                    len(action_bet.prediction) == len(AB.prediction)
+                )
+                for k in range(len(action_bet.bet)):
+                    assert(floatIsEqual(action_bet.bet[k], AB.bet[k]))
+                for k in range(len(action_bet.prediction)):
+                    assert(floatIsEqual(action_bet.prediction[k], AB.prediction[k]))
+    
+
+def test_random_simple_agent_basic(random_agent_config):
+    for vote,seed in random_agent_config:
+        print(f"random: {vote} , {seed}")
+        agent_fac = factory.AgentFactory()
+        env_factory = factory.EnvFactory()
+        votingConfigFac = factory.VotingConfigFactory()
+        votingConf = votingConfigFac.create({})
+        agent = agent_fac.create({
+            'type':'random',
+            'vote':vote,
+            'N': 1,
+            'seed': seed,
+            'totalVotesBound': (
+                votingConf.min_possible_vote_total,
+                votingConf.max_possible_vote_total)
+            })
+        env = env_factory.create({})
+        genBet = np.random.default_rng(seed=seed)
+        genPred = np.random.default_rng(seed=seed)
+        for _ in range(100):
+            assert(agent.vote(state) == vote)
+            for j in env.actions():
+                state = env.state()
+                action_bet = agent.bet(state,j,1)
+                for k in range(len(action_bet.bet)):
+                    assert(floatIsEqual(action_bet.bet[k],genBet.uniform(0,1)))
+                for k in range(len(action_bet.prediction)):
+                    assert(
+                        floatIsEqual(
+                            action_bet.prediction[k], 
+                            genPred.uniform(
+                                votingConf.min_possible_vote_total(),
+                                votingConf.max_possible_vote_total()
+                            )
+                        )
+                    )
+
+@pytest.mark.parametrize("N", [
+    1,
+    2,
+    5,
+    20,
+    15
 ])
-def test_constant_agent_full(AB,vote,money):
-    print(f"consant: {AB.bet} and {AB.prediction}, {vote}, {money}")
+def test_random_simple_agent_forward_prediction(N):
+    vote, seed = (5,0)
+    print(f"random: {vote} , {seed}")
     agent_fac = factory.AgentFactory()
     env_factory = factory.EnvFactory()
+    votingConfigFac = factory.VotingConfigFactory()
+    votingConf = votingConfigFac.create({})
     agent = agent_fac.create({
-        'type':'constant',
+        'type':'random',
         'vote':vote,
-        'prediction':AB})
+        'N': N,
+        'seed': seed,
+        'totalVotesBound': (
+            votingConf.min_possible_vote_total,
+            votingConf.max_possible_vote_total)
+        })
     env = env_factory.create({})
+    genBet = np.random.default_rng(seed=seed)
+    genPred = np.random.default_rng(seed=seed)
     for _ in range(100):
         assert(agent.vote(state) == vote)
         for j in env.actions():
             state = env.state()
-            action_bet = agent.bet(state,j,money)
+            action_bet = agent.bet(state,j,1)
+            assert(
+                len(action_bet.bet) == N
+            )
+            assert(
+                len(action_bet.prediction) == N
+            )
             for k in range(len(action_bet.bet)):
-                assert(action_bet.bet[k] == AB.bet[k])
+                assert(floatIsEqual(action_bet.bet[k],genBet.uniform(0,1)))
             for k in range(len(action_bet.prediction)):
-                assert(action_bet.prediction[k] == AB.prediction[k])
-    
+                assert(
+                    floatIsEqual(
+                        action_bet.prediction[k], 
+                        genPred.uniform(
+                            votingConf.min_possible_vote_total(k),
+                            votingConf.max_possible_vote_total(k)
+                        )
+                    )
+                )
 
-@pytest.mark.parametrize("vote, seed", [
-    (5.,0),
-    (5., 123),    
-    (0., 1231131),
-    (1., 1235234),
-    (2., 5124),
-    (8., 82384),
-    (10., 0),
-])
-def test_random_agent_full(vote, seed):
-    print(f"random: {vote} , {seed}")
-    assert(True)
+
+############ NOT ALLOWED ############
+# @pytest.mark.parametrize("config",#
+#     random_agent_config           #
+# )                                 #
+# def test_checking(config):        #
+#     print(config)                 #
+#####################################
