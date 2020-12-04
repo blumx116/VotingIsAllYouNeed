@@ -2,7 +2,7 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-03 20:23:15
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-03 21:52:16
+# @Last Modified time: 2020-12-04 00:14:55
 from VIAYN.project_types import Agent, Environment,Dict
 from VIAYN.project_types import PolicyConfiguration, PayoutConfiguration, VotingConfiguration
 from typing import Any
@@ -17,7 +17,7 @@ class AgentFactory:
     'prediction': ActionBet(bet = [0.0], prediction = [0.0])
     'seed': float
     'N': integer specifying T (len of prediction)
-    'totalVotesBound': [float,float] max total votes
+    'totalVotesBound': [float func,float func] max total votes
 
     Parameters
     ----------
