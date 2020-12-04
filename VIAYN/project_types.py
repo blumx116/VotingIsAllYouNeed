@@ -84,7 +84,17 @@ class VotingConfiguration(ABC):
     vote_range: VoteRange
     @abstractmethod
     def aggregate_votes(self,
-            vots: List[float]) -> float:
+            votes: List[float]) -> float:
+        ...
+
+    @abstractmethod
+    def max_possible_vote_total(self,
+            n_agents: int) -> float:
+        ...
+
+    @abstractmethod
+    def min_possible_vote_total(self,
+            n_agents: int) -> float:
         ...
 
 class PolicyConfiguration(Generic[ActionType, BetAggregationType], ABC):
