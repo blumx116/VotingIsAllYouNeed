@@ -12,38 +12,24 @@ import pytest
 import VIAYN.project_types as project_types # pylint: disable=import-error
 import VIAYN.samples.factory as factory
 import VIAYN.samples.vote_ranges as vote_range
-
-
-@pytest.fixture
-def example_people_data():
-    return [
-        {
-            "given_name": "Alfonsa",
-            "family_name": "Ruiz",
-            "title": "Senior Software Engineer",
-        },
-        {
-            "given_name": "Sayid",
-            "family_name": "Khan",
-            "title": "Project Manager",
-        },
-    ]
-
+import numpy as np
 
 @pytest.fixture
 def constant_agent_config():
     return [
-    (project_types.ActionBet([0.],[5.]) , 5.,10),
-    (project_types.ActionBet([0.],[4.]) , 5.,1),
-    (project_types.ActionBet([0.5],[1.]) , 5.,100),
-    (project_types.ActionBet([0.5],[0.]), 0,20),
-    (project_types.ActionBet([0.5],[2.]), 2,0),
-    (project_types.ActionBet([0.5],[2.]), 1,15),
-    (project_types.ActionBet([0.5],[7.]), 10,4),
-    (project_types.ActionBet([0.],[4.]), 9,2),
-    (project_types.ActionBet([0.],[2.]), 2,10),
-    (project_types.ActionBet([1],[5.]), 5,21),
-    (project_types.ActionBet([1.],[0.]), 0,6),    
+    (project_types.ActionBet([0.],[5.]) , 5.),
+    (project_types.ActionBet([0.],[4.]) , 5.),
+    (project_types.ActionBet([0.5],[1.]) , 5.),
+    (project_types.ActionBet([0.5],[0.]), 0.),
+    (project_types.ActionBet([0.5],[2.]), 2.),
+    (project_types.ActionBet([0.5],[2.]), 1.),
+    (project_types.ActionBet([0.5],[7.]), 10.),
+    (project_types.ActionBet([0.,0.43,0.1215,0.8,1.],[4.,1,4,1,4]), 9.),
+    (project_types.ActionBet([0.,0.1215,0.8,1.],[4.,4,1,4]), 1.),
+    (project_types.ActionBet([0.,0.43,0.1215,0.8],[4.,1,4,1]), 2.),
+    (project_types.ActionBet([0.,0.43,0.8,1.],[4.,1,4,4]), 7.),
+    (project_types.ActionBet([0.1215,0.8,1.],[1,1,4]), 5.),
+    (project_types.ActionBet([0.,1.],[1,4]), 9.5)
 ]
 
 @pytest.fixture
