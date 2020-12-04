@@ -31,9 +31,9 @@ class AgentFactory:
     Agent
         created agent based on spec
     """
-    def create(self, spec: Dict[str, Any]) -> Agent:
-        return Agent()
-
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> Agent:
+        ...
 
 class EnvFactory:
     """
@@ -53,8 +53,8 @@ class EnvFactory:
     Environment
         created environment based on spec
     """
-
-    def create(self, spec: Dict[str, Any]) -> Environment:
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> Environment:
         ...
 
 
@@ -75,8 +75,8 @@ class PayoutConfigFactory:
     PayoutConfiguration
         created payout config based on spec
     """
-
-    def create(self, spec: Dict[str, Any]) -> PayoutConfiguration:
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> PayoutConfiguration:
         ...
 
 
@@ -97,8 +97,8 @@ class PolicyConfigFactory:
     PolicyConfiguration
         created policy config based on spec
     """
-
-    def create(self, spec: Dict[str, Any]) -> PolicyConfiguration:
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> PolicyConfiguration:
         ...
 
 
@@ -119,6 +119,6 @@ class VotingConfigFactory:
     VotingConfiguration
         created voting config based on spec
     """
-
-    def create(self, spec: Dict[str, Any]) -> VotingConfiguration:
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> VotingConfiguration:
         ...
