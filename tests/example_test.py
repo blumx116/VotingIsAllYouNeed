@@ -22,7 +22,6 @@ def test_some_primes():
 
 
 def format_data_for_display(people):
-    project_types.Action("something")
     result = []
     for i in people:
         firstName = i["given_name"]
