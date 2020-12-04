@@ -59,3 +59,16 @@ class UniformBettingMechanism(BettingMechanism):
                 for dt in range(self.tsteps_per_prediction)]
         return ActionBet(bet=bet, prediction=prediction)
 
+class CompositeAgent(Agent):
+    def __init__(self,
+            betting_mechanism: BettingMechanism,
+            voting_mechanism: VotingMechanism):
+        self.betting_mechanism: BettingMechanism = betting_mechanism
+        self.voting_mechanism: VotingMechanism = voting_mechanism
+
+    def vote(self, state: StateType) -> float:
+        return self.voting_mechanism.vote(state)
+
+    def bet(self, state: StateType, action: ActionType, money: float) -> ActionBet:
+        return self.betting_mechanism.bet(state, action, money)
+
