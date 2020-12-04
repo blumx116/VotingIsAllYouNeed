@@ -13,18 +13,15 @@ class VoteRange(ABC):
 
 ActionType = TypeVar("ActionType", bound=Action)
 
-Prediction = Union[float, List[float]]
-PredictionType =TypeVar("PredictionType", bound=Prediction)
-
 ActionSpaceType = Iterable[ActionType]
 StateType = TypeVar("StateType")
 
 BetAggregationType = TypeVar("BetAggregationType")
 
 @dataclass(frozen=True)
-class ActionBet(Generic[PredictionType]):
-    bet: float 
-    prediction: PredictionType
+class ActionBet:
+    bet: List[float]
+    prediction: List[float]
 
 class Agent(Generic[ActionType, StateType], ABC):
     @abstractmethod
@@ -41,12 +38,12 @@ class Agent(Generic[ActionType, StateType], ABC):
 
 
 @dataclass(frozen=True)
-class WeightedBet(Generic[ActionType, PredictionType]):
-    bet: float # bij
-    prediction: PredictionType # pij
+class WeightedBet(Generic[ActionType]):
+    bet: List[float]  # bij
+    prediction: List[float]  # pij
     action: ActionType # j
     money: float # m_i^(t)
-    cast_by: Agent[ActionType, PredictionType]
+    cast_by: Agent[ActionType]
 
     def weight(self) -> float:
         return self.bet * self.money
@@ -69,19 +66,19 @@ class Environment(Generic[ActionType, StateType]):
         ...
 
 @dataclass(frozen=True)
-class HistoryItem(Generic[ActionType, PredictionType]):
+class HistoryItem(Generic[ActionType]):
     selected_action: ActionType # jstar
     available_actions: List[ActionType] # as
-    predictions: Dict[ActionType, WeightedBet[ActionType, PredictionType]]
+    predictions: Dict[ActionType, WeightedBet[ActionType]]
     t_enacted: int # >= 0
 
 @dataclass(frozen=True)
-class LossLookup(Generic[ActionType, PredictionType]):
-    # Agent = Agent[ActionType, PredictionType]
+class LossLookup(Generic[ActionType]):
+    # Agent = Agent[ActionType]
     lookup: Dict[Agent, Dict[ActionType, float]]
 
     def loss_for(self, agent: Agent, action: ActionType) -> float:
-        return self.lookup[agent][action] # is this worth having???
+        return self.lookup[agent][action]  # is this worth having???
 
 class VotingConfiguration(ABC):
     vote_range: VoteRange
@@ -90,8 +87,8 @@ class VotingConfiguration(ABC):
             vots: List[float]) -> float:
         ...
 
-class PolicyConfiguration(Generic[ActionType, BetAggregationType, PredictionType], ABC):
-    # WeightedBet = WeightedBet[ActionType, PredictionType]
+class PolicyConfiguration(Generic[ActionType, BetAggregationType], ABC):
+    # WeightedBet = WeightedBet[ActionType]
     @abstractmethod
     def aggregate_bets(self,
             predictions: Dict[ActionType, WeightedBet],
@@ -108,14 +105,14 @@ class PolicyConfiguration(Generic[ActionType, BetAggregationType, PredictionType
             aggregate_bets: Dict[ActionType, BetAggregationType]) -> Dict[ActionType, float]:
         ...
 
-class PayoutConfiguration(Generic[ActionType, PredictionType]):
-    # WeightedBet = WeightedBet[ActionType, PredictionType]
-    # Agent = Agent[ActionType, PredictionType]
+class PayoutConfiguration(Generic[ActionType]):
+    # WeightedBet = WeightedBet[ActionType]
+    # Agent = Agent[ActionType]
     # f 
     @abstractmethod
     def calculate_payouts_from_losses(self,
             bets:  Dict[Agent, WeightedBet],
-            losses: LossLookup[ActionType, PredictionType]) \
+            losses: LossLookup[ActionType]) \
             -> Dict[Agent, float]:
         ...
 
@@ -123,7 +120,7 @@ class PayoutConfiguration(Generic[ActionType, PredictionType]):
     @abstractmethod
     def calculate_loss(self,
             predictions: Dict[ActionType, Dict[Agent, WeightedBet]],
-            actual: float) -> LossLookup[ActionType, PredictionType]:
+            actual: float) -> LossLookup[ActionType]:
         ...
 
     @abstractmethod
@@ -134,7 +131,7 @@ class PayoutConfiguration(Generic[ActionType, PredictionType]):
 
 
 @dataclass(frozen=True)
-class SystemConfiguration(Generic[ActionType, BetAggregationType, PredictionType]):
+class SystemConfiguration(Generic[ActionType, BetAggregationType]):
     voting_manager: VotingConfiguration
-    policy_manager: PolicyConfiguration[ActionType, BetAggregationType, PredictionType]
-    payout_manager: PayoutConfiguration[ActionType, PredictionType]
+    policy_manager: PolicyConfiguration[ActionType, BetAggregationType]
+    payout_manager: PayoutConfiguration[ActionType]
