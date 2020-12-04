@@ -1,15 +1,24 @@
+# -*- coding: utf-8 -*-
+# @Author: Carter.Blum
+# @Date:   2020-11-27 20:48:03
+# @Last Modified by:   Suhail.Alnahari
+# @Last Modified time: 2020-12-03 20:48:51
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Generic, TypeVar, Union, List, Iterable, Dict
+from typing import Optional, Generic, TypeVar, List, Iterable, Dict
+
 
 @dataclass
 class Action:
     description: Optional[str]
 
+
 class VoteRange(ABC):
     @abstractmethod
     def contains(self, value: float) -> bool:
         ...
+
 
 ActionType = TypeVar("ActionType", bound=Action)
 
@@ -18,10 +27,12 @@ StateType = TypeVar("StateType")
 
 BetAggregationType = TypeVar("BetAggregationType")
 
+
 @dataclass(frozen=True)
 class ActionBet:
     bet: List[float]
     prediction: List[float]
+
 
 class Agent(Generic[ActionType, StateType], ABC):
     @abstractmethod
@@ -41,12 +52,13 @@ class Agent(Generic[ActionType, StateType], ABC):
 class WeightedBet(Generic[ActionType]):
     bet: List[float]  # bij
     prediction: List[float]  # pij
-    action: ActionType # j
-    money: float # m_i^(t)
-    cast_by: Agent[ActionType]
+    action: ActionType  # j
+    money: float  # m_i^(t)
+    cast_by: Agent[ActionType, StateType]
 
-    def weight(self) -> float:
-        return self.bet * self.money
+    def weight(self) -> List[float]:
+        return [bet * self.money for bet in self.bet]
+
 
 class Environment(Generic[ActionType, StateType]):
     @abstractmethod
@@ -65,27 +77,32 @@ class Environment(Generic[ActionType, StateType]):
     def done(self) -> bool:
         ...
 
+
 @dataclass(frozen=True)
 class HistoryItem(Generic[ActionType]):
-    selected_action: ActionType # jstar
-    available_actions: List[ActionType] # as
+    selected_action: ActionType  # jstar
+    available_actions: List[ActionType]  # as
     predictions: Dict[ActionType, WeightedBet[ActionType]]
-    t_enacted: int # >= 0
+    t_enacted: int  # >= 0
+
 
 @dataclass(frozen=True)
 class LossLookup(Generic[ActionType]):
-    # Agent = Agent[ActionType]
+    # Agent = Agent[ActionType, StateType]
     lookup: Dict[Agent, Dict[ActionType, float]]
 
     def loss_for(self, agent: Agent, action: ActionType) -> float:
         return self.lookup[agent][action]  # is this worth having???
 
+
 class VotingConfiguration(ABC):
     vote_range: VoteRange
+
     @abstractmethod
     def aggregate_votes(self,
             vots: List[float]) -> float:
         ...
+
 
 class PolicyConfiguration(Generic[ActionType, BetAggregationType], ABC):
     # WeightedBet = WeightedBet[ActionType]
@@ -105,9 +122,10 @@ class PolicyConfiguration(Generic[ActionType, BetAggregationType], ABC):
             aggregate_bets: Dict[ActionType, BetAggregationType]) -> Dict[ActionType, float]:
         ...
 
+
 class PayoutConfiguration(Generic[ActionType]):
     # WeightedBet = WeightedBet[ActionType]
-    # Agent = Agent[ActionType]
+    # Agent = Agent[ActionType, StateType]
     # f 
     @abstractmethod
     def calculate_payouts_from_losses(self,
