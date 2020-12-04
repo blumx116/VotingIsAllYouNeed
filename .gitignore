@@ -5,3 +5,5 @@ __pycache__
 .vscode
 bin
 .idea
+docs/build
+*.egg-info
