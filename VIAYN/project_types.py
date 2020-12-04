@@ -98,9 +98,50 @@ class LossLookup(Generic[ActionType]):
 class VotingConfiguration(ABC):
     vote_range: VoteRange
 
+    n_agents: int
+
+
     @abstractmethod
     def aggregate_votes(self,
-            vots: List[float]) -> float:
+            votes: List[float]) -> float:
+        ...
+
+    @abstractmethod
+    def set_n_agents(self,
+            n_agents: int) -> None:
+        self.n_agents = n_agents
+
+    @abstractmethod
+    def max_possible_vote_total(self, dt: int = 0) -> float:
+        """
+
+        :param dt: int
+            Timestep offset from current timestep. Useful because
+            valid votes may change as number of agents is expected
+            to grow
+        :return: max: float
+            the maximum possible value that could be achieved if
+            all agents voted the maximum score
+        """
+        ...
+
+    @abstractmethod
+    def min_possible_vote_total(self, dt: int = 0) -> float:
+        """
+
+        :param  dt: int
+            Timestep offset from current timestep. Useful because
+            valid votes may change as number of agents is expected
+            to grow
+        :return: min: float
+            the minimum possible value that could be achieved if
+            all agents voted the minimum score
+        """
+        ...
+
+    @staticmethod
+    def is_valid_prediction(
+            prediction: List[float])-> bool:
         ...
 
 
@@ -126,7 +167,7 @@ class PolicyConfiguration(Generic[ActionType, BetAggregationType], ABC):
 class PayoutConfiguration(Generic[ActionType]):
     # WeightedBet = WeightedBet[ActionType]
     # Agent = Agent[ActionType, StateType]
-    # f 
+
     @abstractmethod
     def calculate_payouts_from_losses(self,
             bets:  Dict[Agent, WeightedBet],
@@ -146,6 +187,14 @@ class PayoutConfiguration(Generic[ActionType]):
             predictions: Dict[ActionType, Dict[Agent, WeightedBet]],
             actual:  float) -> Dict[Agent, float]:
         ...
+
+    @staticmethod
+    def _is_valid_bet_(bet: List[float]) -> bool:
+        bet_at_timestep: float
+        for bet_at_timestep in bet:
+            if not (0 <= bet_at_timestep <= 1):
+                return False
+        return True
 
 
 @dataclass(frozen=True)
