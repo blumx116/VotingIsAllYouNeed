@@ -180,8 +180,16 @@ class EnvFactory:
         ...
 
 
+@unique
+class PayoutConfigEnum(Enum):
+    simple = auto()
+    suggested = auto()
+
+
 @dataclass(frozen=True)
 class PayoutConfigFactorySpec:
+    configType: PayoutConfigEnum
+
     def __post_init__(self):
         pass
 
@@ -207,9 +215,16 @@ class PayoutConfigFactory:
     def create(spec: PayoutConfigFactorySpec) -> PayoutConfiguration:
         ...
 
+@unique
+class PolicyConfigEnum(Enum):
+    simple = auto()
+    suggested = auto()
+
 
 @dataclass(frozen=True)
 class PolicyConfigFactorySpec:
+    configType: PolicyConfigEnum
+
     def __post_init__(self):
         pass
 
@@ -236,8 +251,16 @@ class PolicyConfigFactory:
         ...
 
 
+@unique
+class VotingConfigEnum(Enum):
+    simple = auto()
+    suggested = auto()
+
+
 @dataclass(frozen=True)
 class VotingConfigFactorySpec:
+    configType: VotingConfigEnum
+
     def __post_init__(self):
         pass
 
