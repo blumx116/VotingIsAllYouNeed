@@ -18,12 +18,13 @@ from VIAYN.project_types import (
 
 VoteBoundGetter = Callable[[int], float]
 
+
 @unique
 class AgentsEnum(Enum):
     constant = auto()
     random = auto()
 
-VoteBoundGetter = Callable[[int], float]
+
 @dataclass(frozen=True)
 class AgentFactorySpec:
     agentType: AgentsEnum
@@ -35,15 +36,16 @@ class AgentFactorySpec:
     N: Optional[int] = None
     
     def __post_init__(self):
-        if (self.agentType == AgentsEnum.constant):
+        if self.agentType == AgentsEnum.constant:
             assert(self.bet is not None)
             assert(self.prediction is not None)
-        elif(self.agentType == AgentsEnum.random):
+        elif self.agentType == AgentsEnum.random:
             assert(self.N is not None)
             assert(self.totalVotesBound is not None)
             assert(self.bet is not None)
         else:
             raise TypeError(self.agentType)
+
 
 class AgentFactory:
     """
@@ -60,7 +62,7 @@ class AgentFactory:
         created agent based on spec
     """
     @staticmethod
-    def create(self,spec: AgentFactorySpec) -> Agent:
+    def create(self, spec: AgentFactorySpec) -> Agent:
         ...
 
 
@@ -68,12 +70,14 @@ class AgentFactory:
 class EnvsEnum(Enum):
     default = auto()
 
+
 @dataclass(frozen=True)
 class EnvsFactorySpec:
     envType: EnvsEnum
 
     def __post_init__(self):
         assert(self.envType == EnvsEnum.default)
+
 
 class EnvFactory:
     """
@@ -100,6 +104,7 @@ class PayoutConfigFactorySpec:
     def __post_init__(self):
         pass
 
+
 class PayoutConfigFactory:
     """
     Creates different types of Payout Configs Based on spec
@@ -125,6 +130,7 @@ class PolicyConfigFactorySpec:
     def __post_init__(self):
         pass
 
+
 class PolicyConfigFactory:
     """
     Creates different types of Policy Configs Based on spec
@@ -146,10 +152,12 @@ class PolicyConfigFactory:
     def create(spec: PolicyConfigFactorySpec) -> PolicyConfiguration:
         ...
 
+
 @dataclass(frozen=True)
 class VotingConfigFactorySpec:
     def __post_init__(self):
         pass
+
 
 class VotingConfigFactory:
     """
