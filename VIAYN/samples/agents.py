@@ -4,12 +4,12 @@ from typing import List, Callable, Optional, Generic
 
 import numpy as np
 
-from VIAYN.project_types import Agent, StateType, ActionType, ActionBet
+from VIAYN.project_types import Agent, A, S, ActionBet
 
 
 class VotingMechanism(Generic[StateType], ABC):
     @abstractmethod
-    def vote(self, state: StateType) -> float:
+    def vote(self, state: S) -> float:
         ...
 
 
