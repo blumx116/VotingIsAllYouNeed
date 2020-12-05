@@ -2,10 +2,10 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-03 20:23:15
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-04 21:21:45
+# @Last Modified time: 2020-12-04 20:13:15
 
 from dataclasses import dataclass
-from typing import Any, Optional, Union, Tuple, List, Callable, Dict,TypeVar, Generic
+from typing import Optional, Union, Tuple, List, Callable, Dict, Iterable
 from enum import Enum, unique, auto
 
 from VIAYN.project_types import (
@@ -15,40 +15,41 @@ from VIAYN.project_types import (
     VotingConfiguration,
     PolicyConfiguration)
 from VIAYN.samples.agents import (
-    BetSelectionMechanism, PredictionSelectionMechanism, VotingMechanism, BettingMechanism, CompositeBettingMechanism,
-    CompositeAgent, StaticVotingMechanism, StaticBetSelectionMech, StaticPredSelectionMech, StaticBettingMechanism,
+    BetSelectionMechanism, PredictionSelectionMechanism, VotingMechanism, CompositeBettingMechanism,
+    CompositeAgent, StaticVotingMechanism, StaticBetSelectionMech, StaticPredSelectionMech,
     RNGUniforPredSelectionMech
 )
 
 VoteBoundGetter = Callable[[int], float]
+
 
 @unique
 class AgentsEnum(Enum):
     constant = auto()
     random = auto()
 
-VoteBoundGetter = Callable[[int], float]
+
 @dataclass(frozen=True)
 class AgentFactorySpec:
     agentType: AgentsEnum
     vote: float
     totalVotesBound: Optional[Tuple[VoteBoundGetter, VoteBoundGetter]] = None
-    seed: Optional[float] = None
+    seed: Optional[int] = None
     prediction: Optional[Union[float, List[float]]] = None
     bet: Optional[Union[float, List[float]]] = None
     N: Optional[int] = None
     
     def __post_init__(self):
-        if (self.agentType == AgentsEnum.constant):
+        if self.agentType == AgentsEnum.constant:
             assert(self.bet is not None)
             assert(self.prediction is not None)
-        elif(self.agentType == AgentsEnum.random):
+        elif self.agentType == AgentsEnum.random:
             assert(self.N is not None)
             assert(self.totalVotesBound is not None)
             assert(self.bet is not None)
         else:
             raise TypeError(self.agentType)
-            
+
 
 class AgentFactory:
     """
@@ -81,6 +82,7 @@ class AgentFactory:
     @staticmethod
     def _create_static_bet_selection_(
             spec: AgentFactorySpec) -> BetSelectionMechanism:
+        assert spec.bet is not None
         return StaticBetSelectionMech(
             AgentFactory._repeat_if_float_(spec.bet, spec.N))
 
@@ -90,6 +92,7 @@ class AgentFactory:
 
     @staticmethod
     def _create_static_prediction_selection_(spec: AgentFactorySpec) -> PredictionSelectionMechanism:
+        assert spec.prediction is not None
         return StaticPredSelectionMech(
             AgentFactory._repeat_if_float_(spec.prediction, spec.N))
 
@@ -97,6 +100,7 @@ class AgentFactory:
     def _create_rng_uniform_prediction_selection_(spec: AgentFactorySpec) -> PredictionSelectionMechanism:
         assert spec.totalVotesBound is not None
         assert spec.seed is not None
+        assert spec.N is not None
         return RNGUniforPredSelectionMech(
             tsteps_per_prediction=spec.N,
             min_possible_prediction=spec.totalVotesBound[0],
@@ -113,7 +117,7 @@ class AgentFactory:
                 bet_selection=AgentFactory._create_static_bet_selection_(spec)))
 
     @staticmethod
-    def _repeat_if_float_(self,
+    def _repeat_if_float_(
             value: Union[float, List[float]],
             n: Optional[int] = None):
         """
@@ -139,14 +143,16 @@ class AgentFactory:
                 assert len(value) == n
             return value
 
-    _creators_: Dict[str, Callable[[AgentFactorySpec], Agent]] = {
-        'random': _create_random_agent_,
-        'static': _create_static_agent_
+    _creators_: Dict[AgentsEnum, Callable[[AgentFactorySpec], Agent]] = {
+        AgentsEnum.random: _create_random_agent_,
+        AgentsEnum.constant: _create_static_agent_
     }
+
 
 @unique
 class EnvsEnum(Enum):
     default = auto()
+
 
 @dataclass(frozen=True)
 class EnvsFactorySpec:
@@ -154,6 +160,7 @@ class EnvsFactorySpec:
 
     def __post_init__(self):
         assert(self.envType == EnvsEnum.default)
+
 
 class EnvFactory:
     """
@@ -175,10 +182,19 @@ class EnvFactory:
         ...
 
 
+@unique
+class PayoutConfigEnum(Enum):
+    simple = auto()
+    suggested = auto()
+
+
 @dataclass(frozen=True)
 class PayoutConfigFactorySpec:
+    configType: PayoutConfigEnum
+
     def __post_init__(self):
         pass
+
 
 class PayoutConfigFactory:
     """
@@ -200,10 +216,19 @@ class PayoutConfigFactory:
         ...
 
 
+@unique
+class PolicyConfigEnum(Enum):
+    simple = auto()
+    suggested = auto()
+
+
 @dataclass(frozen=True)
 class PolicyConfigFactorySpec:
+    configType: PolicyConfigEnum
+
     def __post_init__(self):
         pass
+
 
 class PolicyConfigFactory:
     """
@@ -226,16 +251,26 @@ class PolicyConfigFactory:
     def create(spec: PolicyConfigFactorySpec) -> PolicyConfiguration:
         ...
 
+
+@unique
+class VotingConfigEnum(Enum):
+    simple = auto()
+    suggested = auto()
+
+
 @dataclass(frozen=True)
 class VotingConfigFactorySpec:
+    configType: VotingConfigEnum
+
     def __post_init__(self):
         pass
+
 
 class VotingConfigFactory:
     """
     Creates different types of Voting Configs Based on spec
 
-    
+
     Parameters
     ----------
     spec: VotingConfigFactorySpec
