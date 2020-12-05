@@ -34,7 +34,7 @@ class AgentFactorySpec:
     agentType: AgentsEnum
     vote: float
     totalVotesBound: Optional[Tuple[VoteBoundGetter, VoteBoundGetter]] = None
-    seed: Optional[float] = None
+    seed: Optional[int] = None
     prediction: Optional[Union[float, List[float]]] = None
     bet: Optional[Union[float, List[float]]] = None
     N: Optional[int] = None
@@ -83,6 +83,7 @@ class AgentFactory:
     @staticmethod
     def _create_static_bet_selection_(
             spec: AgentFactorySpec) -> BetSelectionMechanism:
+        assert spec.bet is not None
         return StaticBetSelectionMech(
             AgentFactory._repeat_if_float_(spec.bet, spec.N))
 
@@ -92,6 +93,7 @@ class AgentFactory:
 
     @staticmethod
     def _create_static_prediction_selection_(spec: AgentFactorySpec) -> PredictionSelectionMechanism:
+        assert spec.prediction is not None
         return StaticPredSelectionMech(
             AgentFactory._repeat_if_float_(spec.prediction, spec.N))
 
@@ -99,6 +101,7 @@ class AgentFactory:
     def _create_rng_uniform_prediction_selection_(spec: AgentFactorySpec) -> PredictionSelectionMechanism:
         assert spec.totalVotesBound is not None
         assert spec.seed is not None
+        assert spec.N is not None
         return RNGUniforPredSelectionMech(
             tsteps_per_prediction=spec.N,
             min_possible_prediction=spec.totalVotesBound[0],
@@ -115,9 +118,9 @@ class AgentFactory:
                 bet_selection=AgentFactory._create_static_bet_selection_(spec)))
 
     @staticmethod
-    def _repeat_if_float_(self,
-                          value: Union[float, List[float]],
-                          n: Optional[int] = None):
+    def _repeat_if_float_(
+            value: Union[float, List[float]],
+            n: Optional[int] = None):
         """
         Utility method.
         If a float is passed in for 'value', returns [value] * N
@@ -141,9 +144,9 @@ class AgentFactory:
                 assert len(value) == n
             return value
 
-    _creators_: Dict[str, Callable[[AgentFactorySpec], Agent]] = {
-        'random': _create_random_agent_,
-        'static': _create_static_agent_
+    _creators_: Dict[AgentsEnum, Callable[[AgentFactorySpec], Agent]] = {
+        AgentsEnum.random: _create_random_agent_,
+        AgentsEnum.constant: _create_static_agent_
     }
 
 
@@ -155,8 +158,6 @@ class EnvsEnum(Enum):
 @dataclass(frozen=True)
 class EnvsFactorySpec:
     envType: EnvsEnum
-
-
 
 
 class EnvFactory:
