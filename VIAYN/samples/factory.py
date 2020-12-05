@@ -20,9 +20,8 @@ class AgentFactory:
     Creates different types of Agents Based on dictionary specified
 
     List of acceptable configs:
-    'type': 'constant','random'
-    'vote': float (default = 0.0 or highest vote)
-    'prediction': ActionBet(bet = 0.0 or max moneys, prediction = [])
+    spec: AgentFactorySpec
+    	specifications to create agent with, see above
 
     Parameters
     ----------
