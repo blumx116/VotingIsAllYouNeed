@@ -2,7 +2,7 @@
 # @Author: Carter.Blum
 # @Date:   2020-11-27 20:48:03
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-03 20:48:51
+# @Last Modified time: 2020-12-05 00:37:24
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -15,10 +15,21 @@ class Action:
 
 
 class VoteRange(ABC):
+
+    @staticmethod
     @abstractmethod
-    def contains(self, value: float) -> bool:
+    def contains(value: float) -> bool:
         ...
 
+    @staticmethod
+    @abstractmethod
+    def maxVote() -> float:
+        ...
+    
+    @staticmethod
+    @abstractmethod
+    def minVote() -> float:
+        ...
 
 A = TypeVar("A", bound=Action) # ActionType
 S = TypeVar("S") # StateType
