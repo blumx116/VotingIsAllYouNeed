@@ -2,12 +2,18 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-03 20:23:15
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-04 18:49:22
-from VIAYN.project_types import Agent, Environment,Dict
-from VIAYN.project_types import PolicyConfiguration, PayoutConfiguration, VotingConfiguration
-from dataclasses import dataclass
-from typing import Any, Optional, Union, Tuple, List, Callable
+# @Last Modified time: 2020-12-04 18:51:44
 
+from dataclasses import dataclass
+from typing import Any, Optional, Union, Tuple, List, Callable, Dict
+
+from VIAYN.project_types import (
+    Agent,
+    Environment,
+    PayoutConfiguration,
+    VotingConfiguration,
+    PolicyConfiguration
+)
 
 VoteBoundGetter = Callable[[int], float]
 
@@ -20,6 +26,7 @@ class AgentFactorySpec:
 	prediction: Optional[Union[float, List[float]]] = None
 	bet: Optional[Union[float, List[float]]] = None
 	N: Optional[int] = None
+
 
 class AgentFactory:
     """
@@ -39,9 +46,9 @@ class AgentFactory:
     Agent
         created agent based on spec
     """
-
+    @staticmethod
     def create(self,spec: AgentFactorySpec) -> Agent:
-        return Agent()
+        ...
 
 class EnvFactory:
     """
@@ -61,9 +68,10 @@ class EnvFactory:
     Environment
         created environment based on spec
     """
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> Environment:
+        ...
 
-    def create(self,spec: Dict[str,Any]) -> Environment:
-        return Environment()
 
 class PayoutConfigFactory:
     """
@@ -82,9 +90,9 @@ class PayoutConfigFactory:
     PayoutConfiguration
         created payout config based on spec
     """
-
-    def create(self,spec: Dict[str,Any]) -> PayoutConfiguration:
-        return PayoutConfiguration()
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> PayoutConfiguration:
+        ...
 
 
 class PolicyConfigFactory:
@@ -104,9 +112,10 @@ class PolicyConfigFactory:
     PolicyConfiguration
         created policy config based on spec
     """
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> PolicyConfiguration:
+        ...
 
-    def create(self,spec: Dict[str,Any]) -> PolicyConfiguration:
-        return PolicyConfiguration()
 
 class VotingConfigFactory:
     """
@@ -125,6 +134,6 @@ class VotingConfigFactory:
     VotingConfiguration
         created voting config based on spec
     """
-
-    def create(self,spec: Dict[str,Any]) -> VotingConfiguration:
-        return VotingConfiguration()
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> VotingConfiguration:
+        ...
