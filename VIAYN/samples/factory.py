@@ -1,7 +1,13 @@
 from dataclasses import dataclass
-from typing import Any, Optional, Union, Tuple, List, Callable
+from typing import Any, Optional, Union, Tuple, List, Callable, Dict
 
-from VIAYN.project_types import Agent, Environment,Dict
+from VIAYN.project_types import (
+    Agent,
+    Environment,
+    PayoutConfiguration,
+    VotingConfiguration,
+    PolicyConfiguration
+)
 
 VoteBoundGetter = Callable[[int], float]
 
@@ -14,6 +20,7 @@ class AgentFactorySpec:
 	prediction: Optional[Union[float, List[float]]] = None
 	bet: Optional[Union[float, List[float]]] = None
 	N: Optional[int] = None
+
 
 class AgentFactory:
     """
@@ -33,9 +40,9 @@ class AgentFactory:
     Agent
         created agent based on spec
     """
-
+    @staticmethod
     def create(self,spec: AgentFactorySpec) -> Agent:
-        return Agent()
+        ...
 
 class EnvFactory:
     """
@@ -55,6 +62,72 @@ class EnvFactory:
     Environment
         created environment based on spec
     """
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> Environment:
+        ...
 
-    def create(self,spec: Dict[str,Any]) -> Environment:
-        return Environment()
+
+class PayoutConfigFactory:
+    """
+    Creates different types of Payout Configs Based on dictionary specified
+
+    List of acceptable configs:
+    TBD
+
+    Parameters
+    ----------
+    spec: Dict
+        Information to initialize Payout Config
+
+    Returns
+    -------
+    PayoutConfiguration
+        created payout config based on spec
+    """
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> PayoutConfiguration:
+        ...
+
+
+class PolicyConfigFactory:
+    """
+    Creates different types of Policy Configs Based on dictionary specified
+
+    List of acceptable configs:
+    TBD
+
+    Parameters
+    ----------
+    spec: Dict
+        Information to initialize Policy Config
+
+    Returns
+    -------
+    PolicyConfiguration
+        created policy config based on spec
+    """
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> PolicyConfiguration:
+        ...
+
+
+class VotingConfigFactory:
+    """
+    Creates different types of Voting Configs Based on dictionary specified
+
+    List of acceptable configs:
+    TBD
+
+    Parameters
+    ----------
+    spec: Dict
+        Information to initialize Voting Config
+
+    Returns
+    -------
+    VotingConfiguration
+        created voting config based on spec
+    """
+    @staticmethod
+    def create(spec: Dict[str, Any]) -> VotingConfiguration:
+        ...
