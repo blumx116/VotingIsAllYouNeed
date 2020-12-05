@@ -15,8 +15,8 @@ from VIAYN.project_types import (
     VotingConfiguration,
     PolicyConfiguration)
 from VIAYN.samples.agents import (
-    BetSelectionMechanism, PredictionSelectionMechanism, VotingMechanism, BettingMechanism, CompositeBettingMechanism,
-    CompositeAgent, StaticVotingMechanism, StaticBetSelectionMech, StaticPredSelectionMech, StaticBettingMechanism,
+    BetSelectionMechanism, PredictionSelectionMechanism, VotingMechanism, CompositeBettingMechanism,
+    CompositeAgent, StaticVotingMechanism, StaticBetSelectionMech, StaticPredSelectionMech,
     RNGUniforPredSelectionMech
 )
 
@@ -50,16 +50,6 @@ class AgentFactorySpec:
         else:
             raise TypeError(self.agentType)
 
-@unique
-class EnvsEnum(Enum):
-    default = auto()
-
-@dataclass(frozen=True)
-class EnvsFactorySpec:
-    envType: EnvsEnum
-
-    def __post_init__(self):
-        assert(self.envType == EnvsEnum.default)
 
 class AgentFactory:
     """
@@ -224,6 +214,7 @@ class PayoutConfigFactory:
     @staticmethod
     def create(spec: PayoutConfigFactorySpec) -> PayoutConfiguration:
         ...
+
 
 @unique
 class PolicyConfigEnum(Enum):

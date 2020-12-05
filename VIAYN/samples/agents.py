@@ -22,13 +22,13 @@ class StaticVotingMechanism(Generic[S], VotingMechanism[S]):
         return self.constant_vote
 
 
-class BetSelectionMechanism(Generic[S, A], ABC):
+class BetSelectionMechanism(Generic[A, S], ABC):
     @abstractmethod
     def select_bet_amount(self, state: S, action: A, money: float) -> List[float]:
         ...
 
 
-class StaticBetSelectionMech(Generic[S, A], BetSelectionMechanism):
+class StaticBetSelectionMech(Generic[A, S], BetSelectionMechanism):
     def __init__(self,
             constant_bet: List[float]):
         for bet in constant_bet:
@@ -39,13 +39,13 @@ class StaticBetSelectionMech(Generic[S, A], BetSelectionMechanism):
         return copy(self.constant_bet)
 
 
-class PredictionSelectionMechanism(Generic[S, A], ABC):
+class PredictionSelectionMechanism(Generic[A, S], ABC):
     @abstractmethod
     def select_prediction(self, state: S, action: A, money: float) -> List[float]:
         ...
 
 
-class RNGUniforPredSelectionMech(Generic[S, A], PredictionSelectionMechanism[S, A]):
+class RNGUniforPredSelectionMech(Generic[A, S], PredictionSelectionMechanism[A, S]):
     def __init__(self,
             tsteps_per_prediction: int,
             min_possible_prediction: Callable[[int], float],
@@ -61,7 +61,7 @@ class RNGUniforPredSelectionMech(Generic[S, A], PredictionSelectionMechanism[S, 
          for dt in range(self.tsteps_per_prediction)]
 
 
-class StaticPredSelectionMech(Generic[S, A], PredictionSelectionMechanism[S, A]):
+class StaticPredSelectionMech(Generic[A, S], PredictionSelectionMechanism[A, S]):
     def __init__(self,
             constant_prediction: List[float]):
         self.constant_prediction: List[float] = constant_prediction
@@ -70,19 +70,19 @@ class StaticPredSelectionMech(Generic[S, A], PredictionSelectionMechanism[S, A])
         return copy(self.constant_prediction)
 
 
-class BettingMechanism(Generic[S, A], ABC):
+class BettingMechanism(Generic[A, S], ABC):
     @abstractmethod
     def bet(self, state: S, action: A, money: float) -> ActionBet:
         ...
 
 
-class CompositeBettingMechanism(BettingMechanism):
+class CompositeBettingMechanism(Generic[A, S], BettingMechanism[A, S]):
     def __init__(self,
-            bet_selection: BetSelectionMechanism[S, A],
-            prediction_selection: PredictionSelectionMechanism[S, A]):
-        self.bet_selection_mech: BetSelectionMechanism[S, A] = \
+            bet_selection: BetSelectionMechanism[A, S],
+            prediction_selection: PredictionSelectionMechanism[A, S]):
+        self.bet_selection_mech: BetSelectionMechanism[A, S] = \
             bet_selection
-        self.prediction_selection_mech: PredictionSelectionMechanism[S, A] = \
+        self.prediction_selection_mech: PredictionSelectionMechanism[A, S] = \
             prediction_selection
 
     def bet(self, state: S, action: A, money: float) -> ActionBet:
@@ -91,22 +91,7 @@ class CompositeBettingMechanism(BettingMechanism):
             prediction=self.prediction_selection_mech.select_prediction(state, action, money))
 
 
-class StaticBettingMechanism(BettingMechanism):
-    def __init__(self,
-            constant_bet: List[float],
-            constant_prediction: List[float]):
-        for bet in self.constant_bet:
-            assert 0 <= bet <= 1
-        self.constant_bet: List[float] = constant_bet
-        self.constant_prediction: List[float] = constant_prediction
-
-    def bet(self, state: S, action: A, money: float) -> ActionBet:
-        prediction: List[float] = copy(self.constant_prediction)
-        bet: List[float] = copy(self.constant_bet)
-        return ActionBet(bet=bet, prediction=prediction)
-
-
-class UniformBettingMechanism(BettingMechanism):
+class UniformBettingMechanism(Generic[A, S], BettingMechanism[A, S]):
     def __init__(self,
             constant_bet: List[float],
             tsteps_per_prediction: int,
@@ -127,10 +112,10 @@ class UniformBettingMechanism(BettingMechanism):
         return ActionBet(bet=bet, prediction=prediction)
 
 
-class CompositeAgent(Agent):
+class CompositeAgent(Generic[A, S], Agent[A, S]):
     def __init__(self,
-            betting_mechanism: BettingMechanism,
-            voting_mechanism: VotingMechanism):
+            betting_mechanism: BettingMechanism[A, S],
+            voting_mechanism: VotingMechanism[S]):
         self.betting_mechanism: BettingMechanism = betting_mechanism
         self.voting_mechanism: VotingMechanism = voting_mechanism
 
