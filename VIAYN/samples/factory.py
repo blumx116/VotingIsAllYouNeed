@@ -1,11 +1,25 @@
-# -*- coding: utf-8 -*-
-# @Author: Suhail.Alnahari
-# @Date:   2020-12-03 20:23:15
-# @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-04 00:14:55
-from VIAYN.project_types import Agent, Environment,Dict
-from VIAYN.project_types import PolicyConfiguration, PayoutConfiguration, VotingConfiguration
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, Optional, Union, Tuple, List, Callable, Dict
+
+from VIAYN.project_types import (
+    Agent,
+    Environment,
+    PayoutConfiguration,
+    VotingConfiguration,
+    PolicyConfiguration
+)
+
+VoteBoundGetter = Callable[[int], float]
+
+@dataclass(frozen=True)
+class AgentFactorySpec:
+	type: str
+	vote: float
+	totalVotesBound: Optional[Tuple[VoteBoundGetter, VoteBoundGetter]]
+	seed: Optional[float] = None
+	prediction: Optional[Union[float, List[float]]] = None
+	bet: Optional[Union[float, List[float]]] = None
+	N: Optional[int] = None
 
 
 class AgentFactory:
@@ -13,13 +27,8 @@ class AgentFactory:
     Creates different types of Agents Based on dictionary specified
 
     List of acceptable configs:
-    'type': 'constant','random'
-    'vote': float (default = 0.0 or highest vote)
-    'prediction': ActionBet(bet = [0.0], prediction = [0.0])
-    'seed': float
-    'N': integer specifying T (len of prediction)
-    'totalVotesBound': (Callable[[int], float], Callable[[int], float)
-        min and max total votes
+    spec: AgentFactorySpec
+    	specifications to create agent with, see above
 
     Parameters
     ----------
@@ -32,7 +41,7 @@ class AgentFactory:
         created agent based on spec
     """
     @staticmethod
-    def create(spec: Dict[str, Any]) -> Agent:
+    def create(self,spec: AgentFactorySpec) -> Agent:
         ...
 
 class EnvFactory:
