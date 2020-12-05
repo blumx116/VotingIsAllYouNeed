@@ -20,9 +20,9 @@ class VoteRange(ABC):
         ...
 
 
-A = TypeVar("A", bound=Action) # ActionType
-S = TypeVar("S") # StateType
-B = TypeVar("B") # BetAggregationType
+A = TypeVar("A", bound=Action)  # ActionType
+S = TypeVar("S")  # StateType
+B = TypeVar("B")  # BetAggregationType
 
 
 @dataclass(frozen=True)
@@ -79,7 +79,7 @@ class Environment(Generic[A, S]):
         ...
 
     @abstractmethod
-    def reset(self) -> StateType:
+    def reset(self) -> S:
         ...
 
 

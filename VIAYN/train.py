@@ -5,7 +5,7 @@ import numpy as np
 
 
 from VIAYN.project_types import (
-    Agent, Environment, SystemConfiguration, VotingConfiguration, A, S,
+    Agent, Environment, SystemConfiguration, VotingConfiguration, A, S, B,
     HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration, PolicyConfiguration)
 
 def train(
@@ -75,7 +75,8 @@ def select_action(
 def calculate_payouts(
         history: List[HistoryItem[A, S]],
         welfare_score: float,
-        payout_config: PayoutConfiguration) \
+        payout_config: PayoutConfiguration,
+        t: int) \
         -> Dict[Agent[A, S], float]:
     ...
 
