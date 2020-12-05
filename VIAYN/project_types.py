@@ -49,7 +49,7 @@ class Agent(Generic[ActionType, StateType], ABC):
 
 
 @dataclass(frozen=True)
-class WeightedBet(Generic[ActionType]):
+class WeightedBet(Generic[ActionType, StateType]):
     bet: List[float]  # bij
     prediction: List[float]  # pij
     action: ActionType  # j
@@ -79,10 +79,10 @@ class Environment(Generic[ActionType, StateType]):
 
 
 @dataclass(frozen=True)
-class HistoryItem(Generic[ActionType]):
+class HistoryItem(Generic[ActionType, StateType]):
     selected_action: ActionType  # jstar
     available_actions: List[ActionType]  # as
-    predictions: Dict[ActionType, WeightedBet[ActionType]]
+    predictions: Dict[ActionType, WeightedBet[ActionType, StateType]]
     t_enacted: int  # >= 0
 
 
@@ -97,9 +97,7 @@ class LossLookup(Generic[ActionType]):
 
 class VotingConfiguration(ABC):
     vote_range: VoteRange
-
     n_agents: int
-
 
     @abstractmethod
     def aggregate_votes(self,
@@ -141,7 +139,7 @@ class VotingConfiguration(ABC):
 
     @staticmethod
     def is_valid_prediction(
-            prediction: List[float])-> bool:
+            prediction: List[float]) -> bool:
         ...
 
 
