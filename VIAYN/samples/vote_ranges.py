@@ -2,7 +2,7 @@
 # @Author: Carter.Blum
 # @Date:   2020-12-05 00:08:28
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-05 00:37:14
+# @Last Modified time: 2020-12-10 14:44:06
 import numpy as np
 
 from VIAYN.project_types import VoteRange
