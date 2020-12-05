@@ -5,7 +5,7 @@
 # @Last Modified time: 2020-12-04 20:13:15
 
 from dataclasses import dataclass
-from typing import Iterable, Optional, Union, Tuple, List, Callable, Dict,TypeVar, Generic
+from typing import Optional, Union, Tuple, List, Callable, Dict, Iterable
 from enum import Enum, unique, auto
 
 from VIAYN.project_types import (
@@ -50,6 +50,16 @@ class AgentFactorySpec:
         else:
             raise TypeError(self.agentType)
 
+@unique
+class EnvsEnum(Enum):
+    default = auto()
+
+@dataclass(frozen=True)
+class EnvsFactorySpec:
+    envType: EnvsEnum
+
+    def __post_init__(self):
+        assert(self.envType == EnvsEnum.default)
 
 class AgentFactory:
     """
@@ -65,7 +75,6 @@ class AgentFactory:
     Agent
         created agent based on spec
     """
-
     @staticmethod
     def create(spec: AgentFactorySpec) -> Agent:
         assert spec.agentType in AgentFactory._creators_
@@ -159,6 +168,9 @@ class EnvsEnum(Enum):
 class EnvsFactorySpec:
     envType: EnvsEnum
 
+    def __post_init__(self):
+        assert(self.envType == EnvsEnum.default)
+
 
 class EnvFactory:
     """
@@ -198,8 +210,6 @@ class PayoutConfigFactory:
     """
     Creates different types of Payout Configs Based on spec
 
-    List of acceptable configs:
-    TBD
 
     Parameters
     ----------
@@ -269,7 +279,7 @@ class VotingConfigFactory:
     """
     Creates different types of Voting Configs Based on spec
 
-    
+
     Parameters
     ----------
     spec: VotingConfigFactorySpec
