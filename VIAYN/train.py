@@ -2,7 +2,7 @@
 # @Author: Carter.Blum
 # @Date:   2020-12-10 14:37:06
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-10 14:40:38
+# @Last Modified time: 2020-12-10 14:41:19
 from typing import List, Iterable, Dict, Tuple
 
 import numpy as np
@@ -13,7 +13,6 @@ from VIAYN.project_types import (
     Agent, Environment, SystemConfiguration, VotingConfiguration, A, S, B, VoteRange,
     HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration, PolicyConfiguration)
 from VIAYN.utils import add_dictionaries
-
 
 def train(
         agents: List[Agent[A, S]],
