@@ -2,7 +2,7 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-03 20:23:15
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-04 20:13:15
+# @Last Modified time: 2020-12-04 21:21:45
 
 from dataclasses import dataclass
 from typing import Any, Optional, Union, Tuple, List, Callable, Dict,TypeVar, Generic
@@ -49,16 +49,6 @@ class AgentFactorySpec:
         else:
             raise TypeError(self.agentType)
             
-@unique
-class EnvsEnum(Enum):
-    default = auto()
-
-@dataclass(frozen=True)
-class EnvsFactorySpec:
-    envType: EnvsEnum
-
-    def __post_init__(self):
-        assert(self.envType == EnvsEnum.default)
 
 class AgentFactory:
     """
@@ -154,6 +144,17 @@ class AgentFactory:
         'static': _create_static_agent_
     }
 
+@unique
+class EnvsEnum(Enum):
+    default = auto()
+
+@dataclass(frozen=True)
+class EnvsFactorySpec:
+    envType: EnvsEnum
+
+    def __post_init__(self):
+        assert(self.envType == EnvsEnum.default)
+
 class EnvFactory:
     """
     Creates different types of Environments Based on spec
@@ -232,65 +233,12 @@ class VotingConfigFactorySpec:
 
 class VotingConfigFactory:
     """
-    @staticmethod
-    def create(spec: Dict[str, Any]) -> Environment:
-        ...
+    Creates different types of Voting Configs Based on spec
 
-
-class PayoutConfigFactory:
-    """
-    Creates different types of Payout Configs Based on dictionary specified
-
-    List of acceptable configs:
-    TBD
-
+    
     Parameters
     ----------
-    spec: Dict
-        Information to initialize Payout Config
-
-    Returns
-    -------
-    PayoutConfiguration
-        created payout config based on spec
-    """
-    @staticmethod
-    def create(spec: Dict[str, Any]) -> PayoutConfiguration:
-        ...
-
-
-class PolicyConfigFactory:
-    """
-    Creates different types of Policy Configs Based on dictionary specified
-
-    List of acceptable configs:
-    TBD
-
-    Parameters
-    ----------
-    spec: Dict
-        Information to initialize Policy Config
-
-    Returns
-    -------
-    PolicyConfiguration
-        created policy config based on spec
-    """
-    @staticmethod
-    def create(spec: Dict[str, Any]) -> PolicyConfiguration:
-        ...
-
-
-class VotingConfigFactory:
-    """
-    Creates different types of Voting Configs Based on dictionary specified
-
-    List of acceptable configs:
-    TBD
-
-    Parameters
-    ----------
-    spec: Dict
+    spec: VotingConfigFactorySpec
         Information to initialize Voting Config
 
     Returns
