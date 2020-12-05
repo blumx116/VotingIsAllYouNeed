@@ -69,6 +69,7 @@ class StaticPredSelectionMech(Generic[S, A], PredictionSelectionMechanism[S, A])
     def select_prediction(self, state: S, action: A, money: float) -> List[float]:
         return copy(self.constant_prediction)
 
+
 class BettingMechanism(Generic[S, A], ABC):
     @abstractmethod
     def bet(self, state: S, action: A, money: float) -> ActionBet:
