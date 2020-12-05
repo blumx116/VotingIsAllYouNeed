@@ -6,7 +6,7 @@ import numpy as np
 
 from VIAYN.project_types import (
     Agent, Environment, SystemConfiguration, VotingConfiguration,
-    HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration)
+    HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration, PolicyConfiguration)
 
 A = TypeVar("A")
 S = TypeVar("S")
@@ -22,6 +22,7 @@ def train(
     current_history: List[HistoryItem[A, S]] = []
     balances: Dict[Agent[A, S], float] = \
         {agent: 1. for agent in agents}
+    config.voting_manager.set_n_agents(len(agents))
 
     seed: int
     for seed in episode_seeds:
@@ -52,6 +53,28 @@ def train(
 
             placed_bets: Dict[A, List[WeightedBet[A, S]]] = \
                 get_agent_bets(agents, balances, env.state(), env.actions())
+
+            action: A = select_action(
+                placed_bets,
+                config.policy_manager,
+                config.voting_manager)
+
+            env.step(action)
+
+def select_action(
+        placed_bets: Dict[A, List[WeightedBet[A, S]]],
+        policy_config: PolicyConfiguration,
+        voting_config: VotingConfiguration) \
+        -> A:
+    action: A
+    for action in placed_bets:
+        bet: WeightedBet[A, S]
+        for bet in placed_bets[action]:
+            policy_config.validate_bet(bet)
+            voting_config.validate_bet(bet)
+
+    aggregated_bets: Dict[A, B] = policy_config.aggregate_bets(placed_bets)
+    return policy_config.select_action(aggregated_bets)
 
 def calculate_payouts(
         history: List[HistoryItem[A, S]],
