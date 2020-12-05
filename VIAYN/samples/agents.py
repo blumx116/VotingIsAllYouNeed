@@ -12,6 +12,7 @@ class VotingMechanism(Generic[StateType], ABC):
     def vote(self, state: StateType) -> float:
         ...
 
+
 class StaticVotingMechanism(Generic[StateType], VotingMechanism[StateType]):
     def __init__(self,
             constant_vote: float):
@@ -19,6 +20,7 @@ class StaticVotingMechanism(Generic[StateType], VotingMechanism[StateType]):
 
     def vote(self, state: StateType) -> float:
         return self.constant_vote
+
 
 class BetSelectionMechanism(Generic[StateType, ActionType], ABC):
     @abstractmethod
@@ -115,7 +117,7 @@ class UniformBettingMechanism(BettingMechanism):
         self.min_possible_prediction: Callable[[int], float] = min_possible_prediction
         self.max_possible_prediction: Callable[[int], float] = max_possible_prediction
         self.random = np.random.RandomState(random_seed)
-        
+
     def bet(self, state: StateType, action: ActionType, money: float) -> ActionBet:
         bet: List[float] = copy(self.constant_bet)
         prediction: List[float] = \
