@@ -1,5 +1,19 @@
+from dataclasses import dataclass
+from typing import Any, Optional, Union, Tuple, List, Callable
+
 from VIAYN.project_types import Agent, Environment,Dict
-from typing import Any
+
+VoteBoundGetter = Callable[[int], float]
+
+@dataclass(frozen=True)
+class AgentFactorySpec:
+	type: str
+	vote: float
+	totalVotesBound: Optional[Tuple[VoteBoundGetter, VoteBoundGetter]]
+	seed: Optional[float] = None
+	prediction: Optional[Union[float, List[float]]] = None
+	bet: Optional[Union[float, List[float]]] = None
+	N: Optional[int] = None
 
 class AgentFactory:
     """
@@ -21,7 +35,7 @@ class AgentFactory:
         created agent based on spec
     """
 
-    def create(self,spec: Dict[str,Any]) -> Agent:
+    def create(self,spec: AgentFactorySpec) -> Agent:
         return Agent()
 
 class EnvFactory:
