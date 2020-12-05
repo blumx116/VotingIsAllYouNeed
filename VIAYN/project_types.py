@@ -137,7 +137,7 @@ class VotingConfiguration(ABC):
 
     @staticmethod
     def is_valid_prediction(
-            prediction: List[float])-> bool:
+            prediction: List[float]) -> bool:
         ...
 
 
