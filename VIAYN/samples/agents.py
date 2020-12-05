@@ -22,10 +22,72 @@ class StaticVotingMechanism(Generic[StateType], VotingMechanism[StateType]):
         return self.constant_vote
 
 
-class BettingMechanism(ABC):
+class BetSelectionMechanism(Generic[StateType, ActionType], ABC):
+    @abstractmethod
+    def select_bet_amount(self, state: StateType, action: ActionType, money: float) -> List[float]:
+        ...
+
+
+class StaticBetSelectionMech(Generic[StateType, ActionType], BetSelectionMechanism):
+    def __init__(self,
+            constant_bet: List[float]):
+        for bet in constant_bet:
+            assert 0 <= bet <= 1
+        self.constant_bet: List[float] = constant_bet
+
+    def select_bet_amount(self, state: StateType, action: ActionType, money: float) -> List[float]:
+        return copy(self.constant_bet)
+
+
+class PredictionSelectionMechanism(Generic[StateType, ActionType], ABC):
+    @abstractmethod
+    def select_prediction(self, state: StateType, action: ActionType, money: float) -> List[float]:
+        ...
+
+
+class RNGUniforPredSelectionMech(Generic[StateType, ActionType], PredictionSelectionMechanism[StateType, ActionType]):
+    def __init__(self,
+            tsteps_per_prediction: int,
+            min_possible_prediction: Callable[[int], float],
+            max_possible_prediction: Callable[[int], float],
+            random_seed: int):
+        self.tsteps_per_prediction: int = tsteps_per_prediction
+        self.min_possible_prediction: Callable[[int], float] = min_possible_prediction
+        self.max_possible_prediction: Callable[[int], float] = max_possible_prediction
+        self.random = np.random.RandomState(random_seed)
+
+    def select_prediction(self, state: StateType, action: ActionType, money: float) -> List[float]:
+        return [self.random.uniform(low=self.min_possible_prediction(dt), high=self.max_possible_prediction(dt))
+         for dt in range(self.tsteps_per_prediction)]
+
+
+class StaticPredSelectionMech(Generic[StateType, ActionType], PredictionSelectionMechanism[StateType, ActionType]):
+    def __init__(self,
+            constant_prediction: List[float]):
+        self.constant_prediction: List[float] = constant_prediction
+
+    def select_prediction(self, state: StateType, action: ActionType, money: float) -> List[float]:
+        return copy(self.constant_prediction)
+
+class BettingMechanism(Generic[StateType, ActionType], ABC):
     @abstractmethod
     def bet(self, state: StateType, action: ActionType, money: float) -> ActionBet:
         ...
+
+
+class CompositeBettingMechanism(BettingMechanism):
+    def __init__(self,
+            bet_selection: BetSelectionMechanism[StateType, ActionType],
+            prediction_selection: PredictionSelectionMechanism[StateType, ActionType]):
+        self.bet_selection_mech: BetSelectionMechanism[StateType, ActionType] = \
+            bet_selection
+        self.prediction_selection_mech: PredictionSelectionMechanism[StateType, ActionType] = \
+            prediction_selection
+
+    def bet(self, state: StateType, action: ActionType, money: float) -> ActionBet:
+        return ActionBet(
+            bet=self.bet_selection_mech.select_bet_amount(state, action, money),
+            prediction=self.prediction_selection_mech.select_prediction(state, action, money))
 
 
 class StaticBettingMechanism(BettingMechanism):
