@@ -77,6 +77,14 @@ class Environment(Generic[ActionType, StateType]):
     def done(self) -> bool:
         ...
 
+    @abstractmethod
+    def seed(self, random_seed: int = None):
+        ...
+
+    @abstractmethod
+    def reset(self) -> StateType:
+        ...
+
 
 @dataclass(frozen=True)
 class HistoryItem(Generic[ActionType]):
@@ -97,9 +105,7 @@ class LossLookup(Generic[ActionType]):
 
 class VotingConfiguration(ABC):
     vote_range: VoteRange
-
     n_agents: int
-
 
     @abstractmethod
     def aggregate_votes(self,
