@@ -5,12 +5,8 @@ import numpy as np
 
 
 from VIAYN.project_types import (
-    Agent, Environment, SystemConfiguration, VotingConfiguration,
+    Agent, Environment, SystemConfiguration, VotingConfiguration, A, S,
     HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration, PolicyConfiguration)
-
-A = TypeVar("A")
-S = TypeVar("S")
-B = TypeVar("B")
 
 def train(
         agents: List[Agent[A, S]],
