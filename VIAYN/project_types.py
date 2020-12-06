@@ -2,17 +2,18 @@
 # @Author: Carter.Blum
 # @Date:   2020-11-27 20:48:03
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-05 00:37:24
+# @Last Modified time: 2020-12-06 15:07:43
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Generic, TypeVar, List, Iterable, Dict
+from typing import Optional, Generic, TypeVar, List, Iterable, Dict, Callable
 
 
 @dataclass
 class Action:
     description: Optional[str]
 
+VoteBoundGetter = Callable[[int], float]
 
 class VoteRange(ABC):
 
