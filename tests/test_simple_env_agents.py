@@ -2,13 +2,13 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-03 19:25:18
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-06 15:41:30
+# @Last Modified time: 2020-12-06 17:40:40
 
-
-from conftest import pytest, project_types,factory as fac, vote_range,np
-
-def floatIsEqual(num1: float,num2: float) -> bool:
-    return abs(num1-num2) < 0.000001
+from conftest import (
+    pytest, project_types,
+    factory as fac,
+    vote_range,np, floatIsEqual
+)
 
 def test_constant_simple_agent_basic(constant_agent_config):
     for AB,vote in constant_agent_config:
