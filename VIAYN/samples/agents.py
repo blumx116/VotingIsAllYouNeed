@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# @Author: Carter.Blum
+# @Date:   2020-12-06 14:44:56
+# @Last Modified by:   Suhail.Alnahari
+# @Last Modified time: 2020-12-06 14:54:12
 from abc import ABC, abstractmethod
 from copy import copy
 from typing import List, Callable, Optional, Generic
@@ -28,7 +33,7 @@ class BetSelectionMechanism(Generic[A, S], ABC):
         ...
 
 
-class StaticBetSelectionMech(Generic[A, S], BetSelectionMechanism):
+class StaticBetSelectionMech(Generic[A, S], BetSelectionMechanism [A, S]):
     def __init__(self,
             constant_bet: List[float]):
         for bet in constant_bet:
