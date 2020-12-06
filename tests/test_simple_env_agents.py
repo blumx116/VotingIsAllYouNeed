@@ -2,7 +2,7 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-03 19:25:18
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-06 14:50:12
+# @Last Modified time: 2020-12-06 15:41:30
 
 
 from conftest import pytest, project_types,factory as fac, vote_range,np
@@ -27,9 +27,9 @@ def test_constant_simple_agent_basic(constant_agent_config):
             )
         )
         for _ in range(100):
+            state = env.state()
             assert(agent.vote(state) == vote)
             for j in env.actions():
-                state = env.state()
                 action_bet = agent.bet(state,j,1)
                 assert(
                     len(action_bet.bet) == len(AB.bet)
@@ -70,9 +70,9 @@ def test_random_simple_agent_basic(random_agent_config):
         genBet = np.random.default_rng(seed=seed)
         genPred = np.random.default_rng(seed=seed)
         for _ in range(100):
+            state = env.state()
             assert(agent.vote(state) == vote)
             for j in env.actions():
-                state = env.state()
                 action_bet = agent.bet(state,j,1)
                 for k in range(len(action_bet.bet)):
                     assert(floatIsEqual(action_bet.bet[k],genBet.uniform(0,1)))
@@ -121,9 +121,9 @@ def test_random_simple_agent_forward_prediction(N):
     genBet = np.random.default_rng(seed=seed)
     genPred = np.random.default_rng(seed=seed)
     for _ in range(100):
+        state = env.state()
         assert(agent.vote(state) == vote)
         for j in env.actions():
-            state = env.state()
             action_bet = agent.bet(state,j,1)
             assert(
                 len(action_bet.bet) == N

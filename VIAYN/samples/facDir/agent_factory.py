@@ -2,7 +2,7 @@
 # @Author: Carter.Blum, Suhail.Alnahari
 # @Date:   2020-12-05 16:42:44
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-05 16:51:05
+# @Last Modified time: 2020-12-06 15:36:25
 
 from enum import Enum, unique, auto
 from dataclasses import dataclass
@@ -141,6 +141,6 @@ class AgentFactory:
             return value
 
     _creators_: Dict[AgentsEnum, Callable[[AgentFactorySpec], Agent]] = {
-        AgentsEnum.random: _create_random_agent_,
-        AgentsEnum.constant: _create_static_agent_
+        AgentsEnum.random: lambda x: AgentFactory._create_random_agent_(x),
+        AgentsEnum.constant: lambda x: AgentFactory._create_static_agent_(x)
     }
