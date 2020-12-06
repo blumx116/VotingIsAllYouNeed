@@ -2,7 +2,7 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-03 19:25:18
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-04 20:48:07
+# @Last Modified time: 2020-12-06 14:50:12
 
 
 from conftest import pytest, project_types,factory as fac, vote_range,np
@@ -47,7 +47,7 @@ def test_random_simple_agent_basic(random_agent_config):
     for vote,seed in random_agent_config:
         print(f"random: {vote} , {seed}")
         votingConf = fac.VotingConfigFactory.create(
-            fac.VotingConfigFactorySpec()
+            fac.VotingConfigFactorySpec(fac.VotingConfigEnum.simple)
         )
         agent = fac.AgentFactory.create(
             fac.AgentFactorySpec(
@@ -98,7 +98,7 @@ def test_random_simple_agent_forward_prediction(N):
     vote, seed = (5,0)
     print(f"random: {vote} , {seed}")
     votingConf = fac.VotingConfigFactory.create(
-        fac.VotingConfigFactorySpec()
+        fac.VotingConfigFactorySpec(fac.VotingConfigEnum.simple)
     )
     agent = fac.AgentFactory.create(
         fac.AgentFactorySpec(
