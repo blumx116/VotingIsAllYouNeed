@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Suhail.Alnahari
-# @Date:   2020-12-04 22:06:47
+# @Date:   2020-12-06 18:09:26
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-06 18:13:10
+# @Last Modified time: 2020-12-06 18:13:25
 
 
 from conftest import (
@@ -59,17 +59,4 @@ def aggregateSuggested(
     (aggregateSuggested, vote_range.ZeroToTenVoteRange, [0 for _ in range(30)]),
     (aggregateSuggested, vote_range.ZeroToTenVoteRange, [])
 ])
-def test_vote_config(aggFun, VR,vals):
-    vc: project_types.VotingConfiguration = fac.VotingConfigFactory.create(
-        fac.VotingConfigFactorySpec(
-            fac.VotingConfigEnum.simple,
-            VR
-        )
-    )
-    assert(vc.n_agents == 0)
-    vc.set_n_agents(len(vals))
-    assert(vc.n_agents == len(vals))
-    assert(vc.max_possible_vote_total() == (len(vals)*VR.maxVote()))
-    assert(vc.min_possible_vote_total() == (len(vals)*VR.minVote()))
-    assert(floatIsEqual(vc.aggregate_votes(vals), aggFun(vals,VR)))    
-
+def test_policy_config(aggFun, VR,vals):

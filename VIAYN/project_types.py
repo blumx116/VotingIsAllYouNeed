@@ -2,7 +2,7 @@
 # @Author: Carter.Blum
 # @Date:   2020-11-27 20:48:03
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-06 15:07:43
+# @Last Modified time: 2020-12-06 18:37:04
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -153,7 +153,7 @@ class VotingConfiguration(ABC):
         ...
 
 
-class PolicyConfiguration(Generic[A, B], ABC):
+class PolicyConfiguration(Generic[A, B, S], ABC):
     # WeightedBet = WeightedBet[ActionType]
     @abstractmethod
     def aggregate_bets(self,
@@ -172,7 +172,7 @@ class PolicyConfiguration(Generic[A, B], ABC):
         ...
 
 
-class PayoutConfiguration(Generic[A]):
+class PayoutConfiguration(Generic[A, S], ABC):
     @abstractmethod
     def calculate_payouts_from_losses(self,
             bets:  Dict[Agent, WeightedBet[A, S]],
