@@ -47,3 +47,35 @@ def random_agent_config():
 
 def floatIsEqual(num1: float,num2: float) -> bool:
     return abs(num1-num2) < 0.000001
+
+@pytest.fixture
+def gen_cust():
+    def _gen_cust_(spec:factory.AgentFactorySpec):
+        return factory.AgentFactory.create(spec)
+    return _gen_cust_
+
+@pytest.fixture
+def gen_env():
+    def _gen_env_(spec:factory.EnvsFactorySpec):
+        return factory.EnvFactory.create(spec)
+    return _gen_env_
+
+@pytest.fixture
+def gen_vote_conf():
+    def _gen_vote_conf_(spec:factory.VotingConfigFactorySpec):
+        return factory.VotingConfigFactory.create(spec)
+    return _gen_vote_conf_
+
+@pytest.fixture
+def gen_policy_conf():
+    def _gen_policy_conf_(spec:factory.PolicyConfigFactorySpec):
+        return factory.PolicyConfigFactory.create(spec)
+    return _gen_policy_conf_
+
+@pytest.fixture
+def gen_payout_conf():
+    def _gen_payout_conf_(spec:factory.PayoutConfigFactorySpec):
+        return factory.PayoutConfigFactory.create(spec)
+    return _gen_payout_conf_
+
+    
