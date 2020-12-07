@@ -59,4 +59,4 @@ def aggregateSuggested(
     (aggregateSuggested, vote_range.ZeroToTenVoteRange, [0 for _ in range(30)]),
     (aggregateSuggested, vote_range.ZeroToTenVoteRange, [])
 ])
-def test_policy_config(aggFun, VR,vals):
+# def test_policy_config(aggFun, VR,vals):
