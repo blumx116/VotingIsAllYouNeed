@@ -6,7 +6,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Generic, TypeVar, List, Iterable, Dict
+from typing import Optional, Generic, TypeVar, List, Iterable, Dict, Tuple
 
 
 @dataclass
@@ -56,6 +56,9 @@ class WeightedBet(Generic[A, S]):
     def weight(self) -> List[float]:
         return [bet * self.money for bet in self.bet]
 
+    def to_action_bet(self) -> ActionBet:
+        return ActionBet(bet=self.bet, prediction=self.prediction)
+
 
 class Environment(Generic[A, S]):
     @abstractmethod
@@ -88,7 +91,6 @@ class HistoryItem(Generic[A, S]):
 class VotingConfiguration(ABC):
     vote_range: VoteRange
     n_agents: int
-
 
     @abstractmethod
     def aggregate_votes(self,
@@ -166,7 +168,7 @@ class PayoutConfiguration(Generic[A, S]):
     def calculate_payout_from_loss(self,
             loss_to_evaluate: float,
             all_losses: List[Tuple[float, float]], # [(weight, loss)]
-            t_cast_on: int, #tiemstep info lets us discount by timestep
+            t_cast_on: int, # timestep info lets us discount by timestep
             t_current: int,
             action_bet_on: A,
             action_selected: A) -> float:
@@ -194,4 +196,4 @@ class PayoutConfiguration(Generic[A, S]):
 class SystemConfiguration(Generic[A, B]):
     voting_manager: VotingConfiguration
     policy_manager: PolicyConfiguration[A, B]
-    payout_manager: PayoutConfiguration[A]
+    payout_manager: PayoutConfiguration[A, S]
