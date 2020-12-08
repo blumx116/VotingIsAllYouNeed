@@ -12,6 +12,7 @@ import pytest
 import VIAYN.project_types as project_types # pylint: disable=import-error
 import VIAYN.samples.factory as factory
 import VIAYN.samples.vote_ranges as vote_range
+from typing import Optional, Generic, TypeVar, List, Iterable, Dict, Callable
 import numpy as np
 
 @pytest.fixture
@@ -43,3 +44,6 @@ def random_agent_config():
     (8., 82384),
     (10., 0),
 ]
+
+def floatIsEqual(num1: float,num2: float) -> bool:
+    return abs(num1-num2) < 0.000001
