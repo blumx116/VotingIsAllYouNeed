@@ -155,7 +155,7 @@ class PolicyConfiguration(Generic[A, B, S], Configuration[A, S], ABC):
     # WeightedBet = WeightedBet[ActionType]
     @abstractmethod
     def aggregate_bets(self,
-            predictions: Dict[A, WeightedBet[A, S]],
+            predictions: Dict[A, List[WeightedBet[A, S]]],
             actual: float) -> Dict[A, B]:
         ...
 
