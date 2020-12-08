@@ -13,7 +13,8 @@ def train(
         env: Environment[A, S],
         episode_seeds: Iterable[int],
         config: SystemConfiguration[A, B, S],
-        tsteps_per_episode: int = np.inf):
+        tsteps_per_episode: int = np.inf) \
+        -> Tuple[List[List[HistoryItem[A, S]], Dict[Agent[A, S], float]]]:
     old_episode_history: List[List[HistoryItem[A, S]]] = []
     current_history: List[HistoryItem[A, S]] = []
     balances: Dict[Agent[A, S], float] = \
@@ -56,11 +57,15 @@ def train(
 
             env.step(action)
 
+    old_episode_history.append(current_history)
+    # need to append the last one (TODO: redo this logic to avoid duplication)
+
+    return old_episode_history, balances
+
 
 def select_action(
         placed_bets: Dict[A, List[WeightedBet[A, S]]],
-        config: SystemConfiguration[A, B, S]) \
-        -> A:
+        config: SystemConfiguration[A, B, S]) -> A:
     aggregated_bets: Dict[A, B] = config.policy_manager.aggregate_bets(placed_bets)
     return config.policy_manager.select_action(aggregated_bets)
 

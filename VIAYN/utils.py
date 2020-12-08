@@ -1,4 +1,4 @@
-from typing import TypeVar, Dict, C
+from typing import TypeVar, Dict
 from copy import copy
 
 T = TypeVar("T")
