@@ -2,11 +2,11 @@ from typing import List, Iterable, Dict, Tuple
 
 import numpy as np
 
-
-
 from VIAYN.project_types import (
-    Agent, Environment, SystemConfiguration, VotingConfiguration, A, S, B,
+    Agent, Environment, SystemConfiguration, VotingConfiguration, A, S, B, VoteRange,
     HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration, PolicyConfiguration)
+from VIAYN.utils import add_dictionaries
+
 
 def train(
         agents: List[Agent[A, S]],
@@ -36,12 +36,12 @@ def train(
             welfare_score: float = get_agent_votes(
                 agents=agents,
                 state=state,
-                voting_config=config.voting_manager)
+                config=config)
 
             payouts: Dict[Agent[A, S], float] = calculate_payouts(
                 current_history,
                 welfare_score,
-                config.payout_manager)
+                config, t)
 
             agent: Agent[A, S]
             for agent in payouts:
@@ -52,47 +52,48 @@ def train(
 
             action: A = select_action(
                 placed_bets,
-                config.policy_manager,
-                config.voting_manager)
+                config)
 
             env.step(action)
 
+
 def select_action(
         placed_bets: Dict[A, List[WeightedBet[A, S]]],
-        policy_config: PolicyConfiguration,
-        voting_config: VotingConfiguration) \
+        config: SystemConfiguration[A, B, S]) \
         -> A:
-    action: A
-    for action in placed_bets:
-        bet: WeightedBet[A, S]
-        for bet in placed_bets[action]:
-            policy_config.validate_bet(bet)
-            voting_config.validate_bet(bet)
+    aggregated_bets: Dict[A, B] = config.policy_manager.aggregate_bets(placed_bets)
+    return config.policy_manager.select_action(aggregated_bets)
 
-    aggregated_bets: Dict[A, B] = policy_config.aggregate_bets(placed_bets)
-    return policy_config.select_action(aggregated_bets)
 
 def calculate_payouts(
         history: List[HistoryItem[A, S]],
         welfare_score: float,
-        payout_config: PayoutConfiguration,
+        config: SystemConfiguration[A, B, S],
         t: int) \
         -> Dict[Agent[A, S], float]:
-    ...
+    total_payouts: Dict[Agent[A, S], float] = {}
+    record: HistoryItem[A, S]
+    for record in history:
+        payout: Dict[Agent[A, S], float] = \
+            config.payout_manager.calculate_all_payouts(
+                record=record, welfare_score=welfare_score,
+                t_current=t)
+        total_payouts = add_dictionaries(total_payouts, payout)
+
+    return total_payouts
+
 
 def get_agent_votes(
         agents: List[Agent[A, S]],
         state: S,
-        voting_config: VotingConfiguration) -> float:
+        config: SystemConfiguration[A, B, S]) -> float:
     votes: List[float] = [agent.vote(state) for agent in agents]
-    named_votes: List[Tuple[Agent[A, S], float]] = list(zip(agents, votes))
-    agent: Agent[A, S]
-    vote: float
-    for agent, vote in named_votes:
-        assert voting_config.vote_range.contains(vote), \
-            f"{agent} made an invalid vote {vote} for rule {voting_config.vote_range}"
+    vote_range: VoteRange = config.voting_manager.vote_range
+    votes = [vote for vote in votes if vote_range.contains(vote)]
+    # filter to only valid values
+    # TODO : log invalid votes
+    return config.voting_manager.aggregate_votes(votes)
 
-    return voting_config.aggregate_votes(votes)
 
 def get_agent_bets(
         agents: List[Agent[A, S]],
