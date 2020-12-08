@@ -140,7 +140,7 @@ class PolicyConfiguration(Generic[A, B], ABC):
     # WeightedBet = WeightedBet[ActionType]
     @abstractmethod
     def aggregate_bets(self,
-            predictions: Dict[A, WeightedBet[A, S]],
+            predictions: Dict[A, List[WeightedBet[A, S]]],
             actual: float) -> Dict[A, B]:
         ...
 
@@ -180,8 +180,6 @@ class PayoutConfiguration(Generic[A, S]):
             welfare_score: float,
             t_current: int) -> Dict[Agent[A, S], float]:
         ...
-
-
 
     @staticmethod
     def _is_valid_bet_(bet: List[float]) -> bool:
