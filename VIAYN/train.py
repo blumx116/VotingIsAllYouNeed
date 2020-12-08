@@ -14,7 +14,7 @@ def train(
         episode_seeds: Iterable[int],
         config: SystemConfiguration[A, B, S],
         tsteps_per_episode: int = np.inf) \
-        -> Tuple[List[List[HistoryItem[A, S]], Dict[Agent[A, S], float]]]:
+        -> Tuple[List[List[HistoryItem[A, S]]], Dict[Agent[A, S], float]]:
     old_episode_history: List[List[HistoryItem[A, S]]] = []
     current_history: List[HistoryItem[A, S]] = []
     balances: Dict[Agent[A, S], float] = \
