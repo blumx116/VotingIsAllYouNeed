@@ -189,8 +189,6 @@ class PayoutConfiguration(Generic[A, S]):
             t_current: int) -> Dict[Agent[A, S], float]:
         ...
 
-
-
     @staticmethod
     def _is_valid_bet_(bet: List[float]) -> bool:
         bet_at_timestep: float
@@ -201,7 +199,13 @@ class PayoutConfiguration(Generic[A, S]):
 
 
 @dataclass(frozen=True)
-class SystemConfiguration(Generic[A, B]):
-    voting_manager: VotingConfiguration
-    policy_manager: PolicyConfiguration[A, B]
+class SystemConfiguration(Generic[A, B, S], Configuration[A, S]):
+    voting_manager: VotingConfiguration[A, S]
+    policy_manager: PolicyConfiguration[A, B, S]
     payout_manager: PayoutConfiguration[A, S]
+
+    def validate_bet(self,
+            bet: WeightedBet[A, S]) -> bool:
+        return self.voting_manager.validate_bet(bet) and \
+                self.policy_manager.validate_bet(bet) and \
+                self.payout_manager.validate_bet(bet)
