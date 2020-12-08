@@ -6,7 +6,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Generic, TypeVar, List, Iterable, Dict
+from typing import Optional, Generic, TypeVar, List, Iterable, Dict, Tuple
 
 
 @dataclass
@@ -56,6 +56,9 @@ class WeightedBet(Generic[A, S]):
     def weight(self) -> List[float]:
         return [bet * self.money for bet in self.bet]
 
+    def to_action_bet(self) -> ActionBet:
+        return ActionBet(bet=self.bet, prediction=self.prediction)
+
 
 class Environment(Generic[A, S]):
     @abstractmethod
@@ -86,18 +89,11 @@ class Environment(Generic[A, S]):
 @dataclass(frozen=True)
 class HistoryItem(Generic[A, S]):
     selected_action: A  # jstar
-    available_actions: List[A]  # as
-    predictions: Dict[A, WeightedBet[A, S]]
+    predictions: Dict[A, List[WeightedBet[A, S]]]
     t_enacted: int  # >= 0
 
-
-@dataclass(frozen=True)
-class LossLookup(Generic[A]):
-    # Agent = Agent[ActionType, StateType]
-    lookup: Dict[Agent, Dict[A, float]]
-
-    def loss_for(self, agent: Agent, action: A) -> float:
-        return self.lookup[agent][action]  # is this worth having???
+    def available_actions(self) -> List[A]:
+        return list(self.predictions.keys())
 
 
 class VotingConfiguration(ABC):
@@ -167,26 +163,33 @@ class PolicyConfiguration(Generic[A, B], ABC):
         ...
 
 
-class PayoutConfiguration(Generic[A]):
-    @abstractmethod
-    def calculate_payouts_from_losses(self,
-            bets:  Dict[Agent, WeightedBet[A, S]],
-            losses: LossLookup[A]) \
-            -> Dict[Agent, float]:
-        ...
-
-    # L
+class PayoutConfiguration(Generic[A, S]):
     @abstractmethod
     def calculate_loss(self,
-            predictions: Dict[A, Dict[Agent, WeightedBet[A, S]]],
-            actual: float) -> LossLookup[A]:
+            bet_to_evaluate: ActionBet,
+            t_cast_on: int,  # timestep info let us look up in the array
+            t_current: int,  # which prediction is for this timestep
+            welfare_score: float) -> float:
         ...
 
     @abstractmethod
-    def calculate_payouts(self,
-            predictions: Dict[A, Dict[Agent, WeightedBet[A, S]]],
-            actual:  float) -> Dict[Agent, float]:
+    def calculate_payout_from_loss(self,
+            loss_to_evaluate: float,
+            all_losses: List[Tuple[float, float]], # [(weight, loss)]
+            t_cast_on: int, # timestep info lets us discount by timestep
+            t_current: int,
+            action_bet_on: A,
+            action_selected: A) -> float:
         ...
+
+    @abstractmethod
+    def calculate_all_payouts(self,
+            record: HistoryItem,
+            welfare_score: float,
+            t_current: int) -> Dict[Agent[A, S], float]:
+        ...
+
+
 
     @staticmethod
     def _is_valid_bet_(bet: List[float]) -> bool:
@@ -201,4 +204,4 @@ class PayoutConfiguration(Generic[A]):
 class SystemConfiguration(Generic[A, B]):
     voting_manager: VotingConfiguration
     policy_manager: PolicyConfiguration[A, B]
-    payout_manager: PayoutConfiguration[A]
+    payout_manager: PayoutConfiguration[A, S]
