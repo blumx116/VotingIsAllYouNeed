@@ -96,7 +96,14 @@ class HistoryItem(Generic[A, S]):
         return list(self.predictions.keys())
 
 
-class VotingConfiguration(ABC):
+class Configuration(Generic[A, S], ABC):
+    @abstractmethod
+    def validate_bet(self,
+            bet: WeightedBet[A, S]) -> bool:
+        return True
+
+
+class VotingConfiguration(Generic[A, S], Configuration[A, S], ABC):
     vote_range: VoteRange
     n_agents: int
 
@@ -140,11 +147,11 @@ class VotingConfiguration(ABC):
 
     @staticmethod
     def is_valid_prediction(
-            prediction: List[float])-> bool:
+            prediction: List[float]) -> bool:
         ...
 
 
-class PolicyConfiguration(Generic[A, B], ABC):
+class PolicyConfiguration(Generic[A, B, S], Configuration[A, S], ABC):
     # WeightedBet = WeightedBet[ActionType]
     @abstractmethod
     def aggregate_bets(self,
@@ -163,7 +170,7 @@ class PolicyConfiguration(Generic[A, B], ABC):
         ...
 
 
-class PayoutConfiguration(Generic[A, S]):
+class PayoutConfiguration(Generic[A, S], Configuration[A, S]):
     @abstractmethod
     def calculate_loss(self,
             bet_to_evaluate: ActionBet,
