@@ -207,8 +207,6 @@ class PayoutConfiguration(Generic[A, S], Configuration[A, S]):
             t_current: int) -> Dict[Agent[A, S], float]:
         ...
 
-
-
     @staticmethod
     def _is_valid_bet_(bet: List[float]) -> bool:
         bet_at_timestep: float
