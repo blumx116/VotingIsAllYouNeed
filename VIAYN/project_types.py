@@ -2,7 +2,7 @@
 # @Author: Carter.Blum
 # @Date:   2020-11-27 20:48:03
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-10 14:48:19
+# @Last Modified time: 2020-12-10 14:51:17
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -206,6 +206,8 @@ class PayoutConfiguration(Generic[A, S], Configuration[A, S]):
             welfare_score: float,
             t_current: int) -> Dict[Agent[A, S], float]:
         ...
+
+
 
     @staticmethod
     def _is_valid_bet_(bet: List[float]) -> bool:
