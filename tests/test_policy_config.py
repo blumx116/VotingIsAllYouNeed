@@ -2,7 +2,7 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-06 18:09:26
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-10 14:53:56
+# @Last Modified time: 2020-12-10 14:59:45
 
 
 from tests.conftest import (
@@ -13,24 +13,23 @@ from tests.conftest import (
 )
 
 def aggregateSimple(
-    votes: List[float],
-    vr:project_types.VoteRange
-    ) -> float:
-    res: float = 0.
-    for i in votes:
-        if (vr.contains(i)):
-            res += i
+    weights: List[List[float]],
+    predictions: List[List[float]]
+    ) -> List[float]:
+    res: List[float] = []
+    ws = np.asarray(weights)
+    ps = np.asarray(predictions)
+    print(ws.shape)
+    print(ps.shape)
+    assert(ws.shape() == ps.shape())
+    for j in range(ws.shape()[1]):
+        actionSum: float = 0.
+        for i in range(ws.shape()[0]):
+            actionSum += (ws[i,j]*ps[i,j])
+        res.append(actionSum/sum(ws[:,j]))
     return res
 
-def aggregateSuggested(
-    votes: List[float],
-    vr:project_types.VoteRange
-    ) -> float:
-    res: float = 0.
-    for i in votes:
-        if (vr.contains(i)):
-            res += i**0.5
-    return res
+
 
 
 # @pytest.mark.parametrize("aggFun,VR,vals", [
