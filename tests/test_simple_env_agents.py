@@ -4,7 +4,7 @@
 # @Last Modified by:   Suhail.Alnahari
 # @Last Modified time: 2020-12-06 17:40:40
 
-from conftest import (
+from tests.conftest import (
     pytest, project_types,
     factory as fac,
     vote_range,np, floatIsEqual

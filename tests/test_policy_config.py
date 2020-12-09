@@ -5,7 +5,7 @@
 # @Last Modified time: 2020-12-07 21:59:27
 
 
-from conftest import (
+from tests.conftest import (
     pytest, project_types,
     factory as fac,
     vote_range,np,
