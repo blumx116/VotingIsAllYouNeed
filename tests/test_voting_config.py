@@ -5,10 +5,10 @@
 # @Last Modified time: 2020-12-06 18:13:10
 
 
-from conftest import (
+from tests.conftest import (
     pytest, project_types,
     factory as fac,
-    vote_range,np,
+    vote_range ,np,
     List, floatIsEqual
 )
 

@@ -1,7 +1,7 @@
 from copy import copy
 from typing import List, Union, Optional
 
-from VIAYN.project_types import Environment, StateType, ActionType, Action
+from VIAYN.project_types import Environment, Action
 
 
 class IntAction(Action):
