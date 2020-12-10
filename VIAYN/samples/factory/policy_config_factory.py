@@ -14,6 +14,7 @@ from VIAYN.project_types import PolicyConfiguration
 class PolicyConfigEnum(Enum):
     simple = auto()
     suggested = auto()
+    suggested_general = auto()
 
 
 @dataclass(frozen=True)

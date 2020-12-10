@@ -24,6 +24,7 @@ class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S])
         chosen_action: A = self.select_action(aggregate_bets)
         return {action: (1. if action == chosen_action else 0.) for action in aggregate_bets.keys()}
 
+
 class ThompsonPolicyBase(Generic[A, B, S], PolicyConfiguration[A, B, S]):
     def __init__(self,
             random_seed: Optional[int] = None):
