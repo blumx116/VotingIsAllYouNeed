@@ -3,11 +3,12 @@
 # @Date:   2020-12-05 16:54:09
 # @Last Modified by:   Suhail.Alnahari
 # @Last Modified time: 2020-12-05 17:09:12
-
-
 from dataclasses import dataclass
 from enum import Enum, unique, auto
+from typing import Dict, Callable
+
 from VIAYN.project_types import PayoutConfiguration
+from VIAYN.samples.payout import SuggestedPayoutConfig, SimplePayoutConfig
 
 
 @unique
@@ -39,8 +40,11 @@ class PayoutConfigFactory:
     PayoutConfiguration
         created payout config based on spec
     """
+    lookup: Dict[PayoutConfigEnum, Callable[[], PayoutConfiguration]] = {
+        PayoutConfigEnum.simple: lambda: SimplePayoutConfig(),
+        PayoutConfigEnum.suggested: lambda: SuggestedPayoutConfig()
+    }
+
     @staticmethod
     def create(spec: PayoutConfigFactorySpec) -> PayoutConfiguration:
-        ...
-
-
+        return PayoutConfigFactory.lookup[spec.configType]()
