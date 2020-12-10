@@ -1,5 +1,7 @@
-from typing import TypeVar, Dict
 from copy import copy
+from typing import Dict, List, Sequence, TypeVar, Optional, Callable
+
+from VIAYN.project_types import A, S, WeightedBet
 
 T = TypeVar("T")
 V = TypeVar("V", int, float, complex, str)
@@ -30,3 +32,44 @@ def add_dictionaries(
         else:
             result[key] = value
     return result
+
+
+def weighted_mean(bets: List[WeightedBet[A, S]]) -> List[float]:
+    assert len(bets) > 0
+    prediction_len: int = len(bets[0].prediction)
+    weighted_sum: List[float] = [0. for _ in range(prediction_len)]
+    total_weights: List[float] = [0. for _ in range(prediction_len)]
+    bet: WeightedBet[A, S]
+    for bet in bets:
+        assert len(bet.prediction) == prediction_len
+        t: int
+        prediction_at_t: float
+        weight_at_t: float
+        for t, (prediction_at_t, weight_at_t) in enumerate(zip(bet.prediction, bet.weight())):
+            weighted_sum[t] += prediction_at_t * weight_at_t
+            total_weights[t] += weight_at_t
+
+    return [w_sum / total_w for w_sum, total_w in zip(weighted_sum, total_weights)]
+
+
+def argmax(args: Sequence[T], fn: Callable[[T], float]) -> Optional[T]:
+    """
+    Breaks ties with the first element found
+    Parameters
+    ----------
+    args
+    fn
+
+    Returns
+    -------
+
+    """
+    maximum: Optional[float] = None
+    max_arg: Optional[T] = None
+    arg: T
+    for arg in args:
+        value: float = fn(arg)
+        if maximum is None or value > maximum:
+            maximum = value
+            max_arg = arg
+    return max_arg
