@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
-# @Author: Carter.Blum, Suhail.Alnahari
-# @Date:   2020-12-09 01:07:33
+# @Author: Suhail.Alnahari
+# @Date:   2020-12-09 20:10:07
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-09 01:10:21
+# @Last Modified time: 2020-12-09 20:11:58
+from typing import Dict, List
 
-from conftest import project_types, Dict, List
-PayoutConfiguration = project_types.PayoutConfiguration
-HistoryItem = project_types.HistoryItem
-A = project_types.A
-S = project_types.S
-ActionBet = project_types.ActionBet
-Agent = project_types.Agent
+import tests.conftest
+from VIAYN.project_types import PayoutConfiguration, HistoryItem, A, S, ActionBet, Agent
 
 
 def payout_config_isomorphism(
