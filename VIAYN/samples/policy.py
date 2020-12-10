@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import Generic, List, Dict, Optional, Tuple
 
 from numpy.random import RandomState
@@ -23,8 +24,34 @@ class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S])
         chosen_action: A = self.select_action(aggregate_bets)
         return {action: (1. if action == chosen_action else 0.) for action in aggregate_bets.keys()}
 
+class ThompsonPolicyBase(Generic[A, B, S], PolicyConfiguration[A, B, S]):
+    def __init__(self,
+            random_seed: Optional[int] = None):
+        self.random: RandomState = RandomState(random_seed)
 
-class ThompsonPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, List[DiscreteDistribution], S]):
+    @abstractmethod
+    def aggregate_bets(self,
+            predictions: Dict[A, List[WeightedBet[A, S]]]) -> Dict[A, B]:
+        ...
+
+    @abstractmethod
+    def select_action(self,
+            aggregate_bets: Dict[A, B]) -> A:
+        ...
+
+    def action_probabilities(self,
+            aggregate_bets: Dict[A, B]) -> Dict[A, float]:
+        n_samples: int = 10000  # TODO : should this scale up with the number of actions??
+        counts: Dict[A, float] = {action: 0. for action in aggregate_bets}
+        for _ in range(n_samples):
+            choice: A = self.select_action(aggregate_bets)
+            counts[choice] += 1
+        for action in counts:
+            counts[action] /= n_samples
+        return counts
+
+
+class ThompsonPolicyConfiguration(Generic[A, S], ThompsonPolicyBase[A, List[DiscreteDistribution], S]):
     """
         NOTE: because we made the decision to support the possibility of different bets @ each timestep
         this code enacts a slightly different version of Thompson Sampling than described in the whitepaper
@@ -75,19 +102,8 @@ class ThompsonPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, List[Dis
         assert chosen is not None
         return chosen
 
-    def action_probabilities(self,
-            aggregate_bets: Dict[A, List[DiscreteDistribution]]) -> Dict[A, float]:
-        n_samples: int = 10000  # TODO : should this scale up with the number of actions??
-        counts: Dict[A, float] = {action: 0. for action in aggregate_bets}
-        for _ in range(n_samples):
-            choice: A = self.select_action(aggregate_bets)
-            counts[choice] += 1
-        for action in counts:
-            counts[action] /= n_samples
-        return counts
 
-
-class ThompsonPolicyConfiguration2(Generic[A, S], PolicyConfiguration[A, DiscreteDistribution, S]):
+class ThompsonPolicyConfiguration2(Generic[A, S], ThompsonPolicyBase[A, DiscreteDistribution, S]):
     """
     ThompsonSampling as I originally planned it to be.
     Assumes all values in a given WeightedBet's bet are the same
@@ -113,16 +129,3 @@ class ThompsonPolicyConfiguration2(Generic[A, S], PolicyConfiguration[A, Discret
         chosen: Optional[A] = dict_argmax(scores)
         assert chosen is not None
         return chosen
-
-    def action_probabilities(self,
-            aggregate_bets: Dict[A, DiscreteDistribution]) -> Dict[A, float]:
-        # TODO : duplicate with ThompsonPolicyConfiguration.action_probabilities
-        # except for arg type & who's select_action it calls
-        n_samples: int = 10000  # TODO : should this scale up with the number of actions??
-        counts: Dict[A, float] = {action: 0. for action in aggregate_bets}
-        for _ in range(n_samples):
-            choice: A = self.select_action(aggregate_bets)
-            counts[choice] += 1
-        for action in counts:
-            counts[action] /= n_samples
-        return counts
