@@ -2,7 +2,7 @@ from typing import Generic, List
 
 import numpy as np
 
-from VIAYN.project_types import VoteRange, VotingConfiguration, A, S
+from VIAYN.project_types import VoteRange, VotingConfiguration, A, S, WeightedBet
 from VIAYN.samples.vote_ranges import FiveStarVoteRange, BinaryVoteRange, ZeroToTenVoteRange
 
 
@@ -13,9 +13,12 @@ class ClassicalVotingConfig(Generic[A, S], VotingConfiguration[A, S]):
     vote_range: VoteRange = BinaryVoteRange() # technically instantiating a static class
     # but makes types work out without being nasty
 
+    def validate_bet(self, bet: WeightedBet[A, S]) -> bool:
+        return self.is_valid_prediction(bet.prediction)
+
     def aggregate_votes(self,
             votes: List[float]) -> float:
-        return np.sum(votes)
+        return sum(votes)
 
     def max_possible_vote_total(self, dt: int = 0) -> float:
         """
