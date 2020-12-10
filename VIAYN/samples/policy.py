@@ -45,9 +45,6 @@ class ThompsonPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, List[Dis
     def aggregate_bets(self,
             predictions: Dict[A, List[WeightedBet[A, S]]]) -> Dict[A, List[DiscreteDistribution]]:
         result: Dict[A, List[DiscreteDistribution]] = {action: [] for action in predictions.keys()}
-        if len(predictions) == 0:
-            return result
-        # select an arbitrary prediction as the base length
         action: A
         for action in predictions:
             bets: List[WeightedBet[A, S]] = predictions[action]
