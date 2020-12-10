@@ -158,7 +158,7 @@ class VotingConfiguration(Generic[A, S], Configuration[A, S], ABC):
         ...
 
     @abstractmethod
-    def is_valid_prediction_(
+    def is_valid_prediction(self,
             prediction: List[float]) -> bool:
         ...
 
