@@ -8,22 +8,19 @@ from VIAYN.DiscreteDistribution import  DiscreteDistribution
 
 
 class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S]):
-    @staticmethod
-    def aggregate_bets(
+    def aggregate_bets(self,
             predictions: Dict[A, List[WeightedBet[A, S]]]) -> Dict[A, float]:
         return {action: sum(weighted_mean(bets)) for action, bets in predictions.items()}
 
-    @staticmethod
-    def select_action(
+    def select_action(self,
             aggregate_bets: Dict[A, float]) -> A:
         result: Optional[A] = dict_argmax(aggregate_bets)
         assert result is not None
         return result
 
-    @staticmethod
-    def action_probabilities(
+    def action_probabilities(self,
             aggregate_bets: Dict[A, float]) -> Dict[A, float]:
-        chosen_action: A = GreedyPolicyConfiguration.select_action(aggregate_bets)
+        chosen_action: A = self.select_action(aggregate_bets)
         return {action: (1. if action == chosen_action else 0.) for action in aggregate_bets.keys()}
 
 
@@ -69,8 +66,7 @@ class ThompsonPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, List[Dis
             result[action] = distributions
         return result
 
-    @staticmethod
-    def select_action(
+    def select_action(self,
             aggregate_bets: Dict[A, List[DiscreteDistribution]]) -> A:
         def sample_sum(distributions: List[DiscreteDistribution]) -> float:
             return sum([distribution.sample() for distribution in distributions])
@@ -79,13 +75,12 @@ class ThompsonPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, List[Dis
         assert chosen is not None
         return chosen
 
-    @staticmethod
-    def action_probabilities(
+    def action_probabilities(self,
             aggregate_bets: Dict[A, List[DiscreteDistribution]]) -> Dict[A, float]:
         n_samples: int = 10000  # TODO : should this scale up with the number of actions??
         counts: Dict[A, float] = {action: 0. for action in aggregate_bets}
         for _ in range(n_samples):
-            choice: A = ThompsonPolicyConfiguration.select_action(aggregate_bets)
+            choice: A = self.select_action(aggregate_bets)
             counts[choice] += 1
         for action in counts:
             counts[action] /= n_samples
@@ -112,23 +107,21 @@ class ThompsonPolicyConfiguration2(Generic[A, S], PolicyConfiguration[A, Discret
                 random_seed=self.random)
         return result
 
-    @staticmethod
-    def select_action(
+    def select_action(self,
             aggregate_bets: Dict[A, DiscreteDistribution]) -> A:
         scores: Dict[A, float] = {action: dist.sample() for action, dist in aggregate_bets.items()}
         chosen: Optional[A] = dict_argmax(scores)
         assert chosen is not None
         return chosen
 
-    @staticmethod
-    def action_probabilities(
+    def action_probabilities(self,
             aggregate_bets: Dict[A, DiscreteDistribution]) -> Dict[A, float]:
         # TODO : duplicate with ThompsonPolicyConfiguration.action_probabilities
         # except for arg type & who's select_action it calls
         n_samples: int = 10000  # TODO : should this scale up with the number of actions??
         counts: Dict[A, float] = {action: 0. for action in aggregate_bets}
         for _ in range(n_samples):
-            choice: A = ThompsonPolicyConfiguration2.select_action(aggregate_bets)
+            choice: A = self.select_action(aggregate_bets)
             counts[choice] += 1
         for action in counts:
             counts[action] /= n_samples
