@@ -3,6 +3,8 @@
 # @Date:   2020-12-05 00:08:28
 # @Last Modified by:   Suhail.Alnahari
 # @Last Modified time: 2020-12-05 00:37:14
+import numpy as np
+
 from VIAYN.project_types import VoteRange
 
 
@@ -49,3 +51,17 @@ class ZeroToTenVoteRange(VoteRange):
     @staticmethod
     def minVote() -> float:
         return 0.
+
+
+class UnboundedVoteRange(VoteRange):
+    @staticmethod
+    def contains(value: float) -> bool:
+        return True
+
+    @staticmethod
+    def maxVote() -> float:
+        return float(np.inf)
+
+    @staticmethod
+    def minVote() -> float:
+        return float(-np.inf)
