@@ -73,3 +73,7 @@ def argmax(args: Sequence[T], fn: Callable[[T], float]) -> Optional[T]:
             maximum = value
             max_arg = arg
     return max_arg
+
+
+def dict_argmax(dictionary: Dict[T, float]) -> Optional[T]:
+    return argmax(list(dictionary.keys()), lambda key: dictionary[key])
