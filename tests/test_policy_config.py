@@ -2,15 +2,16 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-06 18:09:26
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-10 14:59:45
+# @Last Modified time: 2020-12-10 15:02:08
 
+from typing import List
+from tests.conftest import floatIsEqual
+import pytest
+import VIAYN.project_types as project_types
+import VIAYN.samples.factory as fac
+import VIAYN.samples.vote_ranges as vote_range
+import numpy as np
 
-from tests.conftest import (
-    pytest, project_types,
-    factory as fac,
-    vote_range,np,
-    List, floatIsEqual
-)
 
 def aggregateSimple(
     weights: List[List[float]],
