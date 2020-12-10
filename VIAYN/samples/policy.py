@@ -90,3 +90,46 @@ class ThompsonPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, List[Dis
         for action in counts:
             counts[action] /= n_samples
         return counts
+
+
+class ThompsonPolicyConfiguration2(Generic[A, S], PolicyConfiguration[A, DiscreteDistribution, S]):
+    """
+    ThompsonSampling as I originally planned it to be.
+    Assumes all values in a given WeightedBet's bet are the same
+    """
+    def __init__(self,
+            random_seed: Optional[int] = None):
+        self.random: RandomState = RandomState(random_seed)
+
+    def aggregate_bets(self,
+                   predictions: Dict[A, List[WeightedBet[A, S]]]) -> Dict[A, DiscreteDistribution]:
+        result: Dict[A, DiscreteDistribution] = {}
+        action: A
+        for action in predictions:
+            result[action] = DiscreteDistribution.from_weighted_vals(
+                vals=[sum(bet.prediction) for bet in predictions[action]],
+                weights=[bet.bet[0] for bet in predictions[action]],
+                random_seed=self.random)
+        return result
+
+    @staticmethod
+    def select_action(
+            aggregate_bets: Dict[A, DiscreteDistribution]) -> A:
+        scores: Dict[A, float] = {action: dist.sample() for action, dist in aggregate_bets.items()}
+        chosen: Optional[A] = dict_argmax(scores)
+        assert chosen is not None
+        return chosen
+
+    @staticmethod
+    def action_probabilities(
+            aggregate_bets: Dict[A, DiscreteDistribution]) -> Dict[A, float]:
+        # TODO : duplicate with ThompsonPolicyConfiguration.action_probabilities
+        # except for arg type & who's select_action it calls
+        n_samples: int = 10000  # TODO : should this scale up with the number of actions??
+        counts: Dict[A, float] = {action: 0. for action in aggregate_bets}
+        for _ in range(n_samples):
+            choice: A = ThompsonPolicyConfiguration2.select_action(aggregate_bets)
+            counts[choice] += 1
+        for action in counts:
+            counts[action] /= n_samples
+        return counts
