@@ -34,7 +34,8 @@ def add_dictionaries(
     return result
 
 
-def weighted_mean(bets: List[WeightedBet[A, S]]) -> List[float]:
+def weighted_mean_of_bets(bets: List[WeightedBet[A, S]]) -> List[float]:
+    # TODO: should probably use np.average with weights
     assert len(bets) > 0
     prediction_len: int = len(bets[0].prediction)
     weighted_sum: List[float] = [0. for _ in range(prediction_len)]
