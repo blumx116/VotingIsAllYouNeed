@@ -1,7 +1,7 @@
 from typing import Generic, List, Dict, Optional
 
 from VIAYN.project_types import PolicyConfiguration, A, B, S, WeightedBet
-from VIAYN.utils import weighted_mean, argmax
+from VIAYN.utils import weighted_mean, argmax, dict_argmax
 from VIAYN.DiscreteDistribution import  DiscreteDistribution
 
 
@@ -14,7 +14,7 @@ class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S])
     @staticmethod
     def select_action(
             aggregate_bets: Dict[A, float]) -> A:
-        result: Optional[A] = argmax(list(aggregate_bets.keys()), lambda key: aggregate_bets[key])
+        result: Optional[A] = dict_argmax(aggregate_bets)
         assert result is not None
         return result
 
