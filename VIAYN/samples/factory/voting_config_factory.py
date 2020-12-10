@@ -7,8 +7,12 @@
 
 from dataclasses import dataclass
 from enum import Enum, unique, auto
+from typing import Callable, Dict, Optional
+
 from VIAYN.project_types import VotingConfiguration, VoteRange
-from typing import Optional
+from VIAYN.samples.voting import (
+    ClassicalVotingConfig, DirectCardinalVotingConfig,
+    RecommendedVotingConfig)
 
 @unique
 class VotingConfigEnum(Enum):
@@ -42,6 +46,12 @@ class VotingConfigFactory:
     VotingConfiguration
         created voting config based on spec
     """
+    lookup: Dict[VotingConfigEnum, Callable[[], VotingConfiguration]] = {
+        VotingConfigEnum.simple: lambda: DirectCardinalVotingConfig(),
+        VotingConfigEnum.suggested: lambda: RecommendedVotingConfig(),
+        VotingConfigEnum.classical: lambda: ClassicalVotingConfig()
+    }
+
     @staticmethod
     def create(spec: VotingConfigFactorySpec) -> VotingConfiguration:
-        ...
+        return VotingConfigFactory.lookup[spec.configType]()
