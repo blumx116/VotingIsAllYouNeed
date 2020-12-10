@@ -8,6 +8,9 @@ from VIAYN.utils import weighted_mean_of_bets
 
 
 class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
+    def validate_bet(self, bet: WeightedBet[A, S]) -> bool:
+        return sum(bet.bet) <= 1
+
     def _calculate_payouts_for_action_(self,
             bets: List[WeightedBet[A, S]],
             welfare_score: float,
@@ -57,8 +60,6 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
         # timestep at the earliest
         return delta_t - 1
 
-
-
     @abstractmethod
     def _batch_payout_from_losses_(self,
             weighted_losses: List[Tuple[float, float]]) -> List[float]:
@@ -93,11 +94,10 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             t_cast_on: int,  # timestep info let us look up in the array
             t_current: int,  # which prediction is for this timestep
             welfare_score: float) -> float:
-        return super()._squared_loss_(
+        return self._squared_loss_(
             bet_to_evaluate=bet_to_evaluate,
             t_cast_on=t_cast_on, t_current=t_current,
             welfare_score=welfare_score)
-
 
     def calculate_payout_from_loss(self,
             bet_amount_to_evaluate: float,
@@ -136,11 +136,10 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             t_cast_on: int,  # timestep info let us look up in the array
             t_current: int,  # which prediction is for this timestep
             welfare_score: float) -> float:
-        return super()._squared_loss_(
+        return self._squared_loss_(
             bet_to_evaluate=bet_to_evaluate,
             t_cast_on=t_cast_on, t_current=t_current,
             welfare_score=welfare_score)
-
 
     def calculate_payout_from_loss(self,
             bet_amount_to_evaluate: float,
@@ -155,7 +154,7 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
         mean: float = self._mean_loss_(all_losses)
         maximum: float = self._max_loss_(all_losses)
         return bet_amount_to_evaluate *\
-               (maximum - loss_to_evaluate) / (maximum - mean)
+            (maximum - loss_to_evaluate) / (maximum - mean)
 
     @staticmethod
     def _mean_loss_(
