@@ -1,6 +1,8 @@
+from math import sqrt
 from typing import Generic, List
 
 import numpy as np
+
 
 from VIAYN.project_types import VoteRange, VotingConfiguration, A, S, WeightedBet
 from VIAYN.samples.vote_ranges import FiveStarVoteRange, BinaryVoteRange, ZeroToTenVoteRange
@@ -55,3 +57,36 @@ class ClassicalVotingConfig(Generic[A, S], VotingConfiguration[A, S]):
             if not min_pred <= prediction_at_t <= max_pred:
                 return False
         return True
+
+
+class RecommendedVoting(Generic[A, S], VotingConfiguration[A, S]):
+    def __init__(self):
+        self.n_agents: int = 0
+
+    vote_range: VoteRange = ZeroToTenVoteRange()
+
+    def validate_bet(self, bet: WeightedBet[A, S]) -> bool:
+        return self.is_valid_prediction(bet.prediction)
+
+    def aggregate_votes(self,
+            votes: List[float]) -> float:
+        return sum(map(sqrt, votes))
+
+    def max_possible_vote_total(self, dt: int = 0) -> float:
+        # TODO: implement way to account for expected growth in n_agents
+        return sqrt(self.vote_range.maxVote()) * self.n_agents
+
+    def min_possible_vote_total(self, dt: int = 1) -> float:
+        return 0.
+
+    def is_valid_prediction(self,
+            prediction: List[float]) -> bool:
+        dt: int
+        prediction_at_t: float
+        for dt, prediction_at_t in enumerate(prediction):
+            if not (self.min_possible_vote_total(dt)
+                    <= prediction_at_t
+                    <= self.max_possible_vote_total(dt)):
+                return False
+        return True
+
