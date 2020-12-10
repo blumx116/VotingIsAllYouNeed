@@ -41,7 +41,8 @@ class DiscreteDistribution:
     @staticmethod
     def from_weighted_vals(
             vals: Iterable[float],
-            weights: Iterable[float]) -> "DiscreteDistribution":
+            weights: Iterable[float],
+            random_seed: RandomState) -> "DiscreteDistribution":
         distribution_constructor: Dict[float, float] = {}
         val: float
         weight: float
@@ -54,4 +55,5 @@ class DiscreteDistribution:
 
         return DiscreteDistribution(
             values=list(distribution_constructor.keys()),
-            probabilities=[weight / total_weights for weight in distribution_constructor.values()])
+            probabilities=[weight / total_weights for weight in distribution_constructor.values()],
+            random_seed=random_seed)
