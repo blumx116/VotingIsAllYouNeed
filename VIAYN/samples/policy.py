@@ -4,14 +4,14 @@ from typing import Generic, List, Dict, Optional, Tuple
 from numpy.random import RandomState
 
 from VIAYN.project_types import PolicyConfiguration, A, B, S, WeightedBet
-from VIAYN.utils import weighted_mean, argmax, dict_argmax
+from VIAYN.utils import weighted_mean_of_bets, argmax, dict_argmax
 from VIAYN.DiscreteDistribution import  DiscreteDistribution
 
 
 class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S]):
     def aggregate_bets(self,
             predictions: Dict[A, List[WeightedBet[A, S]]]) -> Dict[A, float]:
-        return {action: sum(weighted_mean(bets)) for action, bets in predictions.items()}
+        return {action: sum(weighted_mean_of_bets(bets)) for action, bets in predictions.items()}
 
     def select_action(self,
             aggregate_bets: Dict[A, float]) -> A:

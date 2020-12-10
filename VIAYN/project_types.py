@@ -192,6 +192,7 @@ class PayoutConfiguration(Generic[A, S], Configuration[A, S]):
 
     @abstractmethod
     def calculate_payout_from_loss(self,
+            bet_amount_to_evaluate: float,
             loss_to_evaluate: float,
             all_losses: List[Tuple[float, float]], # [(weight, loss)]
             t_cast_on: int, # timestep info lets us discount by timestep
