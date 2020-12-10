@@ -47,7 +47,7 @@ def test_random_simple_agent_basic(random_agent_config):
     for vote,seed in random_agent_config:
         print(f"random: {vote} , {seed}")
         votingConf = fac.VotingConfigFactory.create(
-            fac.VotingConfigFactorySpec(fac.VotingConfigEnum.simple)
+            fac.VotingConfigFactorySpec(fac.VotingConfigEnum.simple,vote_range.BinaryVoteRange)
         )
         agent = fac.AgentFactory.create(
             fac.AgentFactorySpec(
@@ -98,7 +98,7 @@ def test_random_simple_agent_forward_prediction(N):
     vote, seed = (5,0)
     print(f"random: {vote} , {seed}")
     votingConf = fac.VotingConfigFactory.create(
-        fac.VotingConfigFactorySpec(fac.VotingConfigEnum.simple)
+        fac.VotingConfigFactorySpec(fac.VotingConfigEnum.simple,vote_range.BinaryVoteRange)
     )
     agent = fac.AgentFactory.create(
         fac.AgentFactorySpec(
