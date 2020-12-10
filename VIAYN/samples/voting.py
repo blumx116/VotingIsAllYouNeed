@@ -87,4 +87,3 @@ class RecommendedVoting(Generic[A, S], VotingConfigurationBase[A, S]):
     def aggregate_votes(self,
             votes: List[float]) -> float:
         return sum(map(sqrt, votes))
-

@@ -14,6 +14,7 @@ from typing import Optional
 class VotingConfigEnum(Enum):
     simple = auto()
     suggested = auto()
+    classical = auto()
 
 
 @dataclass(frozen=True)
