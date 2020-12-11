@@ -28,6 +28,10 @@ class VotingConfigurationBase(Generic[A, S], VotingConfiguration[A, S]):
                 return False
         return True
 
+    def set_n_agents(self,
+            n_agents: int) -> None:
+        return super().set_n_agents(n_agents)
+
 
 class SumVotingConfig(Generic[A, S], VotingConfigurationBase[A, S]):
     def __init__(self, vote_range: VoteRange):
@@ -74,7 +78,7 @@ class DirectCardinalVotingConfig(Generic[A, S], SumVotingConfig[A, S]):
         super().__init__(UnboundedVoteRange())
 
 
-class RecommendedVoting(Generic[A, S], VotingConfigurationBase[A, S]):
+class RecommendedVotingConfig(Generic[A, S], VotingConfigurationBase[A, S]):
     def __init__(self):
         super().__init__(ZeroToTenVoteRange())
 
