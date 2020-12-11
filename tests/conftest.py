@@ -45,10 +45,10 @@ def floatIsEqual(num1: float,num2: float) -> bool:
     return abs(num1-num2) < 0.000001
 
 @pytest.fixture
-def gen_cust():
-    def _gen_cust_(spec:factory.AgentFactorySpec):
+def gen_agent():
+    def _gen_agent_(spec:factory.AgentFactorySpec):
         return factory.AgentFactory.create(spec)
-    return _gen_cust_
+    return _gen_agent_
 
 @pytest.fixture
 def gen_env():
@@ -73,5 +73,16 @@ def gen_payout_conf():
     def _gen_payout_conf_(spec:factory.PayoutConfigFactorySpec):
         return factory.PayoutConfigFactory.create(spec)
     return _gen_payout_conf_
+
+@pytest.fixture
+def gen_weighted_bet():
+    def _gen_weighted_bet_(
+        bet: List[float],
+        prediction: List[float], 
+        action=None,
+        money=0,
+        cast_by=None):
+        return project_types.WeightedBet(bet,prediction,action,money,cast_by)
+    return _gen_weighted_bet_
 
     
