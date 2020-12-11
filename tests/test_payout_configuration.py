@@ -1,27 +1,34 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import tests.conftest
 from VIAYN.project_types import PayoutConfiguration, HistoryItem, A, S, ActionBet, Agent
 
 
 def payout_config_isomorphism(
-        config: PayoutConfiguration,
-        record: HistoryItem,
+        config: PayoutConfiguration[A, S],
+        record: HistoryItem[A, S],
         welfare_score: float,
         t_current: int):
     t_cast_on: int = record.t_enacted
-    selected_action: A
+    selected_action: A = record.selected_action
     action: A
     total_payouts: Dict[Agent[A, S], float] = {}
     for action in record.available_actions():
         abets: Dict[Agent[A, S], ActionBet] = \
             {wb.cast_by: wb.to_action_bet() for wb in record.predictions[action]}
         losses: Dict[Agent[A, S], float] = \
-            { agent: config.calculate_loss(abet, t_cast_on, t_current, welfare_score)
+            {agent: config.calculate_loss(abet, t_cast_on, t_current, welfare_score)
                 for agent, abet in abets.items()}
-        loss_list: List[float] = [loss for agent, loss in losses.items()]
+        t_index: int = (t_current - t_cast_on) - 1
+        # duplicate code with PayoutConfigBase._get_t_index_
+        bets: Dict[Agent[A, S], float] = \
+            {agent: abet.bet[t_index]
+                for agent, abet in abets.items()}
+        loss_list: List[Tuple[float, float]] =  \
+            [(bets[agent], losses[agent]) for agent in abets.keys()]
         payouts: Dict[Agent[A, S], float] = \
-            {agent : config.calculate_payout_from_loss(
+            {agent: config.calculate_payout_from_loss(
+                bet_amount_to_evaluate=abets[agent].bet[(t_current - t_cast_on)-1],
                 loss_to_evaluate=loss, all_losses=loss_list,
                 t_cast_on=t_cast_on, t_current=t_current,
                 action_bet_on=action, action_selected=selected_action)
