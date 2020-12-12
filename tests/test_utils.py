@@ -2,7 +2,7 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-10 15:47:28
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-10 23:36:41
+# @Last Modified time: 2020-12-11 22:28:21
 from typing import List
 from tests.conftest import floatIsEqual
 import pytest
@@ -89,7 +89,7 @@ def test_weighted_mean(bets,predictions,moneys,expected,gen_weighted_bet):
         weightedBets.append(
             gen_weighted_bet(bets[i],predictions[i],money=moneys[i])
         )
-    res = U.weighted_mean(weightedBets)
+    res = U.weighted_mean_of_bets(weightedBets)
     assert(len(res) == len(expected))
     for i in range(len(res)):
         assert(floatIsEqual(res[i],expected[i]))
@@ -148,7 +148,7 @@ def test_weighted_mean_shouldFail(bets,predictions,moneys,expected,gen_weighted_
                 gen_weighted_bet(bets[i],predictions[i],money=moneys[i])
             )
         
-        res = U.weighted_mean(weightedBets)
+        res = U.weighted_mean_of_bets(weightedBets)
         assert(False)
     except:
         assert(True)
