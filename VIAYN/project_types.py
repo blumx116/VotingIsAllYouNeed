@@ -2,7 +2,7 @@
 # @Author: Carter.Blum
 # @Date:   2020-11-27 20:48:03
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-10 14:57:59
+# @Last Modified time: 2020-12-11 19:03:36
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -184,7 +184,7 @@ class PolicyConfiguration(Generic[A, B, S], Configuration[A, S], ABC):
 class PayoutConfiguration(Generic[A, S], Configuration[A, S]):
     @abstractmethod
     def calculate_loss(self,
-            bet_to_evaluate: ActionBet,
+            bet_to_evaluate: WeightedBet,
             t_cast_on: int,  # timestep info let us look up in the array
             t_current: int,  # which prediction is for this timestep
             welfare_score: float) -> float:
