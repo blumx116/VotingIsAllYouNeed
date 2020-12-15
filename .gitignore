@@ -7,3 +7,4 @@ bin
 .idea
 docs/build
 *.egg-info
+*/.mypy_cache
