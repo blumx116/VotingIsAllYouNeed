@@ -12,7 +12,7 @@ class BinaryVoteRange(VoteRange):
     
     @staticmethod
     def contains(value: float) -> bool:
-        return int(value) in [0, 1]
+        return value in [0, 1]
     
     @staticmethod
     def maxVote() -> float:
@@ -27,7 +27,7 @@ class FiveStarVoteRange(VoteRange):
     
     @staticmethod
     def contains(value: float) -> bool:
-        return int(value) in [1, 2, 3, 4, 5]
+        return value in [1, 2, 3, 4, 5]
 
     @staticmethod
     def maxVote() -> float:

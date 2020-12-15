@@ -46,12 +46,12 @@ class VotingConfigFactory:
     VotingConfiguration
         created voting config based on spec
     """
-    lookup: Dict[VotingConfigEnum, Callable[[], VotingConfiguration]] = {
-        VotingConfigEnum.simple: lambda: DirectCardinalVotingConfig(),
-        VotingConfigEnum.suggested: lambda: RecommendedVotingConfig(),
-        VotingConfigEnum.classical: lambda: ClassicalVotingConfig()
+    lookup: Dict[VotingConfigEnum, Callable[[VoteRange], VotingConfiguration]] = {
+        VotingConfigEnum.simple: lambda vr: DirectCardinalVotingConfig(vr),
+        VotingConfigEnum.suggested: lambda vr: RecommendedVotingConfig(vr),
+        VotingConfigEnum.classical: lambda vr: ClassicalVotingConfig(vr)
     }
 
     @staticmethod
     def create(spec: VotingConfigFactorySpec) -> VotingConfiguration:
-        return VotingConfigFactory.lookup[spec.configType]()
+        return VotingConfigFactory.lookup[spec.configType](spec.voteRange)

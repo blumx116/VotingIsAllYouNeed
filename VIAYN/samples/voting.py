@@ -1,5 +1,5 @@
 from math import sqrt
-from typing import Generic, List
+from typing import Generic, List, Optional
 
 import numpy as np
 
@@ -31,6 +31,9 @@ class VotingConfigurationBase(Generic[A, S], VotingConfiguration[A, S]):
     def set_n_agents(self,
             n_agents: int) -> None:
         return super().set_n_agents(n_agents)
+
+    def _filter_valid_votes_(self, votes: List[float]) -> List[float]:
+        return list(filter(lambda vote: self.vote_range.contains(vote), votes))
 
 
 class SumVotingConfig(Generic[A, S], VotingConfigurationBase[A, S]):
@@ -65,22 +68,28 @@ class SumVotingConfig(Generic[A, S], VotingConfigurationBase[A, S]):
 
     def aggregate_votes(self,
             votes: List[float]) -> float:
-        return sum(votes)
+        return sum(self._filter_valid_votes_(votes))
 
 
 class ClassicalVotingConfig(Generic[A, S], SumVotingConfig[A, S]):
-    def __init__(self):
-        super().__init__(BinaryVoteRange())
+    def __init__(self, vote_range: Optional[VoteRange] = None):
+        if vote_range is None:
+            vote_range = BinaryVoteRange()
+        super().__init__(vote_range)
 
 
 class DirectCardinalVotingConfig(Generic[A, S], SumVotingConfig[A, S]):
-    def __init__(self):
-        super().__init__(UnboundedVoteRange())
+    def __init__(self, vote_range: Optional[VoteRange] = None):
+        if vote_range is None:
+            vote_range = UnboundedVoteRange()
+        super().__init__(vote_range)
 
 
 class RecommendedVotingConfig(Generic[A, S], VotingConfigurationBase[A, S]):
-    def __init__(self):
-        super().__init__(ZeroToTenVoteRange())
+    def __init__(self, vote_range: Optional[VoteRange] = None):
+        if vote_range is None:
+            vote_range = ZeroToTenVoteRange()
+        super().__init__(vote_range)
 
     def max_possible_vote_total(self, dt: int = 1) -> float:
         return self.n_agents * sqrt(self.vote_range.maxVote())
@@ -90,4 +99,4 @@ class RecommendedVotingConfig(Generic[A, S], VotingConfigurationBase[A, S]):
 
     def aggregate_votes(self,
             votes: List[float]) -> float:
-        return sum(map(sqrt, votes))
+        return sum(map(sqrt, self._filter_valid_votes_(votes)))
