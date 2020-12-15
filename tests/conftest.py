@@ -111,7 +111,7 @@ def gen_payout_conf():
         )
     return _gen_payout_conf_
 
-@pytest.fixture
+@pytest.fixture 
 def gen_weighted_bet():
     def _gen_weighted_bet_(
         bet: List[float],
@@ -122,13 +122,14 @@ def gen_weighted_bet():
         return WeightedBet(bet,prediction,action,money,cast_by)
     return _gen_weighted_bet_
 
-@pytest.fixture
+@pytest.fixture 
 def gen_history_item():
     def _gen_history_item_(
         selectedA,
-        predictions = {}, 
-        t_enacted: int = 0
-        ):
+        predictions = None, 
+        t_enacted: int = 0):
+        if predictions is None:
+            predictions = {}
         return HistoryItem(selectedA,predictions,t_enacted)
     return _gen_history_item_
 
