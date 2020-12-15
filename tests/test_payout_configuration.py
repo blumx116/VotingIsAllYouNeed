@@ -47,12 +47,12 @@ from VIAYN.samples.factory import PayoutConfigEnum as PCE
 #         assert total_payouts[agent] == other_payouts[agent]
        
 @pytest.mark.parametrize("enum,pred,t1,t0,R,expected", [
-    (PCE.simple,[],1,0,0,None), # What happens here?
+    # (PCE.simple,[],1,0,0,None), # TODO: should throw on creation of WeightedBet
     (PCE.simple,[3],1,0,1,4),
     (PCE.simple,[0,3],2,0,1,4),
     (PCE.simple,[10,10,10,3,10,10,10],4,0,1,4),
     (PCE.simple,[10,10,10,3,10,10,10],3,0,1,81),
-    (PCE.suggested,[],1,0,0,None), # What happens here?
+    # (PCE.suggested,[],1,0,0,None),   # TODO: should throw on creation of WeightedBet
     (PCE.suggested,[3],1,0,1,4),
     (PCE.suggested,[0,3],2,0,1,4),
     (PCE.suggested,[10,10,10,3,10,10,10],4,0,1,4),
@@ -87,11 +87,11 @@ def test_payout_config_calculate_loss(
     ),
     (
         PCE.simple,5,1,0,5,[(5,5),(4,5),(0.01,5)],1,1,
-        0
+        5
     ),
     (
         PCE.simple,5,1,0,5,[(5,5)],1,1,
-        0
+        5
     ),
     (
         PCE.suggested,1,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
@@ -111,11 +111,11 @@ def test_payout_config_calculate_loss(
     ),
     (
         PCE.suggested,5,1,0,5,[(5,5),(4,5),(0.01,5)],1,1,
-        0
+        5
     ),
     (
         PCE.suggested,5,1,0,5,[(5,5)],1,1,
-        0
+        5
     ),
 ])
 def test_payout_config_calculate_payout_from_loss(
@@ -222,7 +222,7 @@ def test_payout_config_calculate_payout_from_loss(
         {'A1': 10.0,'A2':0., 'A3': 5.6}
     ),
     (
-        PCE.simple,
+        PCE.simple, #TODO: check this
         5.5,
         'a2',1,
         [
@@ -301,7 +301,7 @@ def test_payout_config_calculate_payout_from_loss(
             ([0.9,0.05,0.05],[1,5,11],'a1',3,'A2'),
             ([0.3,0.4,0.3],[1,7,10],'a2',5,'A1'),
         ],
-        {'A1': 0.,'A2':0.}
+        {'A1': 0.,'A2':5.2} # TODO: is this right?
     ),
     (
         PCE.suggested,
@@ -361,7 +361,7 @@ def test_payout_config_calculate_payout_from_loss(
             ([0.9,0.05,0.05],[1,5,11],'a1',3,'A2'),
             ([0.3,0.4,0.3],[1,7,10],'a2',5,'A1'),
         ],
-        {'A1': 0.,'A2':0.}
+        {'A1': 0.,'A2':2.1} # TODO: is this right?
     ),
     (
         PCE.suggested,
@@ -485,3 +485,6 @@ def test_payout_config_calculate_all_payouts(
                 expected[agent]
             )
         )
+
+
+# TODO: looks like test coverage right now doesn't hit t_cast_on != 0, right?

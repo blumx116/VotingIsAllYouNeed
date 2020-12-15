@@ -116,6 +116,8 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             action_bet_on: A,
             action_selected: A) -> float:
         if action_bet_on == action_selected:
+            if len(np.unique([loss for _, loss in all_losses])) == 1:
+                return bet_amount_to_evaluate
             return bet_amount_to_evaluate * \
                    (float(np.max(all_losses)) - loss_to_evaluate)
         else:
@@ -159,6 +161,10 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             action_selected: A) -> float:
         if action_bet_on != action_selected:
             return 0.
+
+        if len(np.unique([loss for _, loss in all_losses])) == 1:
+            return bet_amount_to_evaluate # TODO: duplicate with SimpleConfig calculate_payout_from_loss
+
         mean: float = self._mean_loss_(all_losses)
         maximum: float = self._max_loss_(all_losses)
         return bet_amount_to_evaluate *\
