@@ -167,7 +167,7 @@ def test_suggested_policy_config_multiple_actions(
 ])
 def test_suggested_policy_config_select_action(arr,vals,expected,gen_policy_conf):
     policyConf = gen_policy_conf(fac.PolicyConfigEnum.suggested)
-    res = policyConf.select_action({key:val for key,val in zip(arr,val)})
+    res = policyConf.select_action({key:val for key,val in zip(arr,vals)})
 
 @pytest.mark.parametrize("arr,vals,expected", [
     ([0,1,2,3,4,5],[0,0,0,0,0,100],5),
@@ -178,5 +178,5 @@ def test_suggested_policy_config_select_action(arr,vals,expected,gen_policy_conf
 ])
 def test_suggested_policy_config_action_probs(arr,vals,expected,gen_policy_conf):
     policyConf = gen_policy_conf(fac.PolicyConfigEnum.suggested)
-    res = policyConf.action_probabilities({key:val for key,val in zip(arr,val)})
+    res = policyConf.action_probabilities({key:val for key,val in zip(arr,vals)})
     
