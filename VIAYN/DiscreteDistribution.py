@@ -11,7 +11,7 @@ from typing import Dict, List, Sequence, TypeVar
 from VIAYN.project_types import A, S, WeightedBet
 
 import numpy as np
-from numpy.random import RandomState
+from numpy.random import Generator, default_rng
 
 from VIAYN.project_types import A, S, WeightedBet
 
@@ -22,7 +22,7 @@ _epsilon_: float = 1e-4
 class DiscreteDistribution:
     values: List[float]
     probabilities: List[float]
-    random_seed = None
+    random_seed: Optional[Generator] = None
 
     def __post_init__(self):
         assert len(np.unique(self.values)) == len(self.values)
@@ -30,7 +30,7 @@ class DiscreteDistribution:
         assert len(self.values) == len(self.probabilities)
 
     def get_random(self):
-        return self.random_seed if self.random_seed is not None else RandomState()
+        return self.random_seed if self.random_seed is not None else default_rng()
 
     def sample(self) -> float:
         random_value: float = self.get_random().uniform()
@@ -47,7 +47,7 @@ class DiscreteDistribution:
     def from_weighted_vals(
             vals: Iterable[float],
             weights: Iterable[float],
-            random_seed: RandomState) -> "DiscreteDistribution":
+            random_seed: Generator) -> "DiscreteDistribution":
         distribution_constructor: Dict[float, float] = {}
         val: float
         weight: float

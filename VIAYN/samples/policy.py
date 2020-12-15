@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Generic, List, Dict, Optional, Tuple
 
-from numpy.random import RandomState
+from numpy.random import default_rng, Generator
 
 from VIAYN.project_types import PolicyConfiguration, A, B, S, WeightedBet
 from VIAYN.utils import weighted_mean_of_bets, argmax, dict_argmax
@@ -33,7 +33,7 @@ class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S])
 class ThompsonPolicyBase(Generic[A, B, S], PolicyConfiguration[A, B, S]):
     def __init__(self,
             random_seed: Optional[int] = None):
-        self.random: RandomState = RandomState(random_seed)
+        self.random: Generator = default_rng(random_seed)
 
     def validate_bet(self, bet: WeightedBet[A, S]) -> bool:
         # TODO: this should probably do some actual validation
@@ -75,7 +75,7 @@ class ThompsonPolicyConfiguration(Generic[A, S], ThompsonPolicyBase[A, List[Disc
     """
     def __init__(self,
             random_seed: Optional[int] = None):
-        self.random: RandomState = RandomState(random_seed)
+        self.random: Generator = default_rng(random_seed)
 
     def aggregate_bets(self,
             predictions: Dict[A, List[WeightedBet[A, S]]]) -> Dict[A, List[DiscreteDistribution]]:
@@ -121,7 +121,7 @@ class ThompsonPolicyConfiguration2(Generic[A, S], ThompsonPolicyBase[A, Discrete
     """
     def __init__(self,
             random_seed: Optional[int] = None):
-        self.random: RandomState = RandomState(random_seed)
+        self.random: Generator = default_rng(random_seed)
 
     def aggregate_bets(self,
                    predictions: Dict[A, List[WeightedBet[A, S]]]) -> Dict[A, DiscreteDistribution]:

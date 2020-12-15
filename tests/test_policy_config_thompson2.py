@@ -76,7 +76,7 @@ def test_suggested_policy_config_single_action(
     moneys,expected,
     gen_policy_conf,gen_weighted_bet):
     policyConf = gen_policy_conf(fac.PolicyConfigEnum.suggested_general)
-    weightedBets : List[P.WeightedBet] = []
+    weightedBets : List[project_types.WeightedBet] = []
     for i in range(len(bets)):
         print(bets[i],predictions[i],moneys[i])
         weightedBets.append(
@@ -147,7 +147,7 @@ def test_suggested_policy_config_multiple_actions(
     moneys,expected,
     gen_policy_conf,gen_weighted_bet):
     policyConf = gen_policy_conf(fac.PolicyConfigEnum.suggested_general)
-    weightedBets : List[P.WeightedBet] = []
+    weightedBets : List[project_types.WeightedBet] = []
     for i in range(len(bets)):
         print(bets[i],predictions[i],moneys[i])
         weightedBets.append(

@@ -36,3 +36,8 @@ class StaticEnvironment(Environment[IntAction, IntAction]):
     def done(self) -> bool:
         return False
 
+    def reset(self) -> IntAction:
+        return self.last_action
+
+    def seed(self, random_seed: int = None) -> None:
+        pass

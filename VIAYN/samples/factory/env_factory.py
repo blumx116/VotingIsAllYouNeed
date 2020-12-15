@@ -6,7 +6,10 @@
 
 from dataclasses import dataclass
 from enum import Enum, unique, auto
+from typing import Callable, Dict, Optional
+
 from VIAYN.project_types import Environment
+from VIAYN.samples.env import StaticEnvironment
 
 
 @unique
@@ -17,9 +20,13 @@ class EnvsEnum(Enum):
 @dataclass(frozen=True)
 class EnvsFactorySpec:
     envType: EnvsEnum
+    n_actions: Optional[int] = None
 
     def __post_init__(self):
-        assert(self.envType == EnvsEnum.default)
+        if self.envType ==  EnvsEnum.default:
+            assert self.n_actions is not None
+        else:
+            assert False, "default is currently only supported type"
 
 
 class EnvFactory:
@@ -39,4 +46,7 @@ class EnvFactory:
     """
     @staticmethod
     def create(spec: EnvsFactorySpec) -> Environment:
-        ...
+        if spec.envType == EnvsEnum.default:
+            assert spec.n_actions is not None
+            return StaticEnvironment(spec.n_actions)
+        assert False, "Can only create static environment right now"

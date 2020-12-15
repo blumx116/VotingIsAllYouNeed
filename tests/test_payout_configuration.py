@@ -62,7 +62,7 @@ def test_payout_config_calculate_loss(
     enum,pred,t1,t0,R,expected,
     gen_payout_conf, gen_weighted_bet
 ):
-    pf: project_types.PayoutConfiguration = gen_payout_conf(
+    pf: P.PayoutConfiguration = gen_payout_conf(
         enum
     )
     wb: P.WeightedBet  = gen_weighted_bet(pred,pred)
@@ -122,7 +122,7 @@ def test_payout_config_calculate_payout_from_loss(
     enum,bet,t1,t0,loss,allLs,aj,ai,expected,
     gen_payout_conf, gen_weighted_bet
 ):
-    pf: project_types.PayoutConfiguration = gen_payout_conf(
+    pf: P.PayoutConfiguration = gen_payout_conf(
         enum
     )
     assert(
@@ -456,7 +456,7 @@ def test_payout_config_calculate_all_payouts(
     expected,
     gen_payout_conf, gen_weighted_bet,gen_history_item # fixtures
 ):
-    pf: project_types.PayoutConfiguration = gen_payout_conf(
+    pf: P.PayoutConfiguration = gen_payout_conf(
         enum
     )
     predsDict: Dict[A, List[WeightedBet[A, S]]] = {}
