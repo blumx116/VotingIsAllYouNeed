@@ -84,9 +84,8 @@ def test_simple_policy_config_single_action(
         )
     dic = {'a':weightedBets}
     res = policyConf.aggregate_bets(dic)['a']
-    assert(len(res) == len(expected))
-    for i in range(len(res)):
-        assert(floatIsEqual(res[i],expected[i]))
+    assert(floatIsEqual(res,sum(expected)))
+    # adding sum was easier than changing expected to be a float
 
 @pytest.mark.parametrize("bets,predictions,moneys,expected", [
     (
@@ -158,33 +157,35 @@ def test_simple_policy_config_multiple_actions(
     dic = {i:weightedBets for i in range(100)}
     res = policyConf.aggregate_bets(dic)
     for i in res.keys():
-        assert(len(res[i]) == len(expected))
-        for k in range(len(res[i])):
-            assert(floatIsEqual(res[i][k],expected[k]))
+        assert(floatIsEqual(res[i], sum(expected)))
 
 
 @pytest.mark.parametrize("arr,vals,expected", [
     ([0,1,2,3,4,5],[0,0,0,0,0,100],5),
-    ([5,4,3,2,1,0],[0,0,0,0,0,100],5),
+    ([5,4,3,2,1,0],[0,0,0,0,0,100],0),
     ([0,1,2,3,4,5],[0,10,100,1000,10000,100000],5),
-    ([5,4,3,2,1,0],[100000,10000,1000,100,10,0],0),
-    ([],[],None),
+    ([5,4,3,2,1,0],[100000,10000,1000,100,10,0],5),
+    ([0,1,2,3,4,5],[0,10,100,10000000,100, 10],3),
+    ([1,0,2,3,4,5],[0,0,0,0,0,0],1),
+    # ([],[],None), # TODO: should test that this throws
 ])
 def test_simple_policy_config_select_action(arr,vals,expected,gen_policy_conf):
     policyConf = gen_policy_conf(fac.PolicyConfigEnum.simple)
-    res = policyConf.select_action({key:val for key,val in zip(arr,val)})
+    res = policyConf.select_action({key:val for key,val in zip(arr,vals)})
     assert(res == expected)
 
 @pytest.mark.parametrize("arr,vals,expected", [
     ([0,1,2,3,4,5],[0,0,0,0,0,100],5),
-    ([5,4,3,2,1,0],[0,0,0,0,0,100],5),
+    ([5,4,3,2,1,0],[0,0,0,0,0,100],0),
     ([0,1,2,3,4,5],[0,10,100,1000,10000,100000],5),
-    ([5,4,3,2,1,0],[100000,10000,1000,100,10,0],0),
-    ([],[],None),
+    ([5,4,3,2,1,0],[100000,10000,1000,100,10,0],5),
+    ([0,1,2,3,4,5],[0,10,100,10000000,100, 10],3),
+    ([1,0,2,3,4,5],[0,0,0,0,0,0],1),
+    # ([],[],None), # TODO: should test that this throws
 ])
 def test_simple_policy_config_action_probs(arr,vals,expected,gen_policy_conf):
     policyConf = gen_policy_conf(fac.PolicyConfigEnum.simple)
-    res = policyConf.action_probabilities({key:val for key,val in zip(arr,val)})
+    res = policyConf.action_probabilities({key:val for key,val in zip(arr,vals)})
     for i in arr:
         if (i == expected):
             assert(floatIsEqual(res[i],1))
