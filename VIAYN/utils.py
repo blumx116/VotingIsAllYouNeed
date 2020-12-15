@@ -6,6 +6,8 @@
 from copy import copy
 from typing import Dict, List, Sequence, TypeVar, Optional, Callable
 
+import numpy as np
+
 from VIAYN.project_types import A, S, WeightedBet
 
 T = TypeVar("T")
@@ -42,6 +44,9 @@ def add_dictionaries(
 def weighted_mean_of_bets(bets: List[WeightedBet[A, S]]) -> List[float]:
     # TODO: should probably use np.average with weights
     assert len(bets) > 0
+    assert len(np.unique([len(bet.bet) for bet in bets])) == 1
+    assert len(np.unique([len(bet.prediction) for bet in bets])) == 1
+    assert len(bets[0].bet) == len(bets[0].prediction)
     prediction_len: int = len(bets[0].prediction)
     weighted_sum: List[float] = [0. for _ in range(prediction_len)]
     total_weights: List[float] = [0. for _ in range(prediction_len)]

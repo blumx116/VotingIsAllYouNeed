@@ -160,9 +160,8 @@ def test_weighted_mean_shouldFail(bets,predictions,moneys,expected,gen_weighted_
     ([0,1,2,3,4,5],[0,10,100,1000,10000,100000],5),
     ([5,4,3,2,1,0],[100000,10000,1000,100,10,0],0),
     ([],[],None),
-    ([0,1,2,3,4],[1,1,1,1,1],0), # expected behavior?
-    ([1,1,1,1,1,1],[7,0,7,7,7,7,7,7],1), # expected behavior?
-    ([0],[],None) # expected behavior?
+    ([0,1,2,3,4],[1,1,1,1,1],0), # document this behaviour
+    ([1,1,1,1,1,1],[7,0,7,7,7,7,7,7],1), # and this
 ])
 def test_argmax(arr,vals,expected):
     assert(U.argmax(arr,lambda x: vals[x]) == expected)
