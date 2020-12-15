@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# @Author: Carter.Blum
+# @Date:   2020-12-10 14:37:06
+# @Last Modified by:   Suhail.Alnahari
+# @Last Modified time: 2020-12-10 14:58:42
 from typing import List, Iterable, Dict, Tuple
 
 import numpy as np
@@ -6,7 +11,6 @@ from VIAYN.project_types import (
     Agent, Environment, SystemConfiguration, VotingConfiguration, A, S, B, VoteRange,
     HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration, PolicyConfiguration)
 from VIAYN.utils import add_dictionaries
-
 
 def train(
         agents: List[Agent[A, S]],
@@ -56,18 +60,11 @@ def train(
                 config)
 
             env.step(action)
-
     old_episode_history.append(current_history)
     # need to append the last one (TODO: redo this logic to avoid duplication)
 
     return old_episode_history, balances
 
-
-def select_action(
-        placed_bets: Dict[A, List[WeightedBet[A, S]]],
-        config: SystemConfiguration[A, B, S]) -> A:
-    aggregated_bets: Dict[A, B] = config.policy_manager.aggregate_bets(placed_bets)
-    return config.policy_manager.select_action(aggregated_bets)
 
 
 def calculate_payouts(

@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# @Author: Suhail.Alnahari
+# @Date:   2020-12-11 20:45:25
+# @Last Modified by:   Suhail.Alnahari
+# @Last Modified time: 2020-12-11 20:45:25
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Sequence, Iterable
 from copy import copy
@@ -17,7 +22,7 @@ _epsilon_: float = 1e-4
 class DiscreteDistribution:
     values: List[float]
     probabilities: List[float]
-    random_seed: Optional[np.random] = None
+    random_seed = None
 
     def __post_init__(self):
         assert len(np.unique(self.values)) == len(self.values)

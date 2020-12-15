@@ -2,15 +2,15 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-04 22:06:47
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-06 18:13:10
+# @Last Modified time: 2020-12-11 23:17:59
 
-
-from tests.conftest import (
-    pytest, project_types,
-    factory as fac,
-    vote_range ,np,
-    List, floatIsEqual
-)
+from typing import List
+from tests.conftest import floatIsEqual
+import pytest
+import VIAYN.project_types as project_types
+import VIAYN.samples.factory as fac
+import VIAYN.samples.vote_ranges as vote_range
+import numpy as np
 
 def aggregateSimple(
     votes: List[float],
@@ -59,12 +59,10 @@ def aggregateSuggested(
     (aggregateSuggested, vote_range.ZeroToTenVoteRange, [0 for _ in range(30)]),
     (aggregateSuggested, vote_range.ZeroToTenVoteRange, [])
 ])
-def test_vote_config(aggFun, VR,vals):
-    vc: project_types.VotingConfiguration = fac.VotingConfigFactory.create(
-        fac.VotingConfigFactorySpec(
-            fac.VotingConfigEnum.simple,
-            VR
-        )
+def test_vote_config(aggFun, VR,vals,gen_vote_conf):
+    vc: project_types.VotingConfiguration = gen_vote_conf(
+        fac.VotingConfigEnum.simple,
+        VR
     )
     assert(vc.n_agents == 0)
     vc.set_n_agents(len(vals))

@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# @Author: Suhail.Alnahari
+# @Date:   2020-12-11 19:03:44
+# @Last Modified by:   Suhail.Alnahari
+# @Last Modified time: 2020-12-11 19:05:03
 from abc import abstractmethod
 from typing import List, Tuple, Dict, Generic, Set
 
@@ -19,7 +24,7 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
         t_idx: int = self._get_t_index_(t_current, t_cast_on)
         losses: Dict[Agent[A, S], float] = \
             {bet.cast_by: self.calculate_loss(
-                    bet_to_evaluate=bet.to_action_bet(),
+                    bet_to_evaluate=bet,
                     t_cast_on=t_cast_on,
                     t_current=t_current,
                     welfare_score=welfare_score)
@@ -78,7 +83,7 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
 
     @staticmethod
     def _squared_loss_(
-            bet_to_evaluate: ActionBet,
+            bet_to_evaluate: WeightedBet,
             t_cast_on: int,  # timestep info let us look up in the array
             t_current: int,  # which prediction is for this timestep
             welfare_score: float) -> float:
@@ -90,7 +95,7 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
 
 class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
     def calculate_loss(self,
-            bet_to_evaluate: ActionBet,
+            bet_to_evaluate: WeightedBet,
             t_cast_on: int,  # timestep info let us look up in the array
             t_current: int,  # which prediction is for this timestep
             welfare_score: float) -> float:
@@ -132,7 +137,7 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
 
 class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
     def calculate_loss(self,
-            bet_to_evaluate: ActionBet,
+            bet_to_evaluate: WeightedBet,
             t_cast_on: int,  # timestep info let us look up in the array
             t_current: int,  # which prediction is for this timestep
             welfare_score: float) -> float:
