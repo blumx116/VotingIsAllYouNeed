@@ -65,6 +65,10 @@ class WeightedBet(Generic[A, S]):
     money: float  # m_i^(t)
     cast_by: Agent[A, S]
 
+    def __post_init__(self):
+        assert len(self.bet) == len(self.prediction)
+        assert len(self.bet) != 0
+
     def weight(self) -> List[float]:
         return [bet * self.money for bet in self.bet]
 
