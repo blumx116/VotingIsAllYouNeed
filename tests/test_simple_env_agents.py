@@ -123,7 +123,8 @@ def test_random_simple_agent_forward_prediction(N):
     )
     env = fac.EnvFactory.create(
         fac.EnvsFactorySpec(
-            fac.EnvsEnum.default
+            fac.EnvsEnum.default,
+            n_actions=5
         )
     )    
     genBet = np.random.default_rng(seed=seed)
@@ -140,15 +141,19 @@ def test_random_simple_agent_forward_prediction(N):
                 len(action_bet.prediction) == N
             )
             for k in range(len(action_bet.bet)):
-                assert(floatIsEqual(action_bet.bet[k],genBet.uniform(0,1)))
+                assert(floatIsEqual(action_bet.bet[k], 0.5))
             for k in range(len(action_bet.prediction)):
+                min: float = votingConf.min_possible_vote_total()
+                max: float = votingConf.max_possible_vote_total()
+                if not np.isfinite(min):
+                    min = -100.
+                if not np.isfinite(max):
+                    max = 100
                 assert(
                     floatIsEqual(
                         action_bet.prediction[k], 
                         genPred.uniform(
-                            votingConf.min_possible_vote_total(k),
-                            votingConf.max_possible_vote_total(k)
-                        )
+                            min, max)
                     )
                 )
 
