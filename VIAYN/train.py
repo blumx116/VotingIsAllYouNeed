@@ -3,7 +3,8 @@
 # @Date:   2020-12-10 14:37:06
 # @Last Modified by:   Suhail.Alnahari
 # @Last Modified time: 2020-12-10 14:58:42
-from typing import List, Iterable, Dict, Tuple
+from dataclasses import dataclass
+from typing import Generator, List, Iterable, Dict, Tuple, Generic
 
 import numpy as np
 
@@ -12,13 +13,24 @@ from VIAYN.project_types import (
     HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration, PolicyConfiguration)
 from VIAYN.utils import add_dictionaries
 
+@dataclass(frozen=True)
+class TrainResult(Generic[A, S]):
+    histories: List[List[HistoryItem[A, S]]]
+    balances: Dict[Agent[A, S], float]
+
+    def history_item_for(self, 
+            episode_num: int,
+            t_step: int) -> HistoryItem[A, S]:
+        return self.histories[episode_num][t_step]
+
+
 def train(
         agents: List[Agent[A, S]],
         env: Environment[A, S],
         episode_seeds: Iterable[int],
         config: SystemConfiguration[A, B, S],
         tsteps_per_episode: int = np.inf) \
-        -> Tuple[List[List[HistoryItem[A, S]]], Dict[Agent[A, S], float]]:
+        -> TrainResult[A, S]:
     old_episode_history: List[List[HistoryItem[A, S]]] = []
     current_history: List[HistoryItem[A, S]] = []
     balances: Dict[Agent[A, S], float] = \
@@ -87,7 +99,9 @@ def train(
     old_episode_history.append(current_history)
     # need to append the last one (TODO: redo this logic to avoid duplication)
 
-    return old_episode_history, balances
+    return TrainResult(
+        histories=old_episode_history, 
+        balances=balances)
 
 def pay_outstanding_bets(
         history: List[HistoryItem[A, S]],
