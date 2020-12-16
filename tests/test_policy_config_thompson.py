@@ -7,7 +7,7 @@
 from typing import List
 from tests.conftest import floatIsEqual
 import pytest
-import VIAYN.project_types as project_types
+import VIAYN.project_types as P
 import VIAYN.samples.factory as fac
 import VIAYN.samples.vote_ranges as vote_range
 import numpy as np

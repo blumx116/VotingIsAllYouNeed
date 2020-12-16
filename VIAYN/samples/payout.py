@@ -32,7 +32,7 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
         bet_amounts: Dict[Agent[A, S], float] = \
             {bet.cast_by: bet.weight()[t_idx] for bet in bets}
 
-        if len(np.unique(losses)) == 1: # everyone has the same loss
+        if len(np.unique(list(losses.values()))) == 1: # everyone has the same loss
             return bet_amounts # just give everyone their money back
 
         payouts: List[float] = self._batch_payout_from_losses_(

@@ -205,7 +205,7 @@ def test_payout_config_calculate_payout_from_loss(
             ([0.9,0.05,0.05],[1,5,11],'a1',3,'A2'),
             ([0.3,0.4,0.3],[1,7,10],'a2',5,'A1'),
         ],
-        {'A1': 0.,'A2':0.}
+        {'A1': 2,'A2':1.2}
     ),
     (
         PCE.simple,
@@ -301,7 +301,7 @@ def test_payout_config_calculate_payout_from_loss(
             ([0.9,0.05,0.05],[1,5,11],'a1',3,'A2'),
             ([0.3,0.4,0.3],[1,7,10],'a2',5,'A1'),
         ],
-        {'A1': 0.,'A2':5.2}
+        {'A1': 2.5,'A2':2.7}
     ),
     (
         PCE.suggested,
