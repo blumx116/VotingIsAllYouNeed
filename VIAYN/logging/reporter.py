@@ -4,13 +4,16 @@ Created on Thu May  7 00:48:31 2020
 
 @author: suhai
 """
-
 import logging
 import pandas as pd
 import numpy as np
-from typing import List, Any, Optional
+from typing import List, Any, Optional, TypeVar
+
+T = TypeVar("T")
+
 class Reporter:
     __instance__: Optional[logging.RootLogger] = None
+        
     def __init__(self,log_file: str ='logfile.log'):
         if (Reporter.__instance__ is None):
             Reporter.__instance__ = logging.getLogger()
@@ -40,18 +43,23 @@ class Reporter:
         self.error('An error has happened.')
         self.warning("TESTING ENDED")
         
-    def critical(self,text: str):
+    @staticmethod
+    def critical(text: str):
         if (Reporter.__instance__ is not None):
             Reporter.__instance__.critical(text)
+            
     def debug(self,text: str):
         if (Reporter.__instance__ is not None):
             Reporter.__instance__.debug(text)
+            
     def info(self,text: str):
         if (Reporter.__instance__ is not None):
             Reporter.__instance__.info(text)
+            
     def warning(self,text: str):
         if (Reporter.__instance__ is not None):
             Reporter.__instance__.warning(text)
+            
     def error(self,text: str):
         if (Reporter.__instance__ is not None):
             Reporter.__instance__.error(text)
@@ -60,16 +68,13 @@ class Reporter:
         self.warning("LOGGER SHUTDOWN\n\n")
         self.remove_handlers()
         logging.shutdown()
+       
         
-    def report_vector(self,vector: List[Any],file: str,column: str):
-        append: bool
+    def report_vector(self, vector: List[T],file: str,column: str):
         try:
-            res = pd.read_csv(file+'.csv')
-            append = True
-        except:
-            res = pd.DataFrame(data=np.asarray(vector),columns=[column])
-            append = False
-
-        if (append):
+            res: pd.DataFrame = pd.read_csv(file+'.csv')
             res = pd.concat([res,pd.DataFrame(data=np.asarray(vector),columns=[column])],axis=1)
+        except:
+            res: pd.DataFrame = pd.DataFrame(data=np.asarray(vector),columns=[column])
+            
         res.to_csv(file+'.csv',index=False)
