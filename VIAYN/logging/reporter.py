@@ -12,9 +12,6 @@ from typing import List, Any, Optional
 class Reporter:
     __instance__: Optional[logging.RootLogger] = None
     def __init__(self,log_file: str ='logfile.log'):
-        self.initialize_logger(log_file)
-    
-    def initialize_logger(self,log_file):
         if (Reporter.__instance__ is None):
             Reporter.__instance__ = logging.getLogger()
         #### which messages to report
