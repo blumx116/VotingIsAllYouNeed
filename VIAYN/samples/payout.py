@@ -22,6 +22,13 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
             t_current: int,
             t_cast_on: int) -> Dict[Agent[A, S], float]:
         t_idx: int = self._get_t_index_(t_current, t_cast_on)
+        
+        assert len(np.unique([len(bet.prediction) for bet in bets])) == 1
+        if len(bets) == 0:
+            return {}
+        if len(bets[0].prediction) <= t_idx:
+            return {}
+
         losses: Dict[Agent[A, S], float] = \
             {bet.cast_by: self.calculate_loss(
                     bet_to_evaluate=bet,

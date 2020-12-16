@@ -59,11 +59,73 @@ def train(
                 placed_bets,
                 config)
 
+            # TODO: make this its own function?
+            bets_that_happened: List[WeightedBet[A, S]] = placed_bets[action]
+            bet: WeightedBet[A, S]
+            for bet in bets_that_happened:
+                # duplicate assert
+                assert sum(bet.bet) <= 1
+                balances[bet.cast_by] *= (1 - sum(bet.bet))
+
             env.step(action)
+            
+            current_history.append(
+                HistoryItem(
+                    selected_action=action,
+                    predictions=placed_bets,
+                    t_enacted=t))
+            t += 1
+        
+        final_payouts: Dict[Agent[A, S], float] = pay_outstanding_bets(
+            current_history,t, config)
+
+        for agent in final_payouts:
+            balances[agent] += final_payouts[agent]
+
+
+        
     old_episode_history.append(current_history)
     # need to append the last one (TODO: redo this logic to avoid duplication)
 
     return old_episode_history, balances
+
+def pay_outstanding_bets(
+        history: List[HistoryItem[A, S]],
+        last_t: int,
+        config: SystemConfiguration[A, B, S]) -> Dict[Agent[A, S], float]:
+
+    item: HistoryItem[A, S]
+    total_payouts: Dict[Agent[A, S], float] = {}
+    for item in history:
+        bets_that_matter: List[WeightedBet[A, S]] = \
+            item.predictions[item.selected_action]
+        t_idx: int = last_t - item.t_enacted - 1
+        if len(bets_that_matter) == 0:
+            continue
+        prediction_len: int = len(bets_that_matter[0].prediction)
+        delta_t: int
+        for delta_t in range(prediction_len - t_idx):
+            payouts_for_this_timestep: Dict[Agent[A, S], float] = \
+                config.payout_manager.calculate_all_payouts(
+                    record=item,
+                    welfare_score=0,
+                    t_current=last_t + delta_t)
+            
+            agent: Agent[A, S]
+            for agent in payouts_for_this_timestep:
+                if agent not in total_payouts:
+                    total_payouts[agent] = 0.
+                total_payouts[agent] += payouts_for_this_timestep[agent]
+                
+    return total_payouts
+
+
+
+def select_action(
+        bets: Dict[A, List[WeightedBet[A, S]]],
+        config: SystemConfiguration[A, B, S]) -> A:
+    aggregation: Dict[A, B] = config.policy_manager.aggregate_bets(bets)
+    return config.policy_manager.select_action(aggregation)
 
 
 
@@ -80,6 +142,7 @@ def calculate_payouts(
             config.payout_manager.calculate_all_payouts(
                 record=record, welfare_score=welfare_score,
                 t_current=t)
+        # TODO: poliferate the use of add_dictionaries throughout  train.py
         total_payouts = add_dictionaries(total_payouts, payout)
 
     return total_payouts
