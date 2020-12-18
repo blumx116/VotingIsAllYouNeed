@@ -25,7 +25,7 @@ class StaticEnvironment(Environment[IntAction, IntAction]):
             n_actions: int):
         assert n_actions > 0
         self.action_list: List[IntAction] = [IntAction(i) for i in range(n_actions)]
-        self.last_action: Optional[IntAction] = None
+        self.last_action: IntAction = self.action_list[0]
 
     def step(self, action: Union[int, IntAction]) -> None:
         pass
