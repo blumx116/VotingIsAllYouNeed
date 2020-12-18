@@ -2,7 +2,9 @@
 # @Author: Carter.Blum
 # @Date:   2020-12-05 00:08:28
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-05 00:37:14
+# @Last Modified time: 2020-12-10 14:44:06
+import numpy as np
+
 from VIAYN.project_types import VoteRange
 
 
@@ -10,7 +12,7 @@ class BinaryVoteRange(VoteRange):
     
     @staticmethod
     def contains(value: float) -> bool:
-        return int(value) in [0, 1]
+        return value in [0, 1]
     
     @staticmethod
     def maxVote() -> float:
@@ -25,7 +27,7 @@ class FiveStarVoteRange(VoteRange):
     
     @staticmethod
     def contains(value: float) -> bool:
-        return int(value) in [1, 2, 3, 4, 5]
+        return value in [1, 2, 3, 4, 5]
 
     @staticmethod
     def maxVote() -> float:
@@ -49,3 +51,17 @@ class ZeroToTenVoteRange(VoteRange):
     @staticmethod
     def minVote() -> float:
         return 0.
+
+
+class UnboundedVoteRange(VoteRange):
+    @staticmethod
+    def contains(value: float) -> bool:
+        return True
+
+    @staticmethod
+    def maxVote() -> float:
+        return float(np.inf)
+
+    @staticmethod
+    def minVote() -> float:
+        return float(-np.inf)

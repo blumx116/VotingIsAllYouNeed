@@ -9,6 +9,12 @@ class IntAction(Action):
         self.idx: int = idx
         self.description = str(idx)
 
+    def __hash__(self) -> int:
+        return self.idx 
+
+    def __eq__(self, other: object) -> bool:
+        return type(self) == type(other) and self.idx == other.idx
+
 
 class StaticEnvironment(Environment[IntAction, IntAction]):
     """
@@ -36,3 +42,8 @@ class StaticEnvironment(Environment[IntAction, IntAction]):
     def done(self) -> bool:
         return False
 
+    def reset(self) -> IntAction:
+        return self.last_action
+
+    def seed(self, random_seed: int = None) -> None:
+        pass

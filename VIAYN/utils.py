@@ -1,5 +1,14 @@
-from typing import TypeVar, Dict
+# -*- coding: utf-8 -*-
+# @Author: Carter.Blum
+# @Date:   2020-12-10 14:54:22
+# @Last Modified by:   Suhail.Alnahari
+# @Last Modified time: 2020-12-10 14:59:06
 from copy import copy
+from typing import Dict, List, Sequence, TypeVar, Optional, Callable
+
+import numpy as np
+
+from VIAYN.project_types import A, S, WeightedBet
 
 T = TypeVar("T")
 V = TypeVar("V", int, float, complex, str)
@@ -30,3 +39,52 @@ def add_dictionaries(
         else:
             result[key] = value
     return result
+
+
+def weighted_mean_of_bets(bets: List[WeightedBet[A, S]]) -> List[float]:
+    # TODO: should probably use np.average with weights
+    assert len(bets) > 0
+    assert len(np.unique([len(bet.bet) for bet in bets])) == 1
+    assert len(np.unique([len(bet.prediction) for bet in bets])) == 1
+    assert len(bets[0].bet) == len(bets[0].prediction)
+    prediction_len: int = len(bets[0].prediction)
+    weighted_sum: List[float] = [0. for _ in range(prediction_len)]
+    total_weights: List[float] = [0. for _ in range(prediction_len)]
+    bet: WeightedBet[A, S]
+    for bet in bets:
+        assert len(bet.prediction) == prediction_len
+        t: int
+        prediction_at_t: float
+        weight_at_t: float
+        for t, (prediction_at_t, weight_at_t) in enumerate(zip(bet.prediction, bet.weight())):
+            weighted_sum[t] += prediction_at_t * weight_at_t
+            total_weights[t] += weight_at_t
+
+    return [w_sum / total_w for w_sum, total_w in zip(weighted_sum, total_weights)]
+
+
+def argmax(args: Sequence[T], fn: Callable[[T], float]) -> Optional[T]:
+    """
+    Breaks ties with the first element found
+    Parameters
+    ----------
+    args
+    fn
+
+    Returns
+    -------
+
+    """
+    maximum: Optional[float] = None
+    max_arg: Optional[T] = None
+    arg: T
+    for arg in args:
+        value: float = fn(arg)
+        if maximum is None or value > maximum:
+            maximum = value
+            max_arg = arg
+    return max_arg
+
+
+def dict_argmax(dictionary: Dict[T, float]) -> Optional[T]:
+    return argmax(list(dictionary.keys()), lambda key: dictionary[key])

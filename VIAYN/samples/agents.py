@@ -8,6 +8,7 @@ from copy import copy
 from typing import List, Callable, Optional, Generic
 
 import numpy as np
+from numpy.random import Generator, default_rng
 
 from VIAYN.project_types import Agent, A, S, ActionBet
 
@@ -59,11 +60,21 @@ class RNGUniforPredSelectionMech(Generic[A, S], PredictionSelectionMechanism[A, 
         self.tsteps_per_prediction: int = tsteps_per_prediction
         self.min_possible_prediction: Callable[[int], float] = min_possible_prediction
         self.max_possible_prediction: Callable[[int], float] = max_possible_prediction
-        self.random = np.random.RandomState(random_seed)
+        self.random: Generator = default_rng(random_seed)
 
     def select_prediction(self, state: S, action: A, money: float) -> List[float]:
-        return [self.random.uniform(low=self.min_possible_prediction(dt), high=self.max_possible_prediction(dt))
-         for dt in range(self.tsteps_per_prediction)]
+        # TODO : bascially duplicate code with UniformBettingMechanism.bet
+        prediction: List[float] = [0. for _ in range(self.tsteps_per_prediction)]
+        for dt in range(self.tsteps_per_prediction):
+            low: float = self.min_possible_prediction(dt)
+            if not np.isfinite(low):
+                # TODO: put these constants somewhere
+                low = -100.
+            high: float = self.max_possible_prediction(dt)
+            if not np.isfinite(high):
+                high = 100.
+            prediction[dt] = self.random.uniform(low=low, high=high)
+        return prediction
 
 
 class StaticPredSelectionMech(Generic[A, S], PredictionSelectionMechanism[A, S]):
@@ -107,13 +118,19 @@ class UniformBettingMechanism(Generic[A, S], BettingMechanism[A, S]):
         self.constant_bet: List[float] = constant_bet
         self.min_possible_prediction: Callable[[int], float] = min_possible_prediction
         self.max_possible_prediction: Callable[[int], float] = max_possible_prediction
-        self.random = np.random.RandomState(random_seed)
+        self.random = default_rng(random_seed)
 
     def bet(self, state: S, action: A, money: float) -> ActionBet:
         bet: List[float] = copy(self.constant_bet)
-        prediction: List[float] = \
-            [self.random.uniform(low=self.min_possible_prediction(dt), high=self.max_possible_prediction(dt))
-                for dt in range(self.tsteps_per_prediction)]
+        prediction: List[float] = [0. for _ in range(self.tsteps_per_prediction)]
+        for dt in range(self.tsteps_per_prediction):
+            low: float = self.min_possible_prediction(dt)
+            if not np.isfinite(low):
+                low = 0
+            high: float = self.max_possible_prediction(dt)
+            if not np.isfinite(high):
+                high = 10.
+            prediction[dt] = self.random.uniform(low=low, high=high)
         return ActionBet(bet=bet, prediction=prediction)
 
 

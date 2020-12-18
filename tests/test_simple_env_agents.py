@@ -2,13 +2,16 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-03 19:25:18
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-06 17:40:40
+# @Last Modified time: 2020-12-10 15:02:25
 
-from tests.conftest import (
-    pytest, project_types,
-    factory as fac,
-    vote_range,np, floatIsEqual
-)
+import pytest
+import VIAYN.project_types as project_types
+import VIAYN.samples.factory as fac
+import VIAYN.samples.vote_ranges as vote_range
+import numpy as np
+
+from tests.conftest import floatIsEqual
+
 
 def test_constant_simple_agent_basic(constant_agent_config):
     for AB,vote in constant_agent_config:
@@ -23,7 +26,8 @@ def test_constant_simple_agent_basic(constant_agent_config):
         )
         env = fac.EnvFactory.create(
             fac.EnvsFactorySpec(
-                fac.EnvsEnum.default
+                fac.EnvsEnum.default,
+                n_actions=2
             )
         )
         for _ in range(100):
@@ -44,7 +48,7 @@ def test_constant_simple_agent_basic(constant_agent_config):
     
 
 def test_random_simple_agent_basic(random_agent_config):
-    for vote,seed in random_agent_config:
+    for vote, seed in random_agent_config:
         print(f"random: {vote} , {seed}")
         votingConf = fac.VotingConfigFactory.create(
             fac.VotingConfigFactorySpec(fac.VotingConfigEnum.simple,vote_range.BinaryVoteRange)
@@ -64,28 +68,32 @@ def test_random_simple_agent_basic(random_agent_config):
         )
         env = fac.EnvFactory.create(
             fac.EnvsFactorySpec(
-                fac.EnvsEnum.default
+                fac.EnvsEnum.default,
+                n_actions=2
             )
         )
-        genBet = np.random.default_rng(seed=seed)
         genPred = np.random.default_rng(seed=seed)
         for _ in range(100):
             state = env.state()
             assert(agent.vote(state) == vote)
             for j in env.actions():
-                action_bet = agent.bet(state,j,1)
+                action_bet = agent.bet(state, j, 1)
                 for k in range(len(action_bet.bet)):
-                    assert(floatIsEqual(action_bet.bet[k],genBet.uniform(0,1)))
+                    assert(floatIsEqual(action_bet.bet[k], 0.5))
                 for k in range(len(action_bet.prediction)):
+                    min: float = votingConf.min_possible_vote_total()
+                    max: float = votingConf.max_possible_vote_total()
+                    if not np.isfinite(min):
+                        min = -100.
+                    if not np.isfinite(max):
+                        max = 100
                     assert(
                         floatIsEqual(
                             action_bet.prediction[k], 
-                            genPred.uniform(
-                                votingConf.min_possible_vote_total(),
-                                votingConf.max_possible_vote_total()
-                            )
+                            genPred.uniform(min, max)
                         )
                     )
+
 
 @pytest.mark.parametrize("N", [
     1,
@@ -115,7 +123,8 @@ def test_random_simple_agent_forward_prediction(N):
     )
     env = fac.EnvFactory.create(
         fac.EnvsFactorySpec(
-            fac.EnvsEnum.default
+            fac.EnvsEnum.default,
+            n_actions=5
         )
     )    
     genBet = np.random.default_rng(seed=seed)
@@ -132,15 +141,19 @@ def test_random_simple_agent_forward_prediction(N):
                 len(action_bet.prediction) == N
             )
             for k in range(len(action_bet.bet)):
-                assert(floatIsEqual(action_bet.bet[k],genBet.uniform(0,1)))
+                assert(floatIsEqual(action_bet.bet[k], 0.5))
             for k in range(len(action_bet.prediction)):
+                min: float = votingConf.min_possible_vote_total()
+                max: float = votingConf.max_possible_vote_total()
+                if not np.isfinite(min):
+                    min = -100.
+                if not np.isfinite(max):
+                    max = 100
                 assert(
                     floatIsEqual(
                         action_bet.prediction[k], 
                         genPred.uniform(
-                            votingConf.min_possible_vote_total(k),
-                            votingConf.max_possible_vote_total(k)
-                        )
+                            min, max)
                     )
                 )
 

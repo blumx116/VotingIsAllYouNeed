@@ -7,13 +7,20 @@
 
 from dataclasses import dataclass
 from enum import Enum, unique, auto
+from typing import Dict, Callable
+
 from VIAYN.project_types import PolicyConfiguration
+from VIAYN.samples.policy import (
+    GreedyPolicyConfiguration,
+    ThompsonPolicyConfiguration,
+    ThompsonPolicyConfiguration2)
 
 
 @unique
 class PolicyConfigEnum(Enum):
     simple = auto()
     suggested = auto()
+    suggested_general = auto()
 
 
 @dataclass(frozen=True)
@@ -39,8 +46,14 @@ class PolicyConfigFactory:
     PolicyConfiguration
         created policy config based on spec
     """
+    lookup: Dict[PolicyConfigEnum, Callable[[], PolicyConfiguration]] = {
+        PolicyConfigEnum.simple: lambda: GreedyPolicyConfiguration(),
+        PolicyConfigEnum.suggested: lambda: ThompsonPolicyConfiguration2(),
+        PolicyConfigEnum.suggested_general: lambda: ThompsonPolicyConfiguration()
+    }
+
     @staticmethod
     def create(spec: PolicyConfigFactorySpec) -> PolicyConfiguration:
-        ...
+        return PolicyConfigFactory.lookup[spec.configType]()
 
 

@@ -2,7 +2,7 @@
 # @Author: Carter.Blum
 # @Date:   2020-11-27 20:48:03
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-06 18:37:04
+# @Last Modified time: 2020-12-11 19:03:36
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -64,6 +64,10 @@ class WeightedBet(Generic[A, S]):
     action: A  # j
     money: float  # m_i^(t)
     cast_by: Agent[A, S]
+
+    def __post_init__(self):
+        assert len(self.bet) == len(self.prediction)
+        assert len(self.bet) != 0
 
     def weight(self) -> List[float]:
         return [bet * self.money for bet in self.bet]
@@ -157,8 +161,8 @@ class VotingConfiguration(Generic[A, S], Configuration[A, S], ABC):
         """
         ...
 
-    @staticmethod
-    def is_valid_prediction(
+    @abstractmethod
+    def is_valid_prediction(self,
             prediction: List[float]) -> bool:
         ...
 
@@ -184,7 +188,7 @@ class PolicyConfiguration(Generic[A, B, S], Configuration[A, S], ABC):
 class PayoutConfiguration(Generic[A, S], Configuration[A, S]):
     @abstractmethod
     def calculate_loss(self,
-            bet_to_evaluate: ActionBet,
+            bet_to_evaluate: WeightedBet,
             t_cast_on: int,  # timestep info let us look up in the array
             t_current: int,  # which prediction is for this timestep
             welfare_score: float) -> float:
@@ -192,6 +196,7 @@ class PayoutConfiguration(Generic[A, S], Configuration[A, S]):
 
     @abstractmethod
     def calculate_payout_from_loss(self,
+            bet_amount_to_evaluate: float,
             loss_to_evaluate: float,
             all_losses: List[Tuple[float, float]], # [(weight, loss)]
             t_cast_on: int, # timestep info lets us discount by timestep

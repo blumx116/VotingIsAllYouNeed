@@ -2,19 +2,20 @@
 # @Author: Suhail.Alnahari
 # @Date:   2020-12-06 18:09:26
 # @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-11 23:13:54
+# @Last Modified time: 2020-12-10 23:49:15
 
 from typing import List
 from tests.conftest import floatIsEqual
 import pytest
-import VIAYN.project_types as P
+import VIAYN.project_types as project_types
 import VIAYN.samples.factory as fac
 import VIAYN.samples.vote_ranges as vote_range
 import numpy as np
 import VIAYN.utils as U
 
 
-
+"""
+# TODO : Uncomment & get this working
 @pytest.mark.parametrize("bets,predictions,moneys,expected", [
     (
         [[0],[0.5],[0.2]],
@@ -71,12 +72,12 @@ import VIAYN.utils as U
         [(0.8/2.1)+((0.9*4)/2.1)+(4./2.1), (0.8/2.1)+((0.9*4)/2.1)+(4./2.1)]
     )
 ])
-def test_simple_policy_config_single_action(
+def test_suggested_policy_config_single_action(
     bets,predictions,
     moneys,expected,
     gen_policy_conf,gen_weighted_bet):
-    policyConf = gen_policy_conf(fac.PolicyConfigEnum.simple)
-    weightedBets : List[P.WeightedBet] = []
+    policyConf = gen_policy_conf(fac.PolicyConfigEnum.suggested_general)
+    weightedBets : List[project_types.WeightedBet] = []
     for i in range(len(bets)):
         print(bets[i],predictions[i],moneys[i])
         weightedBets.append(
@@ -84,8 +85,7 @@ def test_simple_policy_config_single_action(
         )
     dic = {'a':weightedBets}
     res = policyConf.aggregate_bets(dic)['a']
-    assert(floatIsEqual(res,sum(expected)))
-    # adding sum was easier than changing expected to be a float
+    
 
 @pytest.mark.parametrize("bets,predictions,moneys,expected", [
     (
@@ -143,12 +143,12 @@ def test_simple_policy_config_single_action(
         [(0.8/2.1)+((0.9*4)/2.1)+(4./2.1), (0.8/2.1)+((0.9*4)/2.1)+(4./2.1)]
     )
 ])
-def test_simple_policy_config_multiple_actions(
+def test_suggested_policy_config_multiple_actions(
     bets,predictions,
     moneys,expected,
     gen_policy_conf,gen_weighted_bet):
-    policyConf = gen_policy_conf(fac.PolicyConfigEnum.simple)
-    weightedBets : List[P.WeightedBet] = []
+    policyConf = gen_policy_conf(fac.PolicyConfigEnum.suggested_general)
+    weightedBets : List[project_types.WeightedBet] = []
     for i in range(len(bets)):
         print(bets[i],predictions[i],moneys[i])
         weightedBets.append(
@@ -156,39 +156,28 @@ def test_simple_policy_config_multiple_actions(
         )
     dic = {i:weightedBets for i in range(100)}
     res = policyConf.aggregate_bets(dic)
-    for i in res.keys():
-        assert(floatIsEqual(res[i], sum(expected)))
-
-
-@pytest.mark.parametrize("arr,vals,expected", [
-    ([0,1,2,3,4,5],[0,0,0,0,0,100],5),
-    ([5,4,3,2,1,0],[0,0,0,0,0,100],0),
-    ([0,1,2,3,4,5],[0,10,100,1000,10000,100000],5),
-    ([5,4,3,2,1,0],[100000,10000,1000,100,10,0],5),
-    ([0,1,2,3,4,5],[0,10,100,10000000,100, 10],3),
-    ([1,0,2,3,4,5],[0,0,0,0,0,0],1),
-    # ([],[],None), # TODO: should test that this throws
-])
-def test_simple_policy_config_select_action(arr,vals,expected,gen_policy_conf):
-    policyConf = gen_policy_conf(fac.PolicyConfigEnum.simple)
-    res = policyConf.select_action({key:val for key,val in zip(arr,vals)})
-    assert(res == expected)
-
-@pytest.mark.parametrize("arr,vals,expected", [
-    ([0,1,2,3,4,5],[0,0,0,0,0,100],5),
-    ([5,4,3,2,1,0],[0,0,0,0,0,100],0),
-    ([0,1,2,3,4,5],[0,10,100,1000,10000,100000],5),
-    ([5,4,3,2,1,0],[100000,10000,1000,100,10,0],5),
-    ([0,1,2,3,4,5],[0,10,100,10000000,100, 10],3),
-    ([1,0,2,3,4,5],[0,0,0,0,0,0],1),
-    # ([],[],None), # TODO: should test that this throws
-])
-def test_simple_policy_config_action_probs(arr,vals,expected,gen_policy_conf):
-    policyConf = gen_policy_conf(fac.PolicyConfigEnum.simple)
-    res = policyConf.action_probabilities({key:val for key,val in zip(arr,vals)})
-    for i in arr:
-        if (i == expected):
-            assert(floatIsEqual(res[i],1))
-            continue
-        assert(floatIsEqual(res[i],0))
     
+
+
+@pytest.mark.parametrize("arr,vals,expected", [
+    ([0,1,2,3,4,5],[0,0,0,0,0,100],5),
+    ([5,4,3,2,1,0],[0,0,0,0,0,100],5),
+    ([0,1,2,3,4,5],[0,10,100,1000,10000,100000],5),
+    ([5,4,3,2,1,0],[100000,10000,1000,100,10,0],0),
+    ([],[],None),
+])
+def test_suggested_policy_config_select_action(arr,vals,expected,gen_policy_conf):
+    policyConf = gen_policy_conf(fac.PolicyConfigEnum.suggested_general)
+    res = policyConf.select_action({key:val for key,val in zip(arr,vals)})
+
+@pytest.mark.parametrize("arr,vals,expected", [
+    ([0,1,2,3,4,5],[0,0,0,0,0,100],5),
+    ([5,4,3,2,1,0],[0,0,0,0,0,100],5),
+    ([0,1,2,3,4,5],[0,10,100,1000,10000,100000],5),
+    ([5,4,3,2,1,0],[100000,10000,1000,100,10,0],0),
+    ([],[],None),
+])
+def test_suggested_policy_config_action_probs(arr,vals,expected,gen_policy_conf):
+    policyConf = gen_policy_conf(fac.PolicyConfigEnum.suggested_general)
+    res = policyConf.action_probabilities({key:val for key,val in zip(arr,vals)})
+"""
