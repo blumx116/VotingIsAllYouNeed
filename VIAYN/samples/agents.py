@@ -30,6 +30,7 @@ Create a CompositeAgent by combining VotingMechanism & BettingMechanism.
 Yes, I know the naming is awful.
 """
 
+
 class VotingMechanism(Generic[S], ABC):
     """
     Abstract class for independent subcomponent of an agent that handles voting
