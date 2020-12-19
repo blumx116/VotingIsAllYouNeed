@@ -15,7 +15,8 @@
     <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="VIAYN package" href="VIAYN.html" /> 
+    <link rel="next" title="VIAYN.samples.factory package" href="VIAYN.samples.factory.html" />
+    <link rel="prev" title="VIAYN.experiments package" href="VIAYN.experiments.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -27,7 +28,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="VIAYN.html" title="VIAYN package"
+          <a href="VIAYN.samples.factory.html" title="VIAYN.samples.factory package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="VIAYN.experiments.html" title="VIAYN.experiments package"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Voting Is All You Need 0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >VIAYN</a> &#187;</li>
@@ -43,8 +47,720 @@
             
   <div class="section" id="viayn-samples-package">
 <h1>VIAYN.samples package<a class="headerlink" href="#viayn-samples-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="VIAYN.samples.factory.html">VIAYN.samples.factory package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="VIAYN.samples.factory.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VIAYN.samples.factory.html#module-VIAYN.samples.factory.agent_factory">VIAYN.samples.factory.agent_factory module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VIAYN.samples.factory.html#module-VIAYN.samples.factory.env_factory">VIAYN.samples.factory.env_factory module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VIAYN.samples.factory.html#module-VIAYN.samples.factory.payout_config_factory">VIAYN.samples.factory.payout_config_factory module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VIAYN.samples.factory.html#module-VIAYN.samples.factory.policy_config_factory">VIAYN.samples.factory.policy_config_factory module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VIAYN.samples.factory.html#module-VIAYN.samples.factory.voting_config_factory">VIAYN.samples.factory.voting_config_factory module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VIAYN.samples.factory.html#module-VIAYN.samples.factory">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-VIAYN.samples.agents">
+<span id="viayn-samples-agents-module"></span><h2>VIAYN.samples.agents module<a class="headerlink" href="#module-VIAYN.samples.agents" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="VIAYN.samples.agents.BetSelectionMechanism">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.agents.</code><code class="sig-name descname">BetSelectionMechanism</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.agents.BetSelectionMechanism" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Generic</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Abstract class for independent subcomponent of an agent that handles betting
+NOTE: not all agents must use betting mechanism, it’s just a useful tool</p>
+<dl class="py method">
+<dt id="VIAYN.samples.agents.BetSelectionMechanism.select_bet_amount">
+<em class="property">abstract </em><code class="sig-name descname">select_bet_amount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">money</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#VIAYN.samples.agents.BetSelectionMechanism.select_bet_amount" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Creates a bet based on the current state, the action being bet on</dt><dd><p>and the current amount of money the agent has</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>S</em>) – the current state at the time of the bet</p></li>
+<li><p><strong>action</strong> (<em>A</em>) – the action the agent is betting on</p></li>
+<li><p><strong>money</strong> (<em>float</em>) – the amount of money the agent has at the time of the bet</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>bet</strong> – how much money to bet on each timestep of the prediction
+total should sum up to less than 1, the percentage of the agent’s
+current total money</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.agents.BettingMechanism">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.agents.</code><code class="sig-name descname">BettingMechanism</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.agents.BettingMechanism" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Generic</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Abstract class for independent subcomponent of an agent that handles betting &amp; predictions
+NOTE: not all agents must use betting mechanism, it’s just a useful tool</p>
+<dl class="py method">
+<dt id="VIAYN.samples.agents.BettingMechanism.bet">
+<em class="property">abstract </em><code class="sig-name descname">bet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">money</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="VIAYN.html#VIAYN.project_types.ActionBet" title="VIAYN.project_types.ActionBet">VIAYN.project_types.ActionBet</a><a class="headerlink" href="#VIAYN.samples.agents.BettingMechanism.bet" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>S</em>) – the state when the bet is being cast</p></li>
+<li><p><strong>action</strong> (<em>A</em>) – the action that is being bet on</p></li>
+<li><p><strong>money</strong> (<em>float</em>) – the amount of money when the bet is being case</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>bet</strong> – contains both the bet amount &amp; the prediction
+TODO: find better terminology for this</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="VIAYN.html#VIAYN.project_types.ActionBet" title="VIAYN.project_types.ActionBet">ActionBet</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.agents.CompositeAgent">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.agents.</code><code class="sig-name descname">CompositeAgent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.agents.CompositeAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.Agent" title="VIAYN.project_types.Agent"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.Agent</span></code></a></p>
+<dl class="py method">
+<dt id="VIAYN.samples.agents.CompositeAgent.bet">
+<code class="sig-name descname">bet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">money</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="VIAYN.html#VIAYN.project_types.ActionBet" title="VIAYN.project_types.ActionBet">VIAYN.project_types.ActionBet</a><a class="headerlink" href="#VIAYN.samples.agents.CompositeAgent.bet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.agents.CompositeAgent.vote">
+<code class="sig-name descname">vote</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.agents.CompositeAgent.vote" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.agents.CompositeBettingMechanism">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.agents.</code><code class="sig-name descname">CompositeBettingMechanism</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.agents.CompositeBettingMechanism" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.agents.BettingMechanism" title="VIAYN.samples.agents.BettingMechanism"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.agents.BettingMechanism</span></code></a></p>
+<p>Composite class that just delegates to bet_selection &amp; prediction_selection</p>
+<dl class="py method">
+<dt id="VIAYN.samples.agents.CompositeBettingMechanism.bet">
+<code class="sig-name descname">bet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">money</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="VIAYN.html#VIAYN.project_types.ActionBet" title="VIAYN.project_types.ActionBet">VIAYN.project_types.ActionBet</a><a class="headerlink" href="#VIAYN.samples.agents.CompositeBettingMechanism.bet" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>S</em>) – the state when the bet is being cast</p></li>
+<li><p><strong>action</strong> (<em>A</em>) – the action that is being bet on</p></li>
+<li><p><strong>money</strong> (<em>float</em>) – the amount of money when the bet is being case</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>bet</strong> – contains both the bet amount &amp; the prediction
+TODO: find better terminology for this</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="VIAYN.html#VIAYN.project_types.ActionBet" title="VIAYN.project_types.ActionBet">ActionBet</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.agents.PredictionSelectionMechanism">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.agents.</code><code class="sig-name descname">PredictionSelectionMechanism</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.agents.PredictionSelectionMechanism" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Generic</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Abstract class for independent subcomponent of an agent that handles betting
+NOTE: not all agents must use betting mechanism, it’s just a useful tool</p>
+<dl class="py method">
+<dt id="VIAYN.samples.agents.PredictionSelectionMechanism.select_prediction">
+<em class="property">abstract </em><code class="sig-name descname">select_prediction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">money</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#VIAYN.samples.agents.PredictionSelectionMechanism.select_prediction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.agents.RNGUniforPredSelectionMech">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.agents.</code><code class="sig-name descname">RNGUniforPredSelectionMech</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.agents.RNGUniforPredSelectionMech" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.agents.PredictionSelectionMechanism" title="VIAYN.samples.agents.PredictionSelectionMechanism"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.agents.PredictionSelectionMechanism</span></code></a></p>
+<p>Uniformly selects a prediction within the valid range for each timestep.
+Intended to be used as part of a CompositeAgent</p>
+<dl class="py method">
+<dt id="VIAYN.samples.agents.RNGUniforPredSelectionMech.select_prediction">
+<code class="sig-name descname">select_prediction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">money</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#VIAYN.samples.agents.RNGUniforPredSelectionMech.select_prediction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a random prediction starting &#64; the next timestep
+Selected uniformly from range of possible predictions at that timestep
+:param state: ignored
+:type state: S
+:param action: ignored
+:type action: A
+:param money: ignored
+:type money: float</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>prediction</strong> – the predictions that the agent wants to put in the best at the current timestep</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.agents.StaticBetSelectionMech">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.agents.</code><code class="sig-name descname">StaticBetSelectionMech</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.agents.StaticBetSelectionMech" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.agents.BetSelectionMechanism" title="VIAYN.samples.agents.BetSelectionMechanism"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.agents.BetSelectionMechanism</span></code></a></p>
+<dl class="py method">
+<dt id="VIAYN.samples.agents.StaticBetSelectionMech.select_bet_amount">
+<code class="sig-name descname">select_bet_amount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">money</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#VIAYN.samples.agents.StaticBetSelectionMech.select_bet_amount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a bet based on the current state, the action being bet on
+and the current amount of money the agent has</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>S</em>) – ignored</p></li>
+<li><p><strong>action</strong> (<em>A</em>) – ignored</p></li>
+<li><p><strong>money</strong> (<em>float</em>) – ignored</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>bet</strong> – percentage of money bet &#64; for each timestep
+constant, as specified in constructor</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.agents.StaticPredSelectionMech">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.agents.</code><code class="sig-name descname">StaticPredSelectionMech</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.agents.StaticPredSelectionMech" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.agents.PredictionSelectionMechanism" title="VIAYN.samples.agents.PredictionSelectionMechanism"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.agents.PredictionSelectionMechanism</span></code></a></p>
+<p>Places the same prediction for every timestep.
+No guarantees that that prediction is always valid</p>
+<dl class="py method">
+<dt id="VIAYN.samples.agents.StaticPredSelectionMech.select_prediction">
+<code class="sig-name descname">select_prediction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">money</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#VIAYN.samples.agents.StaticPredSelectionMech.select_prediction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the same constant predictions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>S</em>) – ignored</p></li>
+<li><p><strong>action</strong> (<em>A</em>) – ignored</p></li>
+<li><p><strong>money</strong> (<em>float</em>) – ignored</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>prediction</strong> – the same constant prediction every time</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.agents.StaticVotingMechanism">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.agents.</code><code class="sig-name descname">StaticVotingMechanism</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.agents.StaticVotingMechanism" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.agents.VotingMechanism" title="VIAYN.samples.agents.VotingMechanism"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.agents.VotingMechanism</span></code></a></p>
+<p>Subcomponent of agent that results in the agent submitting the same
+vote, regardless of state or timestep</p>
+<dl class="py method">
+<dt id="VIAYN.samples.agents.StaticVotingMechanism.vote">
+<code class="sig-name descname">vote</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.agents.StaticVotingMechanism.vote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a vote based on the current state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> (<em>S</em>) – the current state at the time of the vote</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>vote</strong> – the vote for how much the agent likes the current state
+subject to rules in voting configuration</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float &gt;= 0</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.agents.UniformBettingMechanism">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.agents.</code><code class="sig-name descname">UniformBettingMechanism</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.agents.UniformBettingMechanism" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.agents.BettingMechanism" title="VIAYN.samples.agents.BettingMechanism"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.agents.BettingMechanism</span></code></a></p>
+<p>TODO: this should use RNGUniformPredSelectionMech</p>
+<dl class="py method">
+<dt id="VIAYN.samples.agents.UniformBettingMechanism.bet">
+<code class="sig-name descname">bet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">money</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="VIAYN.html#VIAYN.project_types.ActionBet" title="VIAYN.project_types.ActionBet">VIAYN.project_types.ActionBet</a><a class="headerlink" href="#VIAYN.samples.agents.UniformBettingMechanism.bet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Essentially delegates to RNGUniformPredSelectionMech and StaticBetSelectionMech
+:param state: ignored
+:type state: S
+:param action: ignored
+:type action: A
+:param money: ignored
+:type money: float</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>bet</strong> – bet amount &amp; prediction</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="VIAYN.html#VIAYN.project_types.ActionBet" title="VIAYN.project_types.ActionBet">ActionBet</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.agents.VotingMechanism">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.agents.</code><code class="sig-name descname">VotingMechanism</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.agents.VotingMechanism" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Generic</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Abstract class for independent subcomponent of an agent that handles voting
+NOTE: not all agents must use voting mechanism, it’s just a useful tool</p>
+<dl class="py method">
+<dt id="VIAYN.samples.agents.VotingMechanism.vote">
+<em class="property">abstract </em><code class="sig-name descname">vote</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.agents.VotingMechanism.vote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a vote based on the current state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> (<em>S</em>) – the current state at the time of the vote</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>vote</strong> – the vote for how much the agent likes the current state
+subject to rules in voting configuration</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float &gt;= 0</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-VIAYN.samples.env">
+<span id="viayn-samples-env-module"></span><h2>VIAYN.samples.env module<a class="headerlink" href="#module-VIAYN.samples.env" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="VIAYN.samples.env.IntAction">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.env.</code><code class="sig-name descname">IntAction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.env.IntAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.Action" title="VIAYN.project_types.Action"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.Action</span></code></a></p>
+<dl class="py attribute">
+<dt id="VIAYN.samples.env.IntAction.description">
+<code class="sig-name descname">description</code><em class="property">: Optional<span class="p">[</span>str<span class="p">]</span></em><a class="headerlink" href="#VIAYN.samples.env.IntAction.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.env.StaticEnvironment">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.env.</code><code class="sig-name descname">StaticEnvironment</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.env.StaticEnvironment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.Environment" title="VIAYN.project_types.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.Environment</span></code></a></p>
+<p>An environment with nothing but a set of actions, denoted as integers
+The state is just the idx of the last action chosen</p>
+<dl class="py method">
+<dt id="VIAYN.samples.env.StaticEnvironment.actions">
+<code class="sig-name descname">actions</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference internal" href="#VIAYN.samples.env.IntAction" title="VIAYN.samples.env.IntAction">VIAYN.samples.env.IntAction</a><span class="p">]</span><a class="headerlink" href="#VIAYN.samples.env.StaticEnvironment.actions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.env.StaticEnvironment.done">
+<code class="sig-name descname">done</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.env.StaticEnvironment.done" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.env.StaticEnvironment.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#VIAYN.samples.env.IntAction" title="VIAYN.samples.env.IntAction">VIAYN.samples.env.IntAction</a><a class="headerlink" href="#VIAYN.samples.env.StaticEnvironment.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.env.StaticEnvironment.seed">
+<code class="sig-name descname">seed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">random_seed</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#VIAYN.samples.env.StaticEnvironment.seed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.env.StaticEnvironment.state">
+<code class="sig-name descname">state</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#VIAYN.samples.env.IntAction" title="VIAYN.samples.env.IntAction">VIAYN.samples.env.IntAction</a><a class="headerlink" href="#VIAYN.samples.env.StaticEnvironment.state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.env.StaticEnvironment.step">
+<code class="sig-name descname">step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>int<span class="p">, </span><a class="reference internal" href="#VIAYN.samples.env.IntAction" title="VIAYN.samples.env.IntAction">VIAYN.samples.env.IntAction</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#VIAYN.samples.env.StaticEnvironment.step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-VIAYN.samples.payout">
+<span id="viayn-samples-payout-module"></span><h2>VIAYN.samples.payout module<a class="headerlink" href="#module-VIAYN.samples.payout" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="VIAYN.samples.payout.PayoutConfigBase">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.payout.</code><code class="sig-name descname">PayoutConfigBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.payout.PayoutConfigBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.PayoutConfiguration" title="VIAYN.project_types.PayoutConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.PayoutConfiguration</span></code></a></p>
+<p>Optional base class that other PayoutConfigurations can extend from.
+Present so that we can avoid having duplicate code.</p>
+<dl class="py method">
+<dt id="VIAYN.samples.payout.PayoutConfigBase.calculate_all_payouts">
+<code class="sig-name descname">calculate_all_payouts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">record</span><span class="p">:</span> <span class="n"><a class="reference internal" href="VIAYN.html#VIAYN.project_types.HistoryItem" title="VIAYN.project_types.HistoryItem">VIAYN.project_types.HistoryItem</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">welfare_score</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">t_current</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.Agent" title="VIAYN.project_types.Agent">VIAYN.project_types.Agent</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span><span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#VIAYN.samples.payout.PayoutConfigBase.calculate_all_payouts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates how much money each agent should get for their bets that were
+cast in record</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>record</strong> (<a class="reference internal" href="VIAYN.html#VIAYN.project_types.HistoryItem" title="VIAYN.project_types.HistoryItem"><em>HistoryItem</em></a><em>[</em><em>A</em><em>, </em><em>S</em><em>]</em>) – record of all bets that were cast for a single timestep that are
+now eligible for payouts</p></li>
+<li><p><strong>welfare_score</strong> (<em>float</em>) – the current welfare score that the agents were trying to predict</p></li>
+<li><p><strong>t_current</strong> (<em>int</em>) – the timestep &#64; which the welfare score was recorded</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>payouts</strong> – how much money each agent earned from their bets in this record</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[<a class="reference internal" href="VIAYN.html#VIAYN.project_types.Agent" title="VIAYN.project_types.Agent">Agent</a>[A, S], float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.payout.PayoutConfigBase.validate_bet">
+<code class="sig-name descname">validate_bet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bet</span><span class="p">:</span> <span class="n"><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet">VIAYN.project_types.WeightedBet</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.payout.PayoutConfigBase.validate_bet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.payout.SimplePayoutConfig">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.payout.</code><code class="sig-name descname">SimplePayoutConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.payout.SimplePayoutConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.payout.PayoutConfigBase" title="VIAYN.samples.payout.PayoutConfigBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.payout.PayoutConfigBase</span></code></a></p>
+<dl class="py method">
+<dt id="VIAYN.samples.payout.SimplePayoutConfig.calculate_loss">
+<code class="sig-name descname">calculate_loss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bet_to_evaluate</span><span class="p">:</span> <span class="n"><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet">VIAYN.project_types.WeightedBet</a></span></em>, <em class="sig-param"><span class="n">t_cast_on</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">t_current</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">welfare_score</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.payout.SimplePayoutConfig.calculate_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates ‘how far off’ the agents were from correctly predicting the welfare_score.
+Mostly useful for example &amp; potential use in calculate_all_payouts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bet_to_evaluate</strong> (<a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet"><em>WeightedBet</em></a><em>[</em><em>A</em><em>, </em><em>S</em><em>]</em>) – the bet that we are calculating the loss on</p></li>
+<li><p><strong>t_cast_on</strong> (<em>int</em>) – the timestep that the bet was cast on</p></li>
+<li><p><strong>t_current</strong> (<em>int</em>) – the timestep that the evaluation is being made on
+should be the same as the timestep corresponding to welfare score</p></li>
+<li><p><strong>welfare_score</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>loss</strong> – how far off the predictions were</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float &gt;= 0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.payout.SimplePayoutConfig.calculate_payout_from_loss">
+<code class="sig-name descname">calculate_payout_from_loss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bet_amount_to_evaluate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">loss_to_evaluate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">all_losses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">t_cast_on</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">t_current</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">action_bet_on</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">action_selected</span><span class="p">:</span> <span class="n">A</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.payout.SimplePayoutConfig.calculate_payout_from_loss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.payout.SuggestedPayoutConfig">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.payout.</code><code class="sig-name descname">SuggestedPayoutConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.payout.SuggestedPayoutConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.payout.PayoutConfigBase" title="VIAYN.samples.payout.PayoutConfigBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.payout.PayoutConfigBase</span></code></a></p>
+<p>loss = squared error between prediction and welfare_score
+payout = weight_i * (max_loss - loss_i) / (max_loss - weighted_mean_loss)
+where weighted mean is calculated by weights</p>
+<dl class="py method">
+<dt id="VIAYN.samples.payout.SuggestedPayoutConfig.calculate_loss">
+<code class="sig-name descname">calculate_loss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bet_to_evaluate</span><span class="p">:</span> <span class="n"><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet">VIAYN.project_types.WeightedBet</a></span></em>, <em class="sig-param"><span class="n">t_cast_on</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">t_current</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">welfare_score</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.payout.SuggestedPayoutConfig.calculate_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates ‘how far off’ the agents were from correctly predicting the welfare_score.
+Mostly useful for example &amp; potential use in calculate_all_payouts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bet_to_evaluate</strong> (<a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet"><em>WeightedBet</em></a><em>[</em><em>A</em><em>, </em><em>S</em><em>]</em>) – the bet that we are calculating the loss on</p></li>
+<li><p><strong>t_cast_on</strong> (<em>int</em>) – the timestep that the bet was cast on</p></li>
+<li><p><strong>t_current</strong> (<em>int</em>) – the timestep that the evaluation is being made on
+should be the same as the timestep corresponding to welfare score</p></li>
+<li><p><strong>welfare_score</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>loss</strong> – how far off the predictions were</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float &gt;= 0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.payout.SuggestedPayoutConfig.calculate_payout_from_loss">
+<code class="sig-name descname">calculate_payout_from_loss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bet_amount_to_evaluate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">loss_to_evaluate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">all_losses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">t_cast_on</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">t_current</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">action_bet_on</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">action_selected</span><span class="p">:</span> <span class="n">A</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.payout.SuggestedPayoutConfig.calculate_payout_from_loss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-VIAYN.samples.policy">
+<span id="viayn-samples-policy-module"></span><h2>VIAYN.samples.policy module<a class="headerlink" href="#module-VIAYN.samples.policy" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="VIAYN.samples.policy.GreedyPolicyConfiguration">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.policy.</code><code class="sig-name descname">GreedyPolicyConfiguration</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.policy.GreedyPolicyConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.PolicyConfiguration" title="VIAYN.project_types.PolicyConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.PolicyConfiguration</span></code></a></p>
+<p>Selects the action with the highest weighted mean predicted value.
+Predicted value is summed evenly across all timesteps.
+Those values are then weighted by the standard weights of people who cast them</p>
+<dl class="py method">
+<dt id="VIAYN.samples.policy.GreedyPolicyConfiguration.action_probabilities">
+<code class="sig-name descname">action_probabilities</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">aggregate_bets</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>A<span class="p">, </span>float<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>A<span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#VIAYN.samples.policy.GreedyPolicyConfiguration.action_probabilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deterministic policy, so the action with the highest expectation has 100%
+TODO: does this work with ties?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>aggregate_bets</strong> (<em>Dict</em><em>[</em><em>A</em><em>, </em><em>float</em><em>]</em>) – the weighted mean of predictions for each action</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>probabilities</strong> – the probability of each action being selected</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[A, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.policy.GreedyPolicyConfiguration.aggregate_bets">
+<code class="sig-name descname">aggregate_bets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictions</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>A<span class="p">, </span>List<span class="p">[</span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet">VIAYN.project_types.WeightedBet</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>A<span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#VIAYN.samples.policy.GreedyPolicyConfiguration.aggregate_bets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sums across all timesteps and then takes the weighted mean for each action</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>predictions</strong> (<em>Dict</em><em>[</em><em>A</em><em>, </em><em>List</em><em>[</em><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet"><em>WeightedBet</em></a><em>[</em><em>A</em><em>, </em><em>S</em><em>]</em><em>]</em><em>]</em>) – the bets cast for each action</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>expectations</strong> – the weighted mean of predictiosn for each action</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[A, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.policy.GreedyPolicyConfiguration.select_action">
+<code class="sig-name descname">select_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">aggregate_bets</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>A<span class="p">, </span>float<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; A<a class="headerlink" href="#VIAYN.samples.policy.GreedyPolicyConfiguration.select_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deterministically take the action with the highest expected value
+:param aggregate_bets: the weighted mean of predictiosn for each action
+:type aggregate_bets: Dict[A, float]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>action</strong> – the selected action</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>A</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.policy.GreedyPolicyConfiguration.validate_bet">
+<code class="sig-name descname">validate_bet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bet</span><span class="p">:</span> <span class="n"><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet">VIAYN.project_types.WeightedBet</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.policy.GreedyPolicyConfiguration.validate_bet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.policy.ThompsonPolicyBase">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.policy.</code><code class="sig-name descname">ThompsonPolicyBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.policy.ThompsonPolicyBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.PolicyConfiguration" title="VIAYN.project_types.PolicyConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.PolicyConfiguration</span></code></a></p>
+<p>Contains base infrastructure that is used for both ThompsonPayoutConfiguration and
+ThompsonPayoutConfiguration2</p>
+<dl class="py method">
+<dt id="VIAYN.samples.policy.ThompsonPolicyBase.action_probabilities">
+<code class="sig-name descname">action_probabilities</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">aggregate_bets</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>A<span class="p">, </span>B<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>A<span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#VIAYN.samples.policy.ThompsonPolicyBase.action_probabilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the probabilities of taking each action by Monte Carlo sampling
+because a closed form solution is very computationally expensive</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>aggregate_bets</strong> (<em>Dict</em><em>[</em><em>A</em><em>, </em><em>B</em><em>]</em>) – aggregated information about bet distributions. Type of B is different for each
+version of ThompsonConfiguration</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>probabilities</strong> – the monte-carlo estimate of how often each action is chosen</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[A, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.policy.ThompsonPolicyBase.aggregate_bets">
+<em class="property">abstract </em><code class="sig-name descname">aggregate_bets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictions</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>A<span class="p">, </span>List<span class="p">[</span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet">VIAYN.project_types.WeightedBet</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>A<span class="p">, </span>B<span class="p">]</span><a class="headerlink" href="#VIAYN.samples.policy.ThompsonPolicyBase.aggregate_bets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes some aggregate statistics about the predictions made.
+The decisions about what action to take must be made SOLELY off of these
+aggregate statistics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>predictions</strong> (<em>Dict</em><em>[</em><em>A</em><em>, </em><em>List</em><em>[</em><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet"><em>WeightedBet</em></a><em>[</em><em>A</em><em>, </em><em>S</em><em>]</em><em>]</em><em>]</em>) – predictions to aggregate statistics for for each action</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>stats</strong> – mapping from actions to aggregated stats of the predictions about them</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[A, B]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.policy.ThompsonPolicyBase.select_action">
+<em class="property">abstract </em><code class="sig-name descname">select_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">aggregate_bets</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>A<span class="p">, </span>B<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; A<a class="headerlink" href="#VIAYN.samples.policy.ThompsonPolicyBase.select_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Based on the statistics about the actions, selects an action to take
+May be non-deterministic</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>aggregate_bets</strong> (<em>Dict</em><em>[</em><em>A</em><em>, </em><em>B</em><em>]</em>) – statistics about each action. E.g. weighted mean of predictions =&gt; B = float</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>action</strong> – the selected action</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.policy.ThompsonPolicyBase.validate_bet">
+<code class="sig-name descname">validate_bet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bet</span><span class="p">:</span> <span class="n"><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet">VIAYN.project_types.WeightedBet</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.policy.ThompsonPolicyBase.validate_bet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.policy.ThompsonPolicyConfiguration">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.policy.</code><code class="sig-name descname">ThompsonPolicyConfiguration</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.policy.ThompsonPolicyConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.policy.ThompsonPolicyBase" title="VIAYN.samples.policy.ThompsonPolicyBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.policy.ThompsonPolicyBase</span></code></a></p>
+<p>NOTE: because we made the decision to support the possibility of different bets &#64; each timestep
+this code enacts a slightly different version of Thompson Sampling than described in the whitepaper
+Namely, for each action it generates a list of discrete distributions according to the distribution
+&#64; that timestep. It then samples from that distribution &#64; each timestep and sums the samples.
+These sums of samples are used to compare actions
+In principle, this likely reduces the variance of the sampling process and is computationally more
+expensive than what we could use if we know that all of the bets are the same for all timesteps
+in a single timestepsA</p>
+<p>Alternate Explanation:
+For each action &amp; each timestep, constructs a DiscreteDistribution from the predictions.
+Then samples from each of those discrete distributions to obtain a single prediction for the
+value of that action at that timestep.</p>
+<p>All timesteps are then summed together, and the action with the highest total value is chosen.</p>
+<dl class="py method">
+<dt id="VIAYN.samples.policy.ThompsonPolicyConfiguration.aggregate_bets">
+<code class="sig-name descname">aggregate_bets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictions</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>A<span class="p">, </span>List<span class="p">[</span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet">VIAYN.project_types.WeightedBet</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>A<span class="p">, </span>List<span class="p">[</span><a class="reference internal" href="VIAYN.html#VIAYN.DiscreteDistribution.DiscreteDistribution" title="VIAYN.DiscreteDistribution.DiscreteDistribution">VIAYN.DiscreteDistribution.DiscreteDistribution</a><span class="p">]</span><span class="p">]</span><a class="headerlink" href="#VIAYN.samples.policy.ThompsonPolicyConfiguration.aggregate_bets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes some aggregate statistics about the predictions made.
+The decisions about what action to take must be made SOLELY off of these
+aggregate statistics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>predictions</strong> (<em>Dict</em><em>[</em><em>A</em><em>, </em><em>List</em><em>[</em><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet"><em>WeightedBet</em></a><em>[</em><em>A</em><em>, </em><em>S</em><em>]</em><em>]</em><em>]</em>) – predictions to aggregate statistics for for each action</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>stats</strong> – mapping from actions to aggregated stats of the predictions about them</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[A, B]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.policy.ThompsonPolicyConfiguration.select_action">
+<code class="sig-name descname">select_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">aggregate_bets</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>A<span class="p">, </span>List<span class="p">[</span><a class="reference internal" href="VIAYN.html#VIAYN.DiscreteDistribution.DiscreteDistribution" title="VIAYN.DiscreteDistribution.DiscreteDistribution">VIAYN.DiscreteDistribution.DiscreteDistribution</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; A<a class="headerlink" href="#VIAYN.samples.policy.ThompsonPolicyConfiguration.select_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Based on the statistics about the actions, selects an action to take
+May be non-deterministic</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>aggregate_bets</strong> (<em>Dict</em><em>[</em><em>A</em><em>, </em><em>B</em><em>]</em>) – statistics about each action. E.g. weighted mean of predictions =&gt; B = float</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>action</strong> – the selected action</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.policy.ThompsonPolicyConfiguration2">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.policy.</code><code class="sig-name descname">ThompsonPolicyConfiguration2</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.policy.ThompsonPolicyConfiguration2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.policy.ThompsonPolicyBase" title="VIAYN.samples.policy.ThompsonPolicyBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.policy.ThompsonPolicyBase</span></code></a></p>
+<p>ThompsonSampling as I originally planned it to be.
+Assumes all values in a given WeightedBet’s bet are the same</p>
+<p>First sums each prediction over all timesteps, then uses that, combined with the bet amount
+to generate a single DiscreteDistribution per action.
+Then, samples the discrete distribution for each action &amp; selects the action with the highest
+sampled value.</p>
+<dl class="py method">
+<dt id="VIAYN.samples.policy.ThompsonPolicyConfiguration2.aggregate_bets">
+<code class="sig-name descname">aggregate_bets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictions</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>A<span class="p">, </span>List<span class="p">[</span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet">VIAYN.project_types.WeightedBet</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>A<span class="p">, </span><a class="reference internal" href="VIAYN.html#VIAYN.DiscreteDistribution.DiscreteDistribution" title="VIAYN.DiscreteDistribution.DiscreteDistribution">VIAYN.DiscreteDistribution.DiscreteDistribution</a><span class="p">]</span><a class="headerlink" href="#VIAYN.samples.policy.ThompsonPolicyConfiguration2.aggregate_bets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes some aggregate statistics about the predictions made.
+The decisions about what action to take must be made SOLELY off of these
+aggregate statistics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>predictions</strong> (<em>Dict</em><em>[</em><em>A</em><em>, </em><em>List</em><em>[</em><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet"><em>WeightedBet</em></a><em>[</em><em>A</em><em>, </em><em>S</em><em>]</em><em>]</em><em>]</em>) – predictions to aggregate statistics for for each action</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>stats</strong> – mapping from actions to aggregated stats of the predictions about them</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[A, B]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.policy.ThompsonPolicyConfiguration2.select_action">
+<code class="sig-name descname">select_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">aggregate_bets</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>A<span class="p">, </span><a class="reference internal" href="VIAYN.html#VIAYN.DiscreteDistribution.DiscreteDistribution" title="VIAYN.DiscreteDistribution.DiscreteDistribution">VIAYN.DiscreteDistribution.DiscreteDistribution</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; A<a class="headerlink" href="#VIAYN.samples.policy.ThompsonPolicyConfiguration2.select_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Based on the statistics about the actions, selects an action to take
+May be non-deterministic</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>aggregate_bets</strong> (<em>Dict</em><em>[</em><em>A</em><em>, </em><em>B</em><em>]</em>) – statistics about each action. E.g. weighted mean of predictions =&gt; B = float</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>action</strong> – the selected action</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-VIAYN.samples.vote_ranges">
 <span id="viayn-samples-vote-ranges-module"></span><h2>VIAYN.samples.vote_ranges module<a class="headerlink" href="#module-VIAYN.samples.vote_ranges" title="Permalink to this headline">¶</a></h2>
@@ -257,6 +973,196 @@ may be inf or nan</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-VIAYN.samples.voting">
+<span id="viayn-samples-voting-module"></span><h2>VIAYN.samples.voting module<a class="headerlink" href="#module-VIAYN.samples.voting" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="VIAYN.samples.voting.ClassicalVotingConfig">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.voting.</code><code class="sig-name descname">ClassicalVotingConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.voting.ClassicalVotingConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.voting.SumVotingConfig" title="VIAYN.samples.voting.SumVotingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.voting.SumVotingConfig</span></code></a></p>
+<p>Sum of Yes/No votes</p>
+<dl class="py attribute">
+<dt id="VIAYN.samples.voting.ClassicalVotingConfig.n_agents">
+<code class="sig-name descname">n_agents</code><em class="property">: int</em><a class="headerlink" href="#VIAYN.samples.voting.ClassicalVotingConfig.n_agents" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.voting.ClassicalVotingConfig.vote_range">
+<code class="sig-name descname">vote_range</code><em class="property">: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange">VIAYN.project_types.VoteRange</a></em><a class="headerlink" href="#VIAYN.samples.voting.ClassicalVotingConfig.vote_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.voting.DirectCardinalVotingConfig">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.voting.</code><code class="sig-name descname">DirectCardinalVotingConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.voting.DirectCardinalVotingConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.voting.SumVotingConfig" title="VIAYN.samples.voting.SumVotingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.voting.SumVotingConfig</span></code></a></p>
+<p>Sum of votes of any number (probably busted, useful in RL)</p>
+<dl class="py attribute">
+<dt id="VIAYN.samples.voting.DirectCardinalVotingConfig.n_agents">
+<code class="sig-name descname">n_agents</code><em class="property">: int</em><a class="headerlink" href="#VIAYN.samples.voting.DirectCardinalVotingConfig.n_agents" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.voting.DirectCardinalVotingConfig.vote_range">
+<code class="sig-name descname">vote_range</code><em class="property">: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange">VIAYN.project_types.VoteRange</a></em><a class="headerlink" href="#VIAYN.samples.voting.DirectCardinalVotingConfig.vote_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.voting.RecommendedVotingConfig">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.voting.</code><code class="sig-name descname">RecommendedVotingConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.voting.RecommendedVotingConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.voting.VotingConfigurationBase" title="VIAYN.samples.voting.VotingConfigurationBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.voting.VotingConfigurationBase</span></code></a></p>
+<p>Quadratic voting from 0 to 10</p>
+<dl class="py method">
+<dt id="VIAYN.samples.voting.RecommendedVotingConfig.aggregate_votes">
+<code class="sig-name descname">aggregate_votes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">votes</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.voting.RecommendedVotingConfig.aggregate_votes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.voting.RecommendedVotingConfig.max_possible_vote_total">
+<code class="sig-name descname">max_possible_vote_total</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dt</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.voting.RecommendedVotingConfig.max_possible_vote_total" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> – int
+Timestep offset from current timestep. Useful because
+valid votes may change as number of agents is expected
+to grow</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>max: float
+the maximum possible value that could be achieved if
+all agents voted the maximum score</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.voting.RecommendedVotingConfig.min_possible_vote_total">
+<code class="sig-name descname">min_possible_vote_total</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dt</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.voting.RecommendedVotingConfig.min_possible_vote_total" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> – int
+Timestep offset from current timestep. Useful because
+valid votes may change as number of agents is expected
+to grow</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>min: float
+the minimum possible value that could be achieved if
+all agents voted the minimum score</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.voting.RecommendedVotingConfig.n_agents">
+<code class="sig-name descname">n_agents</code><em class="property">: int</em><a class="headerlink" href="#VIAYN.samples.voting.RecommendedVotingConfig.n_agents" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.voting.RecommendedVotingConfig.vote_range">
+<code class="sig-name descname">vote_range</code><em class="property">: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange">VIAYN.project_types.VoteRange</a></em><a class="headerlink" href="#VIAYN.samples.voting.RecommendedVotingConfig.vote_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.voting.SumVotingConfig">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.voting.</code><code class="sig-name descname">SumVotingConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.voting.SumVotingConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VIAYN.samples.voting.VotingConfigurationBase" title="VIAYN.samples.voting.VotingConfigurationBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.samples.voting.VotingConfigurationBase</span></code></a></p>
+<dl class="py method">
+<dt id="VIAYN.samples.voting.SumVotingConfig.aggregate_votes">
+<code class="sig-name descname">aggregate_votes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">votes</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.voting.SumVotingConfig.aggregate_votes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.voting.SumVotingConfig.max_possible_vote_total">
+<code class="sig-name descname">max_possible_vote_total</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dt</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.voting.SumVotingConfig.max_possible_vote_total" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> – int
+Timestep offset from current timestep. Useful because
+valid votes may change as number of agents is expected
+to grow</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>max: float
+the maximum possible value that could be achieved if
+all agents voted the maximum score</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.voting.SumVotingConfig.min_possible_vote_total">
+<code class="sig-name descname">min_possible_vote_total</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dt</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.voting.SumVotingConfig.min_possible_vote_total" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> – int
+Timestep offset from current timestep. Useful because
+valid votes may change as number of agents is expected
+to grow</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>min: float
+the minimum possible value that could be achieved if
+all agents voted the minimum score</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.voting.SumVotingConfig.n_agents">
+<code class="sig-name descname">n_agents</code><em class="property">: int</em><a class="headerlink" href="#VIAYN.samples.voting.SumVotingConfig.n_agents" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.voting.SumVotingConfig.vote_range">
+<code class="sig-name descname">vote_range</code><em class="property">: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange">VIAYN.project_types.VoteRange</a></em><a class="headerlink" href="#VIAYN.samples.voting.SumVotingConfig.vote_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.voting.VotingConfigurationBase">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.voting.</code><code class="sig-name descname">VotingConfigurationBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.voting.VotingConfigurationBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VotingConfiguration" title="VIAYN.project_types.VotingConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.VotingConfiguration</span></code></a></p>
+<dl class="py method">
+<dt id="VIAYN.samples.voting.VotingConfigurationBase.is_valid_prediction">
+<code class="sig-name descname">is_valid_prediction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prediction</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.voting.VotingConfigurationBase.is_valid_prediction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.voting.VotingConfigurationBase.n_agents">
+<code class="sig-name descname">n_agents</code><em class="property">: int</em><a class="headerlink" href="#VIAYN.samples.voting.VotingConfigurationBase.n_agents" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.voting.VotingConfigurationBase.set_n_agents">
+<code class="sig-name descname">set_n_agents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_agents</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#VIAYN.samples.voting.VotingConfigurationBase.set_n_agents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the number of agents in the system. Useful for calculating
+what the max/min possible vote totals are</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_agents</strong> (<em>int &gt; 0</em>) – the number of agents in the system</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.voting.VotingConfigurationBase.validate_bet">
+<code class="sig-name descname">validate_bet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bet</span><span class="p">:</span> <span class="n"><a class="reference internal" href="VIAYN.html#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet">VIAYN.project_types.WeightedBet</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.voting.VotingConfigurationBase.validate_bet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.voting.VotingConfigurationBase.vote_range">
+<code class="sig-name descname">vote_range</code><em class="property">: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange">VIAYN.project_types.VoteRange</a></em><a class="headerlink" href="#VIAYN.samples.voting.VotingConfigurationBase.vote_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-VIAYN.samples">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-VIAYN.samples" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -272,16 +1178,25 @@ may be inf or nan</p>
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">VIAYN.samples package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-VIAYN.samples.agents">VIAYN.samples.agents module</a></li>
+<li><a class="reference internal" href="#module-VIAYN.samples.env">VIAYN.samples.env module</a></li>
+<li><a class="reference internal" href="#module-VIAYN.samples.payout">VIAYN.samples.payout module</a></li>
+<li><a class="reference internal" href="#module-VIAYN.samples.policy">VIAYN.samples.policy module</a></li>
 <li><a class="reference internal" href="#module-VIAYN.samples.vote_ranges">VIAYN.samples.vote_ranges module</a></li>
+<li><a class="reference internal" href="#module-VIAYN.samples.voting">VIAYN.samples.voting module</a></li>
 <li><a class="reference internal" href="#module-VIAYN.samples">Module contents</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="VIAYN.html"
-                        title="previous chapter">VIAYN package</a></p>
+  <p class="topless"><a href="VIAYN.experiments.html"
+                        title="previous chapter">VIAYN.experiments package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="VIAYN.samples.factory.html"
+                        title="next chapter">VIAYN.samples.factory package</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -313,7 +1228,10 @@ may be inf or nan</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="VIAYN.html" title="VIAYN package"
+          <a href="VIAYN.samples.factory.html" title="VIAYN.samples.factory package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="VIAYN.experiments.html" title="VIAYN.experiments package"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Voting Is All You Need 0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >VIAYN</a> &#187;</li>
