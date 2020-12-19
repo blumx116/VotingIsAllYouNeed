@@ -4,11 +4,11 @@
 # @Last Modified by:   Suhail.Alnahari
 # @Last Modified time: 2020-12-10 14:59:06
 from copy import copy
-from typing import Dict, List, Sequence, TypeVar, Optional, Callable
+from typing import Dict, List, Sequence, TypeVar, Optional, Callable, Tuple, Iterable
 
 import numpy as np
 
-from VIAYN.project_types import A, S, WeightedBet
+from VIAYN.project_types import A, S, WeightedBet, Weighted
 
 T = TypeVar("T")
 V = TypeVar("V", int, float, complex, str)
@@ -88,3 +88,58 @@ def argmax(args: Sequence[T], fn: Callable[[T], float]) -> Optional[T]:
 
 def dict_argmax(dictionary: Dict[T, float]) -> Optional[T]:
     return argmax(list(dictionary.keys()), lambda key: dictionary[key])
+
+# TODO: maybe make a weighted-specific file??
+def map_vals(weighted_elements: Iterable[Weighted], fn: Callable[[float], float]) -> List[Weighted]:
+    return [Weighted(w.weight, fn(w.val)) for w in weighted_elements]
+
+def total_weight(
+        weighted_vals: Iterable[Weighted]) -> float:
+    return float(np.sum([w.weight for w in weighted_vals]))
+
+def normalize_weight(
+        weighted_vals: Sequence[Weighted]) -> List[Weighted]:
+    # Can't be an iterable because we have to go through it twice
+    total: float = total_weight(weighted_vals)
+    return [Weighted(w.weight / total, w.val) for w in weighted_vals]
+
+def weighted_mean(
+        weighted_vals: List[Weighted]) -> float:
+    weighted_vals = normalize_weight(weighted_vals)
+    # TODO: could be spend up with np.mean???
+    return float(np.sum(weighted_vals))
+
+def weighted_quartile(
+        weighted_losses: List[Weighted],
+        quartile: float = 0.95) -> float:
+    """
+    Returns the lowest loss observed such that quartile% of the losses (by weight)
+    have lower loss than it
+
+    Parameters
+    ----------
+    weighted_losses
+    quartile: List[Tuple[float, float]]
+        [(weight >= 0, loss >= 0)]
+
+    Returns
+    -------
+    loss: float >= 0
+        the 95th quartile loss
+    """
+    assert 0 < quartile <= 1
+    sorted_indices: np.ndarray = np.argsort([w.val for w in weighted_losses])
+    weighted_losses = [weighted_losses[i] for i in sorted_indices]
+    # sort in order of increasing loss
+
+    weighted_losses = normalize_weight(weighted_losses)
+    # sort the losses in order of increasing loss
+
+    weight_so_far: float = 0.  # observed weight we have seen so far
+    for w in weighted_losses:
+        weight_so_far += w.weight
+        if weight_so_far >= quartile:
+            return w.val
+        # keep going until we've gone through quartile% of the losses by weight
+        # then return the first loss we see
+    raise Exception("should never get here")

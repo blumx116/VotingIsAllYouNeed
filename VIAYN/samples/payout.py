@@ -4,12 +4,12 @@
 # @Last Modified by:   Suhail.Alnahari
 # @Last Modified time: 2020-12-11 19:05:03
 from abc import abstractmethod
-from typing import List, Tuple, Dict, Generic, Set
+from typing import List, Tuple, Dict, Generic, Set, Callable
 
 import numpy as np
 
-from VIAYN.project_types import PayoutConfiguration, A, S, ActionBet, HistoryItem, Agent, WeightedBet, WeightedStatFn
-from VIAYN.utils import weighted_mean_of_bets
+from VIAYN.project_types import PayoutConfiguration, A, S, ActionBet, HistoryItem, Agent, WeightedBet, Weighted
+from VIAYN.utils import map_vals, weighted_mean
 
 """
 This code handles identifying how much money agents should receive based on the accuracy of their previously 
@@ -22,57 +22,47 @@ In general, it should be possible to reconstruct the behaviour of calculate_all_
 calculate_payouts_from_loss and calculate_losses in the same way for all betting configurations.
 """
 
+
 class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
     """
     Optional base class that other PayoutConfigurations can extend from.
     Present so that we can avoid having duplicate code.
     """
+    def __init__(self,
+            upper_bound_fn: Callable[[List[Weighted]], float]):
+        self.upper_bound: Callable[[List[Weighted]], float] = upper_bound_fn
+
     def validate_bet(self, bet: WeightedBet[A, S]) -> bool:
         return sum(bet.bet) <= 1
 
     @staticmethod
-    def _max_loss_(
-            weighted_losses: List[Tuple[float, float]]) -> float:
-        return float(np.max([loss for _, loss in weighted_losses]))
-
-    @staticmethod
-    def quartile_loss(
-            weighted_losses: List[Tuple[float, float]],
-            quartile: float = 0.95) -> float:
+    def advantage(
+            loss: float,
+            baseline: float) -> float:
         """
-        Returns the lowest loss observed such that quartile% of the losses (by weight)
-        have lower loss than it
-
+        How much less loss you got than the baseline
         Parameters
         ----------
-        weighted_losses
-        quartile: List[Tuple[float, float]]
-            [(weight >= 0, loss >= 0)]
+        loss: float
+            the loss to compare to the baseline (lower is better)
+        baseline: float
+            baseline to compare against
+            if you do worse than this, return 0
 
         Returns
         -------
-        loss: float >= 0
-            the 95th quartile loss
+        advantage: float
+            how much better the loss was than the baseline
+            (higher is better)
         """
-        assert 0 < quartile <= 1
-        sorted_indices: np.ndarray = np.argsort([loss for _, loss in weighted_losses])
-        weighted_losses = [weighted_losses[i] for i in sorted_indices]
-        # sort in order of increasing loss
+        # TODO: maybe vectorize this?
+        # TODO: oh, the things I do for typechecker
+        return float(np.max((0, baseline - loss)))
 
-        total_weight: float = float(np.sum([weight for weight, _ in weighted_losses]))
-        weighted_losses = [(weight / total_weight, loss) for weight, loss in weighted_losses]
-        # sort the losses in order of increasing loss
-
-        weight_so_far: float = 0.  # observed weight we have seen so far
-        weight: float
-        loss: float
-        for weight, loss in weighted_losses:
-            total_weight += weight
-            if total_weight >= quartile:
-                return loss
-            # keep going until we've gone through quartile% of the losses by weight
-            # then return the first loss we see
-        raise Exception("should never get here")
+    @staticmethod
+    def max_loss(
+            weighted_losses: List[Weighted]) -> float:
+        return float(np.max([w.val for w in weighted_losses]))
 
     def _calculate_payouts_for_action_(self,
             bets: List[WeightedBet[A, S]],
@@ -129,7 +119,7 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
             return bet_amounts # just give everyone their money back
 
         payouts: List[float] = self._batch_payout_from_losses_(
-            [(bet_amounts[agent], losses[agent]) for agent in losses.keys()])
+            [Weighted(bet_amounts[agent], losses[agent]) for agent in losses.keys()])
         return {agent: payout for agent, payout in zip(losses.keys(), payouts)}
 
     def calculate_all_payouts(self,
@@ -169,12 +159,12 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
 
     @abstractmethod
     def _batch_payout_from_losses_(self,
-            weighted_losses: List[Tuple[float, float]]) -> List[float]:
+            weighted_losses: List[Weighted]) -> List[float]:
         """
 
         Parameters
         ----------
-        weighted_losses: List[Tuple[float, float]]
+        weighted_losses: List[Weighted]]
             [(bet_amount, loss)] each pair corresponds to an agent
         Returns
         -------
@@ -198,6 +188,10 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
 
 
 class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
+    def __init__(self,
+            upper_bound_fn: Callable[[List[Weighted]], float]):
+        super().__init__(upper_bound_fn)
+
     def calculate_loss(self,
             bet_to_evaluate: WeightedBet,
             t_cast_on: int,  # timestep info let us look up in the array
@@ -211,7 +205,7 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
     def calculate_payout_from_loss(self,
             bet_amount_to_evaluate: float, # weight (money * bet_amount)
             loss_to_evaluate: float,
-            all_losses: List[Tuple[float, float]],  # [(weight, loss)]
+            all_losses: List[Weighted],  # [(weight, loss)]
             t_cast_on: int,  # timestep info lets us discount by timestep
             t_current: int,
             action_bet_on: A,
@@ -219,30 +213,31 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
         # loss = max_error - min_error
         # payout scaled by bet amount
         if action_bet_on == action_selected:
-            if len(np.unique([loss for _, loss in all_losses])) == 1:
+            if len(np.unique([w.val for w in all_losses])) == 1:
                 return bet_amount_to_evaluate
             return bet_amount_to_evaluate * \
-                   (float(np.max(all_losses)) - loss_to_evaluate)
+                (float(np.max(all_losses)) - loss_to_evaluate)
         else:
             # no payout for non-selected actions
             return 0.
 
     def _batch_payout_from_losses_(self,
-            weighted_losses: List[Tuple[float, float]]) -> List[float]:
+            weighted_losses: List[Weighted]) -> List[float]:
         """
 
         Parameters
         ----------
-        weighted_losses: List[Tuple[float, float]]
+        weighted_losses: List[Weighted]
             [(bet_amount, loss)] each pair corresponds to an agent
         Returns
         -------
         payout: List[float]
             payout corresponding to each element of the tuple
         """
-        max_loss: float = max([loss for _, loss in weighted_losses])
+        max_loss: float = max([w.val for w in weighted_losses])
+
         # same as calculate_payout_from_loss except max computation is cached
-        return [bet_amount * (max_loss - loss) for bet_amount, loss in weighted_losses]
+        return [loss.weight * PayoutConfigBase.advantage(loss.val, max_loss) for loss in weighted_losses]
 
 
 class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
@@ -251,6 +246,10 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
         payout = weight_i * (max_loss - loss_i) / (max_loss - weighted_mean_loss)
         where weighted mean is calculated by weights
     """
+    def __init__(self,
+            upper_bound_fn: Callable[[List[Weighted]], float]):
+        super().__init__(upper_bound_fn)
+
     def calculate_loss(self,
             bet_to_evaluate: WeightedBet,
             t_cast_on: int,  # timestep info let us look up in the array
@@ -262,9 +261,9 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             welfare_score=welfare_score)
 
     def calculate_payout_from_loss(self,
-            bet_amount_to_evaluate: float, # WEIGHT (name is confusing)
+            bet_amount_to_evaluate: float,  # WEIGHT (name is confusing)
             loss_to_evaluate: float,
-            all_losses: List[Tuple[float, float]],  # [(weight, loss)]
+            all_losses: List[Weighted],  # [(weight, loss)]
             t_cast_on: int,  # timestep info lets us discount by timestep
             t_current: int,
             action_bet_on: A,
@@ -272,41 +271,35 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
         if action_bet_on != action_selected:
             return 0. # no payout for non-selected actions
 
-        if len(np.unique([loss for _, loss in all_losses])) == 1:
-            return bet_amount_to_evaluate # TODO: duplicate with SimpleConfig calculate_payout_from_loss
+        if len(np.unique([w.val for w in all_losses])) == 1:
+            return bet_amount_to_evaluate  # TODO: duplicate with SimpleConfig calculate_payout_from_loss
 
-        mean: float = self._mean_loss_(all_losses) # WEIGHTED mean
-        maximum: float = self._max_loss_(all_losses)
+        maximum: float = self.upper_bound(all_losses)
+        all_losses = map_vals(all_losses, lambda loss: PayoutConfigBase.advantage(loss, maximum))
+        mean: float = weighted_mean(all_losses)
 
         return bet_amount_to_evaluate *\
-            (maximum - loss_to_evaluate) / (maximum - mean)
-
-    @staticmethod
-    def _mean_loss_(
-            losses: List[Tuple[float, float]]) -> float:
-        # TODO: in here and below, there is a probably-spurious cast
-        # to float to appease the type-checker. see #13
-        return float(np.average(
-            a=[loss for _, loss in losses],
-            weights=[weight for weight, _ in losses]))
-
-
+            self.advantage(loss_to_evaluate, maximum) / mean
 
     def _batch_payout_from_losses_(self,
-            weighted_losses: List[Tuple[float, float]]) -> List[float]:
+            weighted_losses: List[Weighted]) -> List[float]:
         """
 
         Parameters
         ----------
-        weighted_losses: List[Tuple[float, float]]
+        weighted_losses: List[Weighted]
             [(bet_amount, loss)] each pair corresponds to an agent
         Returns
         -------
         payout: List[float]
             payout corresponding to each element of the tuple
         """
-        mean: float = self._mean_loss_(weighted_losses) # WEIGHTED mean
-        maximum: float = self._max_loss_(weighted_losses)
+        maximum: float = self.upper_bound(weighted_losses)
+        weighted_gains: List[Weighted] = map_vals(weighted_losses,
+            fn=lambda loss: PayoutConfigBase.advantage(loss, maximum))
+        mean: float = weighted_mean(weighted_gains)
+        # TODO: introduces potential division by 0 error if one person contains more than 95%
+        # of the vote & also does the best
+
         # same as calculate losses except that mean & max are cached
-        return [bet_amount * (maximum - loss) / (maximum - mean)
-                for bet_amount, loss in weighted_losses]
+        return [(gain.weight * gain.val) / mean for gain in weighted_gains]

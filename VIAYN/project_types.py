@@ -20,8 +20,15 @@ class Action:
 
 VoteBoundGetter = Callable[[int], float]
 # type alias for the type of VotingConfiguration.max_possible_vote_total
-WeightedStatFn = Callable[[List[Tuple[float, float]]], float]
-# function from (weight, value) => float. e.g. weighted mean
+
+
+@dataclass(frozen=True)
+class Weighted:
+    weight: float
+    val: float
+
+    def __post_init__(self):
+        assert self.weight > 0
 
 
 class VoteRange(ABC):
@@ -360,8 +367,8 @@ class PayoutConfiguration(Generic[A, S], Configuration[A, S]):
     def calculate_payout_from_loss(self,
             bet_amount_to_evaluate: float,
             loss_to_evaluate: float,
-            all_losses: List[Tuple[float, float]], # [(weight, loss)]
-            t_cast_on: int, # timestep info lets us discount by timestep
+            all_losses: List[Weighted],  # [(weight, loss)]
+            t_cast_on: int,  # timestep info lets us discount by timestep
             t_current: int,
             action_bet_on: A,
             action_selected: A) -> float:
