@@ -72,6 +72,9 @@ class SumVotingConfig(Generic[A, S], VotingConfigurationBase[A, S]):
 
 
 class ClassicalVotingConfig(Generic[A, S], SumVotingConfig[A, S]):
+    """
+    Sum of Yes/No votes
+    """
     def __init__(self, vote_range: Optional[VoteRange] = None):
         if vote_range is None:
             vote_range = BinaryVoteRange()
@@ -79,6 +82,9 @@ class ClassicalVotingConfig(Generic[A, S], SumVotingConfig[A, S]):
 
 
 class DirectCardinalVotingConfig(Generic[A, S], SumVotingConfig[A, S]):
+    """
+    Sum of votes of any number (probably busted, useful in RL)
+    """
     def __init__(self, vote_range: Optional[VoteRange] = None):
         if vote_range is None:
             vote_range = UnboundedVoteRange()
@@ -86,6 +92,9 @@ class DirectCardinalVotingConfig(Generic[A, S], SumVotingConfig[A, S]):
 
 
 class RecommendedVotingConfig(Generic[A, S], VotingConfigurationBase[A, S]):
+    """
+    Quadratic voting from 0 to 10
+    """
     def __init__(self, vote_range: Optional[VoteRange] = None):
         if vote_range is None:
             vote_range = ZeroToTenVoteRange()
