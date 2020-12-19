@@ -1,31 +1,22 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VIAYN.samples package &#8212; Voting Is All You Need 0.0 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="VIAYN package" href="VIAYN.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -40,7 +31,8 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Voting Is All You Need 0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >VIAYN</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="VIAYN.html" accesskey="U">VIAYN package</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="VIAYN.html" accesskey="U">VIAYN package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">VIAYN.samples package</a></li> 
       </ul>
     </div>  
 
@@ -56,36 +48,211 @@
 </div>
 <div class="section" id="module-VIAYN.samples.vote_ranges">
 <span id="viayn-samples-vote-ranges-module"></span><h2>VIAYN.samples.vote_ranges module<a class="headerlink" href="#module-VIAYN.samples.vote_ranges" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="VIAYN.samples.vote_ranges.BinaryVoteRange">
-<em class="property">class </em><code class="descclassname">VIAYN.samples.vote_ranges.</code><code class="descname">BinaryVoteRange</code><a class="headerlink" href="#VIAYN.samples.vote_ranges.BinaryVoteRange" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange"><code class="xref py py-class docutils literal"><span class="pre">VIAYN.project_types.VoteRange</span></code></a></p>
-<dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.vote_ranges.</code><code class="sig-name descname">BinaryVoteRange</code><a class="headerlink" href="#VIAYN.samples.vote_ranges.BinaryVoteRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.VoteRange</span></code></a></p>
+<dl class="py method">
 <dt id="VIAYN.samples.vote_ranges.BinaryVoteRange.contains">
-<code class="descname">contains</code><span class="sig-paren">(</span><em>value: float</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.vote_ranges.BinaryVoteRange.contains" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">static </em><code class="sig-name descname">contains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.vote_ranges.BinaryVoteRange.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether or not ‘value’ is valid for this vote range.
+:param value: the value to be checked
+:type value: float</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>valid</strong> – whether or not the vote is valid for this VoteRange</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.vote_ranges.BinaryVoteRange.maxVote">
+<em class="property">static </em><code class="sig-name descname">maxVote</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.vote_ranges.BinaryVoteRange.maxVote" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>maximum</strong> – the maximum possible float that can be cast in this system.
+e.g. 5 for 5star voting
+may be inf or nan</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.vote_ranges.BinaryVoteRange.minVote">
+<em class="property">static </em><code class="sig-name descname">minVote</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.vote_ranges.BinaryVoteRange.minVote" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>maximum</strong> – the minimum possible float that can be cast in this system
+e.g. 1 for 5star voting
+may be inf or nan</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="VIAYN.samples.vote_ranges.FiveStarVoteRange">
-<em class="property">class </em><code class="descclassname">VIAYN.samples.vote_ranges.</code><code class="descname">FiveStarVoteRange</code><a class="headerlink" href="#VIAYN.samples.vote_ranges.FiveStarVoteRange" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange"><code class="xref py py-class docutils literal"><span class="pre">VIAYN.project_types.VoteRange</span></code></a></p>
-<dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.vote_ranges.</code><code class="sig-name descname">FiveStarVoteRange</code><a class="headerlink" href="#VIAYN.samples.vote_ranges.FiveStarVoteRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.VoteRange</span></code></a></p>
+<dl class="py method">
 <dt id="VIAYN.samples.vote_ranges.FiveStarVoteRange.contains">
-<code class="descname">contains</code><span class="sig-paren">(</span><em>value: float</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.vote_ranges.FiveStarVoteRange.contains" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">static </em><code class="sig-name descname">contains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.vote_ranges.FiveStarVoteRange.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether or not ‘value’ is valid for this vote range.
+:param value: the value to be checked
+:type value: float</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>valid</strong> – whether or not the vote is valid for this VoteRange</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.vote_ranges.FiveStarVoteRange.maxVote">
+<em class="property">static </em><code class="sig-name descname">maxVote</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.vote_ranges.FiveStarVoteRange.maxVote" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>maximum</strong> – the maximum possible float that can be cast in this system.
+e.g. 5 for 5star voting
+may be inf or nan</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.vote_ranges.FiveStarVoteRange.minVote">
+<em class="property">static </em><code class="sig-name descname">minVote</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.vote_ranges.FiveStarVoteRange.minVote" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>maximum</strong> – the minimum possible float that can be cast in this system
+e.g. 1 for 5star voting
+may be inf or nan</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
+<dt id="VIAYN.samples.vote_ranges.UnboundedVoteRange">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.vote_ranges.</code><code class="sig-name descname">UnboundedVoteRange</code><a class="headerlink" href="#VIAYN.samples.vote_ranges.UnboundedVoteRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.VoteRange</span></code></a></p>
+<dl class="py method">
+<dt id="VIAYN.samples.vote_ranges.UnboundedVoteRange.contains">
+<em class="property">static </em><code class="sig-name descname">contains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.vote_ranges.UnboundedVoteRange.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether or not ‘value’ is valid for this vote range.
+:param value: the value to be checked
+:type value: float</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>valid</strong> – whether or not the vote is valid for this VoteRange</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.vote_ranges.UnboundedVoteRange.maxVote">
+<em class="property">static </em><code class="sig-name descname">maxVote</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.vote_ranges.UnboundedVoteRange.maxVote" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>maximum</strong> – the maximum possible float that can be cast in this system.
+e.g. 5 for 5star voting
+may be inf or nan</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.vote_ranges.UnboundedVoteRange.minVote">
+<em class="property">static </em><code class="sig-name descname">minVote</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.vote_ranges.UnboundedVoteRange.minVote" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>maximum</strong> – the minimum possible float that can be cast in this system
+e.g. 1 for 5star voting
+may be inf or nan</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="VIAYN.samples.vote_ranges.ZeroToTenVoteRange">
-<em class="property">class </em><code class="descclassname">VIAYN.samples.vote_ranges.</code><code class="descname">ZeroToTenVoteRange</code><a class="headerlink" href="#VIAYN.samples.vote_ranges.ZeroToTenVoteRange" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange"><code class="xref py py-class docutils literal"><span class="pre">VIAYN.project_types.VoteRange</span></code></a></p>
-<dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.vote_ranges.</code><code class="sig-name descname">ZeroToTenVoteRange</code><a class="headerlink" href="#VIAYN.samples.vote_ranges.ZeroToTenVoteRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="VIAYN.html#VIAYN.project_types.VoteRange" title="VIAYN.project_types.VoteRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.VoteRange</span></code></a></p>
+<dl class="py method">
 <dt id="VIAYN.samples.vote_ranges.ZeroToTenVoteRange.contains">
-<code class="descname">contains</code><span class="sig-paren">(</span><em>value: float</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.vote_ranges.ZeroToTenVoteRange.contains" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">static </em><code class="sig-name descname">contains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.samples.vote_ranges.ZeroToTenVoteRange.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether or not ‘value’ is valid for this vote range.
+:param value: the value to be checked
+:type value: float</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>valid</strong> – whether or not the vote is valid for this VoteRange</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.vote_ranges.ZeroToTenVoteRange.maxVote">
+<em class="property">static </em><code class="sig-name descname">maxVote</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.vote_ranges.ZeroToTenVoteRange.maxVote" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>maximum</strong> – the maximum possible float that can be cast in this system.
+e.g. 5 for 5star voting
+may be inf or nan</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="VIAYN.samples.vote_ranges.ZeroToTenVoteRange.minVote">
+<em class="property">static </em><code class="sig-name descname">minVote</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.samples.vote_ranges.ZeroToTenVoteRange.minVote" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>maximum</strong> – the minimum possible float that can be cast in this system
+e.g. 1 for 5star voting
+may be inf or nan</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -96,12 +263,13 @@
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">VIAYN.samples package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
@@ -122,15 +290,15 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -149,12 +317,13 @@
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Voting Is All You Need 0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >VIAYN</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="VIAYN.html" >VIAYN package</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="VIAYN.html" >VIAYN package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">VIAYN.samples package</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, Suhail Alnahari, Carter Blum.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>
