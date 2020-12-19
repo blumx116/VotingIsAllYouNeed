@@ -30,6 +30,50 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
     def validate_bet(self, bet: WeightedBet[A, S]) -> bool:
         return sum(bet.bet) <= 1
 
+    @staticmethod
+    def _max_loss_(
+            weighted_losses: List[Tuple[float, float]]) -> float:
+        return float(np.max([loss for _, loss in weighted_losses]))
+
+    @staticmethod
+    def _quartile_loss_(
+            weighted_losses: List[Tuple[float, float]],
+            quartile: float = 0.95) -> float:
+        """
+        Returns the lowest loss observed such that quartile% of the losses (by weight)
+        have lower loss than it
+
+        Parameters
+        ----------
+        weighted_losses
+        quartile: List[Tuple[float, float]]
+            [(weight >= 0, loss >= 0)]
+
+        Returns
+        -------
+        loss: float >= 0
+            the 95th quartile loss
+        """
+        assert 0 < quartile <= 1
+        sorted_indices: np.ndarray = np.argsort([loss for _, loss in weighted_losses])
+        weighted_losses = [weighted_losses[i] for i in sorted_indices]
+        # sort in order of increasing loss
+
+        total_weight: float = float(np.sum([weight for weight, _ in weighted_losses]))
+        weighted_losses = [(weight / total_weight, loss) for weight, loss in weighted_losses]
+        # sort the losses in order of increasing loss
+
+        weight_so_far: float = 0.  # observed weight we have seen so far
+        weight: float
+        loss: float
+        for weight, loss in weighted_losses:
+            total_weight += weight
+            if total_weight >= quartile:
+                return loss
+            # keep going until we've gone through quartile% of the losses by weight
+            # then return the first loss we see
+        raise Exception("should never get here")
+
     def _calculate_payouts_for_action_(self,
             bets: List[WeightedBet[A, S]],
             welfare_score: float,
@@ -246,10 +290,7 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             a=[loss for _, loss in losses],
             weights=[weight for weight, _ in losses]))
 
-    @staticmethod
-    def _max_loss_(
-            losses: List[Tuple[float, float]]) -> float:
-        return float(np.max([loss for _, loss in losses]))
+
 
     def _batch_payout_from_losses_(self,
             weighted_losses: List[Tuple[float, float]]) -> List[float]:
