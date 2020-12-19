@@ -67,8 +67,8 @@ def random_agent_config():
     (10., 0),
 ]
 
-def floatIsEqual(num1: float,num2: float) -> bool:
-    return abs(num1-num2) < 0.000001
+def floatIsEqual(num1: float,num2: float,epsilon: float = 1e-6) -> bool:
+    return abs(num1-num2) < epsilon
 
 @pytest.fixture
 def gen_agent():
