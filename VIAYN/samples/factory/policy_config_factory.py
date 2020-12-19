@@ -25,6 +25,19 @@ class PolicyConfigEnum(Enum):
 
 @dataclass(frozen=True)
 class PolicyConfigFactorySpec:
+    """
+    Typed Spec to input to [PolicyConfigFactory.create] to create an [PolicyConfig]
+    
+    Note: Typed spec was used instead of Dict for the factory to provide
+        more information to users.
+
+    Parameters
+    ----------
+    configType: PolicyConfigEnum
+        type of Policy Config corresponds to simple and suggested in requirements
+        suggested general samples each action and timestep using Thompson while
+        suggested samples each action after summing across time-steps
+    """
     configType: PolicyConfigEnum
 
     def __post_init__(self):

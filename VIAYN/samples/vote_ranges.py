@@ -7,9 +7,16 @@ import numpy as np
 
 from VIAYN.project_types import VoteRange
 
+"""
+Classes containing different types of voting systems.
+BinaryVoteRange: Yes/No = {0, 1}
+FiveStarVoteRange: {1, 2, 3, 4, 5}
+ZeroToTenVoteRange: [0, 10]
+UnboundedVoteRange: Anything
+"""
+
 
 class BinaryVoteRange(VoteRange):
-    
     @staticmethod
     def contains(value: float) -> bool:
         return value in [0, 1]

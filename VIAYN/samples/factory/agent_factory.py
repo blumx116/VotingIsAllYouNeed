@@ -22,12 +22,46 @@ from VIAYN.samples.agents import (
 
 @unique
 class AgentsEnum(Enum):
+    # constant agent returns the same votes, bets and predictions that are specified
     constant = auto()
+    # random agent returns random predictions that are specified with length N
     random = auto()
 
 
 @dataclass(frozen=True)
 class AgentFactorySpec:
+    """
+    Typed Spec to input to [AgentFactory.create] to create an [Agent]
+    
+    Note: Typed spec was used instead of Dict for the factory to provide
+        more information to users.
+
+    Parameters
+    ----------
+    agentType: AgentsEnum
+        which agent to create possible types are (constant/random) currently
+    vote: float
+        what value should the agent's happiness be. Agent's happiness is constant
+        for now
+    totalVotesBound: Optional[Tuple[VoteBoundGetter, VoteBoundGetter]] = None
+        What predictions values can be predicted by the agent (min, max)
+    seed: Optional[int]
+        Random seed used by random processes of agents
+    prediction: Optional[Union[float, List[float]]] = None
+        what agents predict the total happiness of all agents at each timestep.
+        If prediction is a List of floats, you would be predicting the happiness
+        for later in the future. 
+        e.g. [5.5,10.7,30.2] at time-step 4 corresponds to the total happiness of the 
+        system is 10.7 for all agents.
+        money wil be bet at time-step 5.
+    bet: Optional[Union[float, List[float]]] = None
+        what percent of the money an agent predicts at each timestep.
+        If bet is a List of floats, you would be casting a bet for later in the
+        future. e.g. [0,0.5,0.2] at time-step 4 corresponds to 0.5 of an agents
+        money wil be bet at time-step 5.  
+    N: Optional[int] = None
+        length of bets as specified by requirements
+    """
     agentType: AgentsEnum
     vote: float
     totalVotesBound: Optional[Tuple[VoteBoundGetter, VoteBoundGetter]] = None
@@ -37,9 +71,11 @@ class AgentFactorySpec:
     N: Optional[int] = None
     
     def __post_init__(self):
+        # constant agent uses these params in addition to vote at least
         if self.agentType == AgentsEnum.constant:
             assert(self.bet is not None)
             assert(self.prediction is not None)
+        # random agent uses these params in addition to vote at least
         elif self.agentType == AgentsEnum.random:
             assert(self.N is not None)
             assert(self.totalVotesBound is not None)

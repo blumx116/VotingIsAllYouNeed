@@ -11,8 +11,22 @@ import numpy as np
 from VIAYN.project_types import PayoutConfiguration, A, S, ActionBet, HistoryItem, Agent, WeightedBet
 from VIAYN.utils import weighted_mean_of_bets
 
+"""
+This code handles identifying how much money agents should receive based on the accuracy of their previously 
+placed bets.
+
+PayoutConfigBase is an optional base class that contains a lot of useful patterns that the payouts generally follow,
+but it is not mandatory.
+
+In general, it should be possible to reconstruct the behaviour of calculate_all_payouts from the behaviour of
+calculate_payouts_from_loss and calculate_losses in the same way for all betting configurations.
+"""
 
 class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
+    """
+    Optional base class that other PayoutConfigurations can extend from.
+    Present so that we can avoid having duplicate code.
+    """
     def validate_bet(self, bet: WeightedBet[A, S]) -> bool:
         return sum(bet.bet) <= 1
 
@@ -21,12 +35,36 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
             welfare_score: float,
             t_current: int,
             t_cast_on: int) -> Dict[Agent[A, S], float]:
+        """
+        Calculates how much payout agents should receive for their bets on a
+        given action (calculated agnostic to whether or not the action was selected)
+
+        Parameters
+        ----------
+        bets: List[WeightedBet[A, S]]
+            the bets that were cast on this action
+        welfare_score: float
+            the total votes that the bets should be compared against
+        t_current: int
+            the current timestep that the welfare_score was collected at
+            used because bets may be multi-timestep
+        t_cast_on: int
+            the timestep that the bets were cast on.
+            also used because bets may be multi-timestep
+
+        Returns
+        -------
+        payouts: Dict[Agent[A, S], float]
+            the amount of payout to each agent
+        """
         t_idx: int = self._get_t_index_(t_current, t_cast_on)
+        # the index of the prediction & bet corresponding to the current timestep
         
         assert len(np.unique([len(bet.prediction) for bet in bets])) == 1
         if len(bets) == 0:
             return {}
         if len(bets[0].prediction) <= t_idx:
+            # no payout if bets do not apply to current timestep
             return {}
 
         losses: Dict[Agent[A, S], float] = \
@@ -36,8 +74,12 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
                     t_current=t_current,
                     welfare_score=welfare_score)
                 for bet in bets}
+        # calculate losses for each agent
         bet_amounts: Dict[Agent[A, S], float] = \
             {bet.cast_by: bet.weight()[t_idx] for bet in bets}
+        # TODO: rename this (and subsequent variables) to WEIGHT
+        # bet amount is confusing
+        # extract bet amounts
 
         if len(np.unique(list(losses.values()))) == 1: # everyone has the same loss
             return bet_amounts # just give everyone their money back
@@ -51,12 +93,18 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
             welfare_score: float,
             t_current: int) -> Dict[Agent[A, S], float]:
         relevant_bets: List[WeightedBet[A, S]] = record.predictions[record.selected_action]
+        # only bets that correspond to the action selected get any money
+        # (this is fair because no money was withdrawn for the other action's bets)
+
         seen_agents: Set[Agent] = set()
         bet: WeightedBet[A, S]
         for bet in relevant_bets:
             agent: Agent[A, S] = bet.cast_by
             assert agent not in seen_agents
             seen_agents.add(agent)
+        # check that there is at most one bet per agent
+        # TODO: we could possibly do away with this assumption, but it would need
+        # a significant refactor
 
         return self._calculate_payouts_for_action_(
             bets=relevant_bets,
@@ -97,6 +145,8 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
             t_cast_on: int,  # timestep info let us look up in the array
             t_current: int,  # which prediction is for this timestep
             welfare_score: float) -> float:
+        # squared error between the prediction for this timestep
+        # and the welfare_score
         prediction: List[float] = bet_to_evaluate.prediction
         t_idx: int = PayoutConfigBase._get_t_index_(t_current, t_cast_on)
         assert t_idx < len(prediction)
@@ -115,19 +165,22 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             welfare_score=welfare_score)
 
     def calculate_payout_from_loss(self,
-            bet_amount_to_evaluate: float,
+            bet_amount_to_evaluate: float, # weight (money * bet_amount)
             loss_to_evaluate: float,
             all_losses: List[Tuple[float, float]],  # [(weight, loss)]
             t_cast_on: int,  # timestep info lets us discount by timestep
             t_current: int,
             action_bet_on: A,
             action_selected: A) -> float:
+        # loss = max_error - min_error
+        # payout scaled by bet amount
         if action_bet_on == action_selected:
             if len(np.unique([loss for _, loss in all_losses])) == 1:
                 return bet_amount_to_evaluate
             return bet_amount_to_evaluate * \
                    (float(np.max(all_losses)) - loss_to_evaluate)
         else:
+            # no payout for non-selected actions
             return 0.
 
     def _batch_payout_from_losses_(self,
@@ -144,10 +197,16 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             payout corresponding to each element of the tuple
         """
         max_loss: float = max([loss for _, loss in weighted_losses])
+        # same as calculate_payout_from_loss except max computation is cached
         return [bet_amount * (max_loss - loss) for bet_amount, loss in weighted_losses]
 
 
 class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
+    """
+        loss = squared error between prediction and welfare_score
+        payout = weight_i * (max_loss - loss_i) / (max_loss - weighted_mean_loss)
+        where weighted mean is calculated by weights
+    """
     def calculate_loss(self,
             bet_to_evaluate: WeightedBet,
             t_cast_on: int,  # timestep info let us look up in the array
@@ -159,7 +218,7 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             welfare_score=welfare_score)
 
     def calculate_payout_from_loss(self,
-            bet_amount_to_evaluate: float,
+            bet_amount_to_evaluate: float, # WEIGHT (name is confusing)
             loss_to_evaluate: float,
             all_losses: List[Tuple[float, float]],  # [(weight, loss)]
             t_cast_on: int,  # timestep info lets us discount by timestep
@@ -167,13 +226,14 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             action_bet_on: A,
             action_selected: A) -> float:
         if action_bet_on != action_selected:
-            return 0.
+            return 0. # no payout for non-selected actions
 
         if len(np.unique([loss for _, loss in all_losses])) == 1:
             return bet_amount_to_evaluate # TODO: duplicate with SimpleConfig calculate_payout_from_loss
 
-        mean: float = self._mean_loss_(all_losses)
+        mean: float = self._mean_loss_(all_losses) # WEIGHTED mean
         maximum: float = self._max_loss_(all_losses)
+
         return bet_amount_to_evaluate *\
             (maximum - loss_to_evaluate) / (maximum - mean)
 
@@ -204,7 +264,8 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
         payout: List[float]
             payout corresponding to each element of the tuple
         """
-        mean: float = self._mean_loss_(weighted_losses)
+        mean: float = self._mean_loss_(weighted_losses) # WEIGHTED mean
         maximum: float = self._max_loss_(weighted_losses)
+        # same as calculate losses except that mean & max are cached
         return [bet_amount * (maximum - loss) / (maximum - mean)
                 for bet_amount, loss in weighted_losses]

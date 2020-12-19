@@ -20,7 +20,7 @@ class EnvsEnum(Enum):
 @dataclass(frozen=True)
 class EnvsFactorySpec:
     envType: EnvsEnum
-    n_actions: Optional[int] = None
+    n_actions: Optional[int] = None # number is exact at each state
 
     def __post_init__(self):
         if self.envType ==  EnvsEnum.default:
@@ -44,6 +44,7 @@ class EnvFactory:
     Environment
         created environment based on spec
     """
+    
     @staticmethod
     def create(spec: EnvsFactorySpec) -> Environment:
         if spec.envType == EnvsEnum.default:

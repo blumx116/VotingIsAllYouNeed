@@ -9,6 +9,11 @@ from VIAYN.DiscreteDistribution import  DiscreteDistribution
 
 
 class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S]):
+    """
+    Selects the action with the highest weighted mean predicted value.
+    Predicted value is summed evenly across all timesteps.
+    Those values are then weighted by the standard weights of people who cast them
+    """
     def validate_bet(self, bet: WeightedBet[A, S]) -> bool:
         # TODO: this should probably do some actual validation
         # but I don't want it to be duplicated with other validations
@@ -16,23 +21,72 @@ class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S])
 
     def aggregate_bets(self,
             predictions: Dict[A, List[WeightedBet[A, S]]]) -> Dict[A, float]:
+        """
+        Sums across all timesteps and then takes the weighted mean for each action
+
+        Parameters
+        ----------
+        predictions: Dict[A, List[WeightedBet[A, S]]]
+            the bets cast for each action
+
+        Returns
+        -------
+        expectations: Dict[A, float]
+            the weighted mean of predictiosn for each action
+        """
         return {action: sum(weighted_mean_of_bets(bets)) for action, bets in predictions.items()}
 
     def select_action(self,
             aggregate_bets: Dict[A, float]) -> A:
+        """
+        Deterministically take the action with the highest expected value
+        Parameters
+        ----------
+        aggregate_bets: Dict[A, float]
+            the weighted mean of predictiosn for each action
+
+        Returns
+        -------
+        action: A
+            the selected action
+        """
         result: Optional[A] = dict_argmax(aggregate_bets)
         assert result is not None
         return result
 
     def action_probabilities(self,
             aggregate_bets: Dict[A, float]) -> Dict[A, float]:
+        """
+        Deterministic policy, so the action with the highest expectation has 100%
+        TODO: does this work with ties?
+
+        Parameters
+        ----------
+        aggregate_bets: Dict[A, float]
+            the weighted mean of predictions for each action
+        Returns
+        -------
+        probabilities: Dict[A, float]
+            the probability of each action being selected
+        """
         chosen_action: A = self.select_action(aggregate_bets)
         return {action: (1. if action == chosen_action else 0.) for action in aggregate_bets.keys()}
 
 
 class ThompsonPolicyBase(Generic[A, B, S], PolicyConfiguration[A, B, S]):
+    """
+        Contains base infrastructure that is used for both ThompsonPayoutConfiguration and
+        ThompsonPayoutConfiguration2
+    """
     def __init__(self,
             random_seed: Optional[int] = None):
+        """
+
+        Parameters
+        ----------
+        random_seed: Optional[int]
+            random_seed for the generator used for sampling
+        """
         self.random: Generator = default_rng(random_seed)
 
     def validate_bet(self, bet: WeightedBet[A, S]) -> bool:
@@ -52,6 +106,20 @@ class ThompsonPolicyBase(Generic[A, B, S], PolicyConfiguration[A, B, S]):
 
     def action_probabilities(self,
             aggregate_bets: Dict[A, B]) -> Dict[A, float]:
+        """
+        Estimates the probabilities of taking each action by Monte Carlo sampling
+        becaues a closed form solution is very computationally expensive
+        Parameters
+        ----------
+        aggregate_bets: Dict[A, B]
+            aggregated information about bet distributions. Type of B is different for each
+            version of ThompsonConfiguration
+
+        Returns
+        -------
+        probabilities: Dict[A, float]
+            the monte-carlo estimate of how often each action is chosen
+        """
         n_samples: int = 10000  # TODO : should this scale up with the number of actions??
         counts: Dict[A, float] = {action: 0. for action in aggregate_bets}
         for _ in range(n_samples):
@@ -71,7 +139,15 @@ class ThompsonPolicyConfiguration(Generic[A, S], ThompsonPolicyBase[A, List[Disc
         These sums of samples are used to compare actions
         In principle, this likely reduces the variance of the sampling process and is computationally more
         expensive than what we could use if we know that all of the bets are the same for all timesteps
-        in a single timesteps
+        in a single timestepsA
+
+        Alternate Explanation:
+        For each action & each timestep, constructs a DiscreteDistribution from the predictions.
+        Then samples from each of those discrete distributions to obtain a single prediction for the
+        value of that action at that timestep.
+
+        All timesteps are then summed together, and the action with the highest total value is chosen.
+
     """
     def __init__(self,
             random_seed: Optional[int] = None):
@@ -96,6 +172,8 @@ class ThompsonPolicyConfiguration(Generic[A, S], ThompsonPolicyBase[A, List[Disc
                         # should be equivalent to using 'if'
                         aggregator.append([])
                     aggregator[t].append((prediction, bet_amount))
+
+            # instantiate distributions for this action from aggrator
             distributions: List[DiscreteDistribution] = [DiscreteDistribution.from_weighted_vals(
                 vals=[prediction for prediction, _ in aggregator[t]],
                 weights=[bet_amount for _, bet_amount in aggregator[t]],
@@ -118,6 +196,11 @@ class ThompsonPolicyConfiguration2(Generic[A, S], ThompsonPolicyBase[A, Discrete
     """
     ThompsonSampling as I originally planned it to be.
     Assumes all values in a given WeightedBet's bet are the same
+
+    First sums each prediction over all timesteps, then uses that, combined with the bet amount
+    to generate a single DiscreteDistribution per action.
+    Then, samples the discrete distribution for each action & selects the action with the highest
+    sampled value.
     """
     def __init__(self,
             random_seed: Optional[int] = None):

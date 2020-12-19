@@ -23,6 +23,22 @@ class VotingConfigEnum(Enum):
 
 @dataclass(frozen=True)
 class VotingConfigFactorySpec:
+    """
+    Typed Spec to input to [VotingConfigFactory.create] to create an [VotingConfig]
+    
+    Note: Typed spec was used instead of Dict for the factory to provide
+        more information to users.
+
+    Parameters
+    ----------
+    configType: VotingConfigEnum:
+        type of Voting Config corresponds to simple and suggested in requirements
+        classical is a straight sum of binary votes
+    voteRange: VoteRange
+        Provides a range of values for agent votes
+    n_agents: Optional[int] = 0
+        set the initial number of agents for the voting configuration
+    """
     configType: VotingConfigEnum
     voteRange: VoteRange
     n_agents: Optional[int] = 0
