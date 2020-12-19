@@ -64,20 +64,23 @@ class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S])
         ----------
         aggregate_bets: Dict[A, float]
             the weighted mean of predictions for each action
+        
         Returns
         -------
         probabilities: Dict[A, float]
             the probability of each action being selected
         """
+
         chosen_action: A = self.select_action(aggregate_bets)
         return {action: (1. if action == chosen_action else 0.) for action in aggregate_bets.keys()}
 
 
 class ThompsonPolicyBase(Generic[A, B, S], PolicyConfiguration[A, B, S]):
     """
-        Contains base infrastructure that is used for both ThompsonPayoutConfiguration and
-        ThompsonPayoutConfiguration2
+    Contains base infrastructure that is used for both ThompsonPayoutConfiguration and
+    ThompsonPayoutConfiguration2
     """
+    
     def __init__(self,
             random_seed: Optional[int] = None):
         """
@@ -108,7 +111,8 @@ class ThompsonPolicyBase(Generic[A, B, S], PolicyConfiguration[A, B, S]):
             aggregate_bets: Dict[A, B]) -> Dict[A, float]:
         """
         Estimates the probabilities of taking each action by Monte Carlo sampling
-        becaues a closed form solution is very computationally expensive
+        because a closed form solution is very computationally expensive
+        
         Parameters
         ----------
         aggregate_bets: Dict[A, B]
@@ -120,6 +124,7 @@ class ThompsonPolicyBase(Generic[A, B, S], PolicyConfiguration[A, B, S]):
         probabilities: Dict[A, float]
             the monte-carlo estimate of how often each action is chosen
         """
+        
         n_samples: int = 10000  # TODO : should this scale up with the number of actions??
         counts: Dict[A, float] = {action: 0. for action in aggregate_bets}
         for _ in range(n_samples):

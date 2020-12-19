@@ -20,16 +20,20 @@ def add_dictionaries(
     """
     Combines two dictionaries. If a key is found in both dictionaries,
         the values are added
+
     Both arguments are not modified
     V must implement __add__(V, V) -> V
+
     Parameters
     ----------
-        first: Dict[T, V]
-        second: Dict[T, V]
+    first: Dict[T, V]
+    second: Dict[T, V]
+    
     Returns
     -------
-        combined : Dict[T, V]
+    combined : Dict[T, V]
     """
+
     result: Dict[T, V] = copy(first)
     key: T
     value: V
