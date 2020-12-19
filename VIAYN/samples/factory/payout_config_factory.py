@@ -5,10 +5,12 @@
 # @Last Modified time: 2020-12-05 17:09:12
 from dataclasses import dataclass
 from enum import Enum, unique, auto
-from typing import Dict, Callable
+from typing import Dict, Callable, List
 
-from VIAYN.project_types import PayoutConfiguration
+from VIAYN.project_types import PayoutConfiguration, Weighted
 from VIAYN.samples.payout import SuggestedPayoutConfig, SimplePayoutConfig
+from VIAYN.samples.payout import PayoutConfigBase
+from VIAYN.utils import weighted_quartile
 
 
 @unique
@@ -30,6 +32,8 @@ class PayoutConfigFactorySpec:
     def __post_init__(self):
         pass
 
+UBType = Callable[[List[Weighted]], float]
+
 
 class PayoutConfigFactory:
     """
@@ -46,11 +50,17 @@ class PayoutConfigFactory:
     PayoutConfiguration
         created payout config based on spec
     """
-    lookup: Dict[PayoutConfigEnum, Callable[[], PayoutConfiguration]] = {
-        PayoutConfigEnum.simple: lambda: SimplePayoutConfig(),
-        PayoutConfigEnum.suggested: lambda: SuggestedPayoutConfig()
+    lookup: Dict[PayoutConfigEnum, Callable[[UBType], PayoutConfiguration]] = {
+        PayoutConfigEnum.simple: lambda ub_fn: SimplePayoutConfig(ub_fn),
+        PayoutConfigEnum.suggested: lambda ub_fn: SuggestedPayoutConfig(ub_fn)
+    }
+
+    upper_bound_lookup: Dict[UpperBoundConfigEnum, UBType] = {
+        UpperBoundConfigEnum.max: PayoutConfigBase.max_loss,
+        UpperBoundConfigEnum.quartile95: lambda weights: weighted_quartile(weights, 0.95)
     }
 
     @staticmethod
     def create(spec: PayoutConfigFactorySpec) -> PayoutConfiguration:
-        return PayoutConfigFactory.lookup[spec.configType]()
+        ub_fn: UBType = PayoutConfigFactory.upper_bound_lookup[spec.upperBound]
+        return PayoutConfigFactory.lookup[spec.configType](ub_fn)
