@@ -310,8 +310,7 @@ class PolicyConfiguration(Generic[A, B, S], Configuration[A, S], ABC):
         Parameters
         ----------
         aggregate_bet: Dict[A, B]
-            statistics about each action. E.g. weighted mean of predictions => B = float
-s
+            statistics about each action. E.g. weighted mean of predictions => B = floats
 
         Returns
         -------
@@ -319,6 +318,7 @@ s
             the probability that each action will be selected, from 0 to 1
             only one action can be taken
         """
+        
         ...
 
 
