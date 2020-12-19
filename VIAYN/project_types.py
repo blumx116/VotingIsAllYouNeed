@@ -20,6 +20,8 @@ class Action:
 
 VoteBoundGetter = Callable[[int], float]
 # type alias for the type of VotingConfiguration.max_possible_vote_total
+WeightedStatFn = Callable[[List[Tuple[float, float]]], float]
+# function from (weight, value) => float. e.g. weighted mean
 
 
 class VoteRange(ABC):

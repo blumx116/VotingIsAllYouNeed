@@ -8,7 +8,7 @@ from typing import List, Tuple, Dict, Generic, Set
 
 import numpy as np
 
-from VIAYN.project_types import PayoutConfiguration, A, S, ActionBet, HistoryItem, Agent, WeightedBet
+from VIAYN.project_types import PayoutConfiguration, A, S, ActionBet, HistoryItem, Agent, WeightedBet, WeightedStatFn
 from VIAYN.utils import weighted_mean_of_bets
 
 """
@@ -36,7 +36,7 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
         return float(np.max([loss for _, loss in weighted_losses]))
 
     @staticmethod
-    def _quartile_loss_(
+    def quartile_loss(
             weighted_losses: List[Tuple[float, float]],
             quartile: float = 0.95) -> float:
         """
