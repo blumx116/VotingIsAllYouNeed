@@ -16,10 +16,16 @@ class PayoutConfigEnum(Enum):
     simple = auto()
     suggested = auto()
 
+@unique
+class UpperBoundConfigEnum(Enum):
+    max = auto()
+    quartile95 = auto()
+
 
 @dataclass(frozen=True)
 class PayoutConfigFactorySpec:
     configType: PayoutConfigEnum
+    upperBound: UpperBoundConfigEnum = UpperBoundConfigEnum.max
 
     def __post_init__(self):
         pass
