@@ -141,7 +141,7 @@ class ThompsonPolicyConfiguration(Generic[A, S], ThompsonPolicyBase[A, List[Disc
         expensive than what we could use if we know that all of the bets are the same for all timesteps
         in a single timestepsA
 
-        Altnerate Explanation:
+        Alternate Explanation:
         For each action & each timestep, constructs a DiscreteDistribution from the predictions.
         Then samples from each of those discrete distributions to obtain a single prediction for the
         value of that action at that timestep.
