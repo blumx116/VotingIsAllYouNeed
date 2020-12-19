@@ -1,15 +1,23 @@
 # -*- coding: utf-8 -*-
-# @Author: Suhail.Alnahari
-# @Date:   2020-12-09 20:10:07
-# @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-12 17:22:51
+"""
+Created on 2020-12-09 20:10:07
+@author: suhail
+
+This file tests payout configurations
+"""
+
+# standard library
 from typing import Dict, List
-from tests.conftest import floatIsEqual
+
+# 3rd party packages
 import pytest
+import numpy as np
+
+# local source
+from tests.conftest import floatIsEqual
 import VIAYN.project_types as P
 import VIAYN.samples.factory as fac
 import VIAYN.samples.vote_ranges as vote_range
-import numpy as np
 from VIAYN.project_types import PayoutConfiguration, HistoryItem, A, S, ActionBet, Agent, WeightedBet
 from VIAYN.samples.factory import PayoutConfigEnum as PCE
 
@@ -48,20 +56,32 @@ from VIAYN.samples.factory import PayoutConfigEnum as PCE
        
 @pytest.mark.parametrize("enum,pred,t1,t0,R,expected", [
     # (PCE.simple,[],1,0,0,None), # TODO: should throw on creation of WeightedBet
-    (PCE.simple,[3],1,0,1,4),
-    (PCE.simple,[0,3],2,0,1,4),
-    (PCE.simple,[10,10,10,3,10,10,10],4,0,1,4),
-    (PCE.simple,[10,10,10,3,10,10,10],3,0,1,81),
+    (PCE.simple,[3],1,0,1,4), # single timestep predictions
+    (PCE.simple,[0,3],2,0,1,4), # two timestep predictions
+    (PCE.simple,[10,10,10,3,10,10,10],4,0,1,4), # multiple timestep good prediction
+    (PCE.simple,[10,10,10,3,10,10,10],3,0,1,81), # multiple timestep bad prediction
     # (PCE.suggested,[],1,0,0,None),   # TODO: should throw on creation of WeightedBet
-    (PCE.suggested,[3],1,0,1,4),
-    (PCE.suggested,[0,3],2,0,1,4),
-    (PCE.suggested,[10,10,10,3,10,10,10],4,0,1,4),
-    (PCE.suggested,[10,10,10,3,10,10,10],3,0,1,81),
+    (PCE.suggested,[3],1,0,1,4),  # single timestep predictions
+    (PCE.suggested,[0,3],2,0,1,4), # two timestep predictions
+    (PCE.suggested,[10,10,10,3,10,10,10],4,0,1,4), # multiple timestep good prediction
+    (PCE.suggested,[10,10,10,3,10,10,10],3,0,1,81), # multiple timestep bad prediction
 ])
 def test_payout_config_calculate_loss(
     enum,pred,t1,t0,R,expected,
     gen_payout_conf, gen_weighted_bet
 ):
+    """
+    This test checks that calculate loss in payout config
+    satisfies our definition of simple and suggested payouts
+    for one agent
+
+    [enum] is the specifier for which payout config to use, given to the factory
+    [wb] is the weighted bet the agent created at [t0] generated from [pred].
+    The loss should be calculated for the [t1] weightedbet
+    [R] is the welfare score.
+    The other two parameters are test fixtures to help create
+    objects easier.
+    """
     pf: P.PayoutConfiguration = gen_payout_conf(
         enum
     )
@@ -69,50 +89,62 @@ def test_payout_config_calculate_loss(
     assert(floatIsEqual(pf.calculate_loss(wb,t0,t1,R),expected))
 
 @pytest.mark.parametrize("enum,bet,t1,t0,loss,allLs,aj,ai,expected", [
+    # testing random bets and weights with main bet = 1
     (
         PCE.simple,1,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
         10*1
     ),
+    # testing random bets and weights with main bet = 5
     (
         PCE.simple,5,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
         10*5
     ),
+    # testing random bets and weights with high loss
     (
         PCE.simple,5,1,0,10,[(5,0),(4,1),(0.01,10)],1,1,
         0
     ),
+    # testing random bets and weights with average loss
     (
         PCE.simple,5,1,0,5,[(5,0),(4,5),(0.01,10)],1,1,
         5*5
     ),
+    # testing random weights and bets with equal losses
     (
         PCE.simple,5,1,0,5,[(5,5),(4,5),(0.01,5)],1,1,
         5
     ),
+    # testing payout with one agent
     (
         PCE.simple,5,1,0,5,[(5,5)],1,1,
         5
     ),
+    # testing random bets and weights with main bet = 1
     (
         PCE.suggested,1,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
         1*(10/(10-((5*0+4*1+10*0.01)/(5+4+0.01))))
     ),
+    # testing random bets and weights with main bet = 5
     (
         PCE.suggested,5,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
         5*(10/(10-((5*0+4*1+10*0.01)/(5+4+0.01))))
     ),
+    # testing random bets and weights with high loss
     (
         PCE.suggested,5,1,0,10,[(5,0),(4,1),(0.01,10)],1,1,
         0
     ),
+    # testing random bets and weights with average loss
     (
         PCE.suggested,5,1,0,5,[(5,0),(4,5),(0.01,10)],1,1,
         5*(5/(10-((5*0+4*5+10*0.01)/(5+4+0.01))))
     ),
+    # testing random weights and bets with equal losses
     (
         PCE.suggested,5,1,0,5,[(5,5),(4,5),(0.01,5)],1,1,
         5
     ),
+    # testing payout with one agent
     (
         PCE.suggested,5,1,0,5,[(5,5)],1,1,
         5
@@ -122,6 +154,19 @@ def test_payout_config_calculate_payout_from_loss(
     enum,bet,t1,t0,loss,allLs,aj,ai,expected,
     gen_payout_conf, gen_weighted_bet
 ):
+    """
+    This test checks that calculate payout for a given loss in payout 
+    config satisfies our definition of simple and suggested payouts
+    for one agent
+
+    [enum] is the specifier for which payout config to use, given to the factory
+    [bet] is the money the agent bet at [t1].
+    The [loss] is specified at [t1] for a certain agent.
+    [allLs] are the weights and bet amounts of all agents at [t1]
+    [aj] is the action that occured and [ai] is the action in question
+    The other two parameters are test fixtures to help create
+    objects easier.
+    """
     pf: P.PayoutConfiguration = gen_payout_conf(
         enum
     )
@@ -135,6 +180,9 @@ def test_payout_config_calculate_payout_from_loss(
     )
 
 @pytest.mark.parametrize("enum,welfare_score,selectedA, t_current,weightedBets,expected", [
+    # These test cases are mostly sanity checks with random configurations of
+    # a three agent system. The configurations were set to have a sample of what could happen
+    # but are not exhaustive. 
     (
         PCE.simple,
         5.5,
@@ -461,17 +509,32 @@ def test_payout_config_calculate_payout_from_loss(
     ),
 ])
 def test_payout_config_calculate_all_payouts(
-    enum, # factory
+    enum, # factory spec variable
     welfare_score,
     selectedA, t_current, # history
     weightedBets,
     expected,
     gen_payout_conf, gen_weighted_bet,gen_history_item # fixtures
 ):
+    """
+    This test checks that calculate all payouts for a given history item
+    in payout config satisfies our definition of simple and suggested payouts
+    for one agent
+
+    [enum] is the specifier for which payout config to use, given to the factory
+    [welfare_score] is the total happiness for all agents at [t_current].
+    [selectedA] is the action selected by all agents at [t_current]
+    [weightedBets] is what the agents bet at [t_current]
+    The other three parameters are test fixtures to help create
+    objects easier.
+    """
+    
     pf: P.PayoutConfiguration = gen_payout_conf(
         enum
     )
     predsDict: Dict[A, List[WeightedBet[A, S]]] = {}
+    
+    # creating list of weighted bets at t1
     for bet,pred,action,money,castby in weightedBets:
         if (action not in predsDict.keys()):
             predsDict[action] = []
@@ -480,11 +543,15 @@ def test_payout_config_calculate_all_payouts(
                 bet,pred,action,money,castby
             )
         )
+    # TODO: doesn't hit t_cast_on != 0
+    # creating history item that's created at t0 = 0
     record: HistoryItem[A,S] = gen_history_item(
         selectedA,
         predsDict,
         0
     )
+
+    # calculting payouts for history item
     payouts = pf.calculate_all_payouts(
         record,
         welfare_score,
@@ -499,4 +566,3 @@ def test_payout_config_calculate_all_payouts(
         )
 
 
-# TODO: looks like test coverage right now doesn't hit t_cast_on != 0, right?

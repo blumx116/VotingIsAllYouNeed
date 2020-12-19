@@ -1,19 +1,34 @@
 # -*- coding: utf-8 -*-
-# @Author: Suhail.Alnahari
-# @Date:   2020-12-03 19:25:18
-# @Last Modified by:   Suhail.Alnahari
-# @Last Modified time: 2020-12-10 15:02:25
+"""
+Created on 2020-12-03 19:25:18
+@author: suhail
 
+This file tests simple agents in a simple environment
+"""
+
+# standard library
+import random
+
+# 3rd party packages
 import pytest
+import numpy as np
+
+# local source
 import VIAYN.project_types as project_types
 import VIAYN.samples.factory as fac
 import VIAYN.samples.vote_ranges as vote_range
-import numpy as np
-
 from tests.conftest import floatIsEqual
 
 
 def test_constant_simple_agent_basic(constant_agent_config):
+    """
+    This test checks that a constant agent predicts and votes the configured
+    [AB] and [vote] for different states in 100 timesteps.
+
+    [AB] is a specified ActionBet
+    [vote] is a specified float
+    """
+    # for a list of random constant agent configurations:
     for AB,vote in constant_agent_config:
         print(f"constant: {AB.bet} and {AB.prediction}, {vote}")
         agent = fac.AgentFactory.create(
@@ -45,9 +60,18 @@ def test_constant_simple_agent_basic(constant_agent_config):
                     assert(floatIsEqual(action_bet.bet[k], AB.bet[k]))
                 for k in range(len(action_bet.prediction)):
                     assert(floatIsEqual(action_bet.prediction[k], AB.prediction[k]))
-    
+            env.step(random.choice(env.actions()))
 
 def test_random_simple_agent_basic(random_agent_config):
+    """
+    This test checks that a random agent predicts and votes using
+    the configured [seed] and [vote] for different states in 
+    100 timesteps.
+
+    [seed] is a specified seed for bets and predictions where they both
+        have different generators
+    [vote] is a specified float
+    """
     for vote, seed in random_agent_config:
         print(f"random: {vote} , {seed}")
         votingConf = fac.VotingConfigFactory.create(
@@ -93,6 +117,7 @@ def test_random_simple_agent_basic(random_agent_config):
                             genPred.uniform(min, max)
                         )
                     )
+            env.step(random.choice(env.actions()))
 
 
 @pytest.mark.parametrize("N", [
@@ -103,6 +128,13 @@ def test_random_simple_agent_basic(random_agent_config):
     15
 ])
 def test_random_simple_agent_forward_prediction(N):
+    """
+    This test checks that a random agent predicts [N] timesteps
+    using the configured seed = 0 and vote = 5 for different states in 
+    100 timesteps.
+
+    [N] is the length of the time-steps
+    """
     vote, seed = (5,0)
     print(f"random: {vote} , {seed}")
     votingConf = fac.VotingConfigFactory.create(
