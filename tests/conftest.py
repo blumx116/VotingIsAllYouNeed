@@ -150,9 +150,9 @@ def gen_payout_conf():
     and creating it in one call instead of needing to create multiple objects 
     every time to create an payout config
     """
-    def _gen_payout_conf_(configType: factory.PayoutConfigEnum):
+    def _gen_payout_conf_(configType: factory.PayoutConfigEnum, upperBound: factory.UpperBoundConfigEnum = factory.UpperBoundConfigEnum.max):
         return factory.PayoutConfigFactory.create(
-            factory.PayoutConfigFactorySpec(configType)    
+            factory.PayoutConfigFactorySpec(configType, upperBound)    
         )
     return _gen_payout_conf_
 
