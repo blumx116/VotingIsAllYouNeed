@@ -88,3 +88,23 @@ def argmax(args: Sequence[T], fn: Callable[[T], float]) -> Optional[T]:
 
 def dict_argmax(dictionary: Dict[T, float]) -> Optional[T]:
     return argmax(list(dictionary.keys()), lambda key: dictionary[key])
+
+
+def dict_to_fn(dict: Dict[T, V]) -> Callable[[T], V]:
+    """
+    This method makes a dictionary act as a function for easy
+    configuration and testing.
+
+    Note: This function is useful because it enforces type checking.
+
+    Parameters
+    ----------
+    dict: Dict[T, V]
+        a dictionary that maps T type keys to V type values
+    
+    Returns
+    -------
+    result: Callable[[T], V]
+        a function where result(key: T) is equivalent to result[key: T]
+    """
+    pass
