@@ -8,6 +8,7 @@ from enum import Enum, unique, auto
 from dataclasses import dataclass
 from typing import Optional, Union, Tuple, List, Callable, Dict, Iterable
 import numpy as np
+
 from VIAYN.project_types import Agent, VoteBoundGetter, A, S
 from VIAYN.samples.agents import (
     BetSelectionMechanism,
@@ -154,7 +155,7 @@ class AgentFactory:
     @staticmethod
     def _repeat_if_float_(
             value: Union[float, List[float]],
-            n: Optional[int] = None):
+            n: Optional[int] = None) -> List[float]:
         """
         Utility method.
         If a float is passed in for 'value', returns [value] * N
@@ -171,7 +172,8 @@ class AgentFactory:
         if isinstance(value, float):
             # repeat for each timestep
             assert n is not None
-            return [value] * n
+            assert 0 <= value <= 1
+            return [value*1.0/n] * n
         else:
             assert isinstance(value, Iterable)
             if n is not None:

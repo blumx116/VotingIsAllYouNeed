@@ -32,7 +32,7 @@ from VIAYN.samples.factory import PayoutConfigEnum as PCE
 #     total_payouts: Dict[Agent[A, S], float] = {}
 #     for action in record.available_actions():
 #         abets: Dict[Agent[A, S], WeightedBet] = \
-#             {wb.cast_by: wb.to_action_bet() for wb in record.predictions[action]}
+#             {wb.cast_by: wb for wb in record.predictions[action]}
 #         losses: Dict[Agent[A, S], float] = \
 #             { agent: config.calculate_loss(abet, t_cast_on, t_current, welfare_score)
 #                 for agent, abet in abets.items()}
