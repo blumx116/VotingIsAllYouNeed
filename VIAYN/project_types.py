@@ -88,9 +88,13 @@ class ActionBet:
     Minimal version of a bet containing only the parts that are
     directly under the control of the agent
     """
-    bet: List[float]  # percentage of money to be bet @ each timestep
-    prediction: List[float]  # the predictions about the welfare score @ each timestep
+    bet: List[float]  # percentage of money to be bet @ each timestep (bij)
+    prediction: List[float]  # the predictions about the welfare score @ each timestep (pij)
 
+    def __post_init__(self):
+        assert len(self.bet) == len(self.prediction)
+        assert len(self.bet) != 0
+        assert abs(sum(self.bet)) <= 1
 
 class Agent(Generic[A, S], ABC):
     """
@@ -120,29 +124,21 @@ class Agent(Generic[A, S], ABC):
 
 
 @dataclass(frozen=True)
-class WeightedBet(Generic[A, S]):
+class WeightedBet(Generic[A, S],ActionBet):
     """
     Like ActionBet, but with additional metadata about the bet
     that the Agent should NOT be able to control
     """
-    bet: List[float]  # bij
-    prediction: List[float]  # pij
     action: A  # j # the action that the bet was placed on
     money: float  # m_i^(t) # the amount of money the agent has at time of bet
     cast_by: Agent[A, S] # which agent it was cast by
 
     def __post_init__(self):
-        assert len(self.bet) == len(self.prediction)
-        assert len(self.bet) != 0
+        pass
 
     def weight(self) -> List[float]:
         return [bet * self.money for bet in self.bet]
-
-    def to_action_bet(self) -> ActionBet:
-        return ActionBet(bet=self.bet, prediction=self.prediction)
-        # TODO: kill me, please
-
-
+        
 class Environment(Generic[A, S]):
     """
     Generic interface that aligns with OpenAI's Gym
