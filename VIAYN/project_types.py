@@ -91,12 +91,16 @@ class ActionBet:
     bet: List[float]  # percentage of money to be bet @ each timestep
     prediction: List[float]  # the predictions about the welfare score @ each timestep
 
+class AnonymizedHistoryItem:
+     pass 
 
 class Agent(Generic[A, S], ABC):
     """
     Minimal interface for an agent to be used with train.py
     Agent's need to be able to do 2 things : predict & bet
     """
+    t : int = 0 # initial timestep
+
     @abstractmethod
     def vote(self,
             state: S) -> float:
@@ -117,6 +121,9 @@ class Agent(Generic[A, S], ABC):
     if action A is taken, given that they are currently @ (global) state and have the
     input amount of money (personally)
     """
+
+    def view(self, info: AnonymizedHistoryItem) -> None:
+         self.t += 1
 
 
 @dataclass(frozen=True)

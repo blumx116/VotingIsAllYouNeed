@@ -10,7 +10,7 @@ from typing import List, Callable, Optional, Generic
 import numpy as np
 from numpy.random import Generator, default_rng
 
-from VIAYN.project_types import Agent, A, S, ActionBet
+from VIAYN.project_types import Agent, A, S, ActionBet, AnonymizedHistoryItem
 
 
 """
@@ -387,3 +387,53 @@ class CompositeAgent(Generic[A, S], Agent[A, S]):
 
     def bet(self, state: S, action: A, money: float) -> ActionBet:
         return self.betting_mechanism.bet(state, action, money)
+
+class MorphicAgent(Generic[A, S], Agent[A, S]):
+    def __init__(self,
+            agents: List[Agent[A,S]],
+            switch_at: List[int]):
+        """
+        Agent that acts as a specific agent depending on
+        how many view calls switch_at specifies
+
+        agent starts being agents[0] for switch_at[0] number
+        of [view()] calls, then switched to agents[1]...etc
+
+        The last agent circles back to the first and this mechanism
+        continues forever
+
+        Parameters
+        ----------
+        agents: List[Agent[A,S]]
+            list of agents that act for [switch_at] timesteps
+        switch_at: List[int]
+            list of time-steps that specify how long each agent can act for
+        """
+        # assert len(np.unique(switch_at)) == len(switch_at)
+        assert min(switch_at) >-1
+        assert len(agents) > 0
+        assert len(agents) == len(switch_at)
+        self.agents: List[Agent[A,S]] = agents
+        self.switch_at: List[int] = switch_at
+        self._tSnapshot: int = 0
+        self._currentAgent: int = 0
+
+    def vote(self, state: S) -> float:
+        assert 0 <= self._currentAgent < len(self.agents)
+        return self.agents[self._currentAgent].vote(state)
+
+    def bet(self, state: S, action: A, money: float) -> ActionBet:
+        assert 0 <= self._currentAgent < len(self.agents)
+        return self.agents[self._currentAgent].bet(state,action,money)
+
+    def view(self, info: AnonymizedHistoryItem) -> None:
+        Agent.view(self,info)
+        assert 0 <= self._currentAgent < len(self.switch_at)
+        if abs(self.t - self._tSnapshot) > self.switch_at[self._currentAgent]:
+            self._nextAgent()
+
+    def _nextAgent(self) -> None:
+        self._tSnapshot = self.t
+        self._currentAgent += 1
+        self._currentAgent = self._currentAgent % len(self.agents)
+                
