@@ -171,7 +171,12 @@ class AgentFactory:
             # repeat for each timestep
             assert n is not None
             assert 0 <= value <= 1
-            return [value*1.0/n] * n
+            values: List[float] = [value*1.0/n] * n
+            # fixing float errors 
+            epsilon =  0.0000001
+            while sum(values) > value:
+                values[-1] -= epsilon
+            return values
         else:
             assert isinstance(value, Iterable)
             if n is not None:
