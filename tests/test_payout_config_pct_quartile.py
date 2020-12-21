@@ -8,7 +8,7 @@ file: test_payout_config_pct_quartile.py
 
 @created: 2020-12-20T15:12:52.489Z-06:00
 
-@last-modified: 2020-12-20T16:40:26.841Z-06:00
+@last-modified: 2020-12-21T16:06:11.630Z-06:00
 """
 
 # standard library
@@ -62,22 +62,17 @@ def test_payout_config_calculate_loss(
 @pytest.mark.parametrize("enum,bet,t1,t0,loss,allLs,aj,ai,expected", [
     # testing random bets and weights with main bet = 1
     (
-        PCE.simple,1,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
-        1*1
-    ),
-    # testing random bets and weights with main bet = 5
-    (
         PCE.simple,5,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
-        1*5
+        (5+4+0.01)*1
     ),
     # testing random bets and weights with high loss
     (
-        PCE.simple,5,1,0,10,[(5,0),(4,1),(0.01,10)],1,1,
+        PCE.simple,0.01,1,0,10,[(5,0),(4,1),(0.01,10)],1,1,
         0
     ),
     # testing random bets and weights with average loss
     (
-        PCE.simple,5,1,0,5,[(5,0),(4,5),(0.01,10)],1,1,
+        PCE.simple,4,1,0,5,[(5,0),(4,5),(0.01,10)],1,1,
         0
     ),
     # testing random weights and bets with equal losses
@@ -85,24 +80,37 @@ def test_payout_config_calculate_loss(
         PCE.simple,5,1,0,5,[(5,5),(4,5),(0.01,5)],1,1,
         5
     ),
-    # Checking behavior start ONLY 1 FROM EACH PAIR SHOULD PASS
-    # 1st pair
+    # Checking behavior start
+    # 1st group
     (
-        PCE.simple,5,1,0,0,[(9,0),(5,2),(5,10)],1,1,
-        5*2
+        PCE.simple,9,1,0,0,[(9,0),(5,2),(5,10)],1,1,
+        (9+5+5)*2
+    ),
+    # if one above fails this should pass
+    # (
+    #     PCE.simple,9,1,0,0,[(9,0),(5,2),(5,10)],1,1,
+    #     (9+5+5)*10
+    # ),
+    (
+        PCE.simple,5,1,0,2,[(9,0),(5,2),(5,10)],1,1,
+        0
     ),
     (
-        PCE.simple,5,1,0,0,[(9,0),(5,2),(5,10)],1,1,
-        5*10
+        PCE.simple,5,1,0,10,[(9,0),(5,2),(5,10)],1,1,
+        0
     ),
-    # 2nd pair
+    # 2nd group
     (
-        PCE.simple,5,1,0,0,[(9,0),(5.001,2),(4.999,10)],1,1,
-        5*2
+        PCE.simple,5.001,1,0,2,[(9,0),(5.001,2),(4.999,10)],1,1,
+        0
     ),
     (
-        PCE.simple,5,1,0,0,[(9,0),(4.999,2),(5.001,10)],1,1,
-        5*10
+        PCE.simple,4.999,1,0,10,[(9,0),(5.001,2),(4.999,10)],1,1,
+        0
+    ),
+    (
+        PCE.simple,4.999,1,0,2,[(9,0),(4.999,2),(5.001,10)],1,1,
+        0
     ),
     # Checking behavior end
     # testing payout with one agent
@@ -110,25 +118,25 @@ def test_payout_config_calculate_loss(
         PCE.simple,5,1,0,5,[(5,5)],1,1,
         5
     ),
-    # testing random bets and weights with main bet = 1
-    (
-        PCE.suggested,1,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
-        1*(1/(1+(1-1)))
-    ),
     # testing random bets and weights with main bet = 5
     (
         PCE.suggested,5,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
-        5*(1/(1+(1-1)))
+        (5+4+0.01)*(1/(1+(1-1)))
     ),
     # testing random bets and weights with high loss
     (
-        PCE.suggested,5,1,0,10,[(5,0),(4,1),(0.01,10)],1,1,
+        PCE.suggested,0.01,1,0,10,[(5,0),(4,1),(0.01,10)],1,1,
         0
     ),
-    # testing random bets and weights with average loss
+    # testing random bets and weights with average loss max confidence loss agent
     (
-        PCE.suggested,5,1,0,5,[(5,0),(4,5),(0.01,10)],1,1,
-        5*(25/(25+(25-25)))
+        PCE.suggested,4,1,0,5,[(5,0),(4,5),(0.01,10)],1,1,
+        0
+    ),
+    # testing random bets and weights with average loss winner
+    (
+        PCE.suggested,5,1,0,0,[(5,0),(4,5),(0.01,10)],1,1,
+        5+4+0.01
     ),
     # testing random weights and bets with equal losses
     (
@@ -140,24 +148,37 @@ def test_payout_config_calculate_loss(
         PCE.suggested,5,1,0,5,[(5,5)],1,1,
         5
     ),
-    # Checking behavior start ONLY 1 FROM EACH PAIR SHOULD PASS
-    # 1st pair
+    # Checking behavior start
+    # 1st group
     (
-        PCE.suggested,5,1,0,0,[(9,0),(5,2),(5,10)],1,1,
-        5*2
+        PCE.suggested,9,1,0,0,[(9,0),(5,2),(5,10)],1,1,
+        9+5+5
     ),
     (
-        PCE.suggested,5,1,0,0,[(9,0),(5,2),(5,10)],1,1,
-        5*10
-    ),
-    # 2nd pair
-    (
-        PCE.suggested,5,1,0,0,[(9,0),(5.001,2),(4.999,10)],1,1,
-        5*2
+        PCE.suggested,5,1,0,2,[(9,0),(5,2),(5,10)],1,1,
+        0
     ),
     (
-        PCE.suggested,5,1,0,0,[(9,0),(4.999,2),(5.001,10)],1,1,
-        5*10
+        PCE.suggested,5,1,0,10,[(9,0),(5,2),(5,10)],1,1,
+        0
+    ),
+    # 2nd group
+    (
+        PCE.suggested,9,1,0,0,[(9,0),(5.001,2),(4.999,10)],1,1,
+        9+5.001+4.999
+    ),
+    (
+        PCE.suggested,5.001,1,0,2,[(9,0),(5.001,2),(4.999,10)],1,1,
+        0
+    ),
+    (
+        PCE.suggested,4.999,1,0,10,[(9,0),(5.001,2),(4.999,10)],1,1,
+        0
+    ),
+    # order doesn't matter
+    (
+        PCE.suggested,4.999,1,0,2,[(9,0),(4.999,2),(5.001,10)],1,1,
+        0
     ),
     # Checking behavior end
 ])
@@ -517,6 +538,36 @@ def test_payout_config_calculate_payout_from_loss(
             ([0.01,0.4,0.3],[24,7.4,8.5],'a2',15,'A3'),
         ],
         {'A1': 5.75,'A2': 3.45,'A3': 0.0}
+    ),
+    # agent with a lot of money wants to cheat the system
+    (
+        PCE.suggested,
+        4,
+        'a2',1,
+        [
+            ([0.5,0.25,0.25],[5,4,6],'a1',5,'A1'),
+            ([0.2,0.4,0.4],[3,7,9],'a2',3,'A2'),
+            ([0.9,0.05,0.05],[1,5,11],'a1',3,'A2'),
+            ([0.3,0.4,0.3],[1,7,10],'a2',5,'A1'),
+            ([0.4,0.1,0.1],[3,0,5.5],'a1',15,'A3'),
+            ([0.005,0.4,0.3],[24,7.4,8.5],'a2',15,'A3'),
+        ],
+        {'A1': 2.175,'A2': 0.0,'A3': 0.0}
+    ),
+    # agent with a lot of money wants to cheat the system
+    (
+        PCE.suggested,
+        3,
+        'a2',1,
+        [
+            ([0.5,0.25,0.25],[5,4,6],'a1',5,'A1'),
+            ([0.2,0.4,0.4],[3,7,9],'a2',3,'A2'),
+            ([0.9,0.05,0.05],[1,5,11],'a1',3,'A2'),
+            ([0.3,0.4,0.3],[1,7,10],'a2',5,'A1'),
+            ([0.4,0.1,0.1],[3,0,5.5],'a1',15,'A3'),
+            ([0.005,0.4,0.3],[24,7.4,8.5],'a2',15,'A3'),
+        ],
+        {'A1': 0.0,'A2': 2.175,'A3': 0.0}
     ),
 ])
 def test_payout_config_calculate_all_payouts(
