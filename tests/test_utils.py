@@ -221,3 +221,29 @@ def test_weighted_mean_shouldFail(bets,predictions,moneys,expected,gen_weighted_
 ])
 def test_argmax(arr,vals,expected):
     assert(U.argmax(arr,lambda x: vals[x]) == expected)
+
+@pytest.mark.parametrize("dictionary",[
+    ({'a':1,'b':2,'c':5}), # simple case
+    ({str(a):a+1 for a in range(100)}), # general case
+])
+def test_dict_to_fn(dictionary):
+    fun = U.dict_to_fn(dictionary)
+    for i in dictionary:
+        assert dictionary[i] == fun(i)
+
+@pytest.mark.parametrize("dictionary,values",[
+    ({'a':1,'b':2,'c':5},['d']), # key not present in dictionary
+    ({'1':1,'2':2,'3':5},[1]), # key different type than one in dictionary
+    ({},[]), # empty dictionary
+    ({'a':1,'b':2,10:5},[]), # different types
+    ({str(a):a+1 for a in range(100)}, ['100']), # general case
+    ({str(a):a+1 for a in range(100)}, [99]), # general case
+])
+def test_dict_to_fn_should_fail(dictionary,values):
+    try:
+        fun = U.dict_to_fn(dictionary)
+        for i in values:
+            fun(i)
+        assert(False)
+    except:
+        assert(True)
