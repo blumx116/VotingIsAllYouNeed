@@ -95,7 +95,7 @@ class ActionBet:
         assert len(self.bet) == len(self.prediction)
         assert len(self.bet) != 0
         assert sum(self.bet) <= 1
-        for b in bet:
+        for b in self.bet:
             assert b >= 0
 
 class Agent(Generic[A, S], ABC):
