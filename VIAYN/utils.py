@@ -107,7 +107,7 @@ def weighted_mean(
         weighted_vals: List[Weighted]) -> float:
     weighted_vals = normalize_weight(weighted_vals)
     # TODO: could be spend up with np.mean???
-    return float(np.sum(weighted_vals))
+    return float(np.sum([w.weight * w.val for w in weighted_vals]))
 
 def weighted_quartile(
         weighted_losses: List[Weighted],

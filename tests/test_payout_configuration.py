@@ -18,7 +18,7 @@ from tests.conftest import floatIsEqual
 import VIAYN.project_types as P
 import VIAYN.samples.factory as fac
 import VIAYN.samples.vote_ranges as vote_range
-from VIAYN.project_types import PayoutConfiguration, HistoryItem, A, S, ActionBet, Agent, WeightedBet
+from VIAYN.project_types import PayoutConfiguration, HistoryItem, A, S, ActionBet, Agent, WeightedBet, Weighted
 from VIAYN.samples.factory import PayoutConfigEnum as PCE
 
 # def payout_config_isomorphism(
@@ -90,10 +90,10 @@ def test_payout_config_calculate_loss(
 
 @pytest.mark.parametrize("enum,bet,t1,t0,loss,allLs,aj,ai,expected", [
     # testing random bets and weights with main bet = 1
-    (
-        PCE.simple,1,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
-        10*1
-    ),
+    # (
+    #     PCE.simple,1,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
+    #     10*1
+    # ), # TODO: not a valid bet to evaluate
     # testing random bets and weights with main bet = 5
     (
         PCE.simple,5,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
@@ -173,7 +173,7 @@ def test_payout_config_calculate_payout_from_loss(
     assert(
         floatIsEqual(
             pf.calculate_payout_from_loss(
-                bet,loss,allLs,t0,t1,aj,ai
+                bet, loss, list(map(lambda t: Weighted(*t), allLs)),t0,t1,aj,ai
             ),
             expected
         )

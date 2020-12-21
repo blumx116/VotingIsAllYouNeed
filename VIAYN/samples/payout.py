@@ -116,7 +116,7 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
         # extract bet amounts
 
         if len(np.unique(list(losses.values()))) == 1: # everyone has the same loss
-            return bet_amounts # just give everyone their money back
+            return bet_amounts  # just give everyone their money back
 
         payouts: List[float] = self._batch_payout_from_losses_(
             [Weighted(bet_amounts[agent], losses[agent]) for agent in losses.keys()])
@@ -203,7 +203,7 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             welfare_score=welfare_score)
 
     def calculate_payout_from_loss(self,
-            bet_amount_to_evaluate: float, # weight (money * bet_amount)
+            bet_amount_to_evaluate: float,  # weight (money * bet_amount)
             loss_to_evaluate: float,
             all_losses: List[Weighted],  # [(weight, loss)]
             t_cast_on: int,  # timestep info lets us discount by timestep
@@ -216,7 +216,7 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             if len(np.unique([w.val for w in all_losses])) == 1:
                 return bet_amount_to_evaluate
             return bet_amount_to_evaluate * \
-                (float(np.max(all_losses)) - loss_to_evaluate)
+                (self.upper_bound(all_losses) - loss_to_evaluate)
         else:
             # no payout for non-selected actions
             return 0.
@@ -234,7 +234,7 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
         payout: List[float]
             payout corresponding to each element of the tuple
         """
-        max_loss: float = max([w.val for w in weighted_losses])
+        max_loss: float = self.upper_bound(weighted_losses)
 
         # same as calculate_payout_from_loss except max computation is cached
         return [loss.weight * PayoutConfigBase.advantage(loss.val, max_loss) for loss in weighted_losses]
