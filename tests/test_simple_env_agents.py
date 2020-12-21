@@ -102,8 +102,7 @@ def test_random_simple_agent_basic(random_agent_config):
             assert(agent.vote(state) == vote)
             for j in env.actions():
                 action_bet = agent.bet(state, j, 1)
-                for k in range(len(action_bet.bet)):
-                    assert(floatIsEqual(action_bet.bet[k], 0.5))
+                assert sum(action_bet.bet) <= 1
                 for k in range(len(action_bet.prediction)):
                     min: float = votingConf.min_possible_vote_total()
                     max: float = votingConf.max_possible_vote_total()
@@ -172,8 +171,7 @@ def test_random_simple_agent_forward_prediction(N):
             assert(
                 len(action_bet.prediction) == N
             )
-            for k in range(len(action_bet.bet)):
-                assert(floatIsEqual(action_bet.bet[k], 0.5))
+            assert sum(action_bet.bet) <= 1
             for k in range(len(action_bet.prediction)):
                 min: float = votingConf.min_possible_vote_total()
                 max: float = votingConf.max_possible_vote_total()
