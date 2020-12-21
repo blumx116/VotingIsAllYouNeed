@@ -94,7 +94,9 @@ class ActionBet:
     def __post_init__(self):
         assert len(self.bet) == len(self.prediction)
         assert len(self.bet) != 0
-        assert abs(sum(self.bet)) <= 1
+        assert sum(self.bet) <= 1
+        for b in bet:
+            assert b >= 0
 
 class Agent(Generic[A, S], ABC):
     """
@@ -134,7 +136,8 @@ class WeightedBet(Generic[A, S],ActionBet):
     cast_by: Agent[A, S] # which agent it was cast by
 
     def __post_init__(self):
-        pass
+        ActionBet.__post_init__(self)
+        # check for weighted bet requirements below
 
     def weight(self) -> List[float]:
         return [bet * self.money for bet in self.bet]

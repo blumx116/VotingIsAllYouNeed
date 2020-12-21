@@ -172,12 +172,8 @@ class AgentFactory:
             assert n is not None
             assert 0 <= value <= 1
             res: List[float] = [value*1.0/n] * n
-            floatErr = abs(1-np.sum(res))
-            for i in range(len(res)):
-                res[i] = max(0,res[i] - floatErr)
-                floatErr -= res[i]
-                if (floatErr <= 0):
-                    return res
+            # subtract float error from last element
+            res[-1] -= value-np.sum(res)
             return res
         else:
             assert isinstance(value, Iterable)
