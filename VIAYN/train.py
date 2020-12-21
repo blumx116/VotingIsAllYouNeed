@@ -10,7 +10,8 @@ import numpy as np
 
 from VIAYN.project_types import (
     Agent, Environment, SystemConfiguration, VotingConfiguration, A, S, B, VoteRange,
-    HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration, PolicyConfiguration)
+    HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration, PolicyConfiguration,
+    AnonymizedHistoryItem)
 from VIAYN.utils import add_dictionaries
 
 
@@ -172,7 +173,12 @@ def train(
             # essentially 'refunds' bets on any actions that were not selected
 
             env.step(action)
-            
+
+            # update agent history
+            ahi = AnonymizedHistoryItem()
+            for agent in agents:
+                agent.view(ahi)
+
             current_history.append(
                 HistoryItem(
                     selected_action=action,
