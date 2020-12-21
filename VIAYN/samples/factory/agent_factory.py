@@ -8,7 +8,8 @@ from enum import Enum, unique, auto
 from dataclasses import dataclass
 from typing import Optional, Union, Tuple, List, Callable, Dict, Iterable
 import numpy as np
-from VIAYN.project_types import Agent, VoteBoundGetter
+
+from VIAYN.project_types import Agent, VoteBoundGetter, A, S
 from VIAYN.samples.agents import (
     BetSelectionMechanism,
     PredictionSelectionMechanism,
@@ -18,7 +19,8 @@ from VIAYN.samples.agents import (
     StaticVotingMechanism,
     StaticBetSelectionMech,
     StaticPredSelectionMech,
-    RNGUniforPredSelectionMech
+    RNGUniforPredSelectionMech,
+    MorphicAgent
 )
 
 @unique
@@ -182,6 +184,31 @@ class AgentFactory:
             if n is not None:
                 assert len(value) == n
             return value
+    
+    @staticmethod
+    def sequentialize(agents: List[Agent[A,S]], switch_at: List[int]) -> Agent[A,S]:
+        """
+        Method that creates an agent Manager that acts as an agent in [agents] for a certain
+        number of time-steps
+
+        Parameters
+        ----------
+        agents: List[Agent[A,S]]
+            agents of the same type that will act in the order given in the list
+            for [switch_at] time-steps each
+        switch_at: List[int]
+            each element in the list corresponds to the amount of time-steps
+            the agent at the corresponding position in [agents] will be acting for
+
+        Returns
+        -------
+        Agent
+            agent manager that plugs agents in and out sequentially based on 
+            the amount of time specified in [switch_at]
+        """
+        # assert len(np.unique(switch_at)) == len(switch_at)
+        return MorphicAgent(agents,switch_at)
+
 
     _creators_: Dict[AgentsEnum, Callable[[AgentFactorySpec], Agent]] = {
         AgentsEnum.random: lambda x: AgentFactory._create_random_agent_(x),
