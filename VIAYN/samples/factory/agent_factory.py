@@ -75,9 +75,13 @@ class AgentFactorySpec(Generic[A, S]):
     prediction: Optional[Union[float, List[float]]] = None
     bet: Optional[Union[float, List[float]]] = None
     N: Optional[int] = None
-    vote_lookup: Dict[S, Union[VotingMechanism[S], float]] = None
-    bet_lookup: Dict[S, Union[BetSelectionMechanism[A, S], List[float], float]] = None
-    prediction_lookup: Dict[S, Union[PredictionSelectionMechanism[A, S], List[float], float]] = None
+    vote_lookup: Optional[Dict[S, Union[VotingMechanism[S], float]]] = None
+    bet_lookup: Optional[Dict[
+        Tuple[Optional[S], Optional[A], Optional[float]],
+        Union[BetSelectionMechanism[A, S], List[float], float]]] = None
+    prediction_lookup: Optional[Dict[
+        Tuple[Optional[S], Optional[A], Optional[float]],
+        Union[PredictionSelectionMechanism[A, S], List[float], float]]] = None
     
     def __post_init__(self):
         # constant agent uses these params in addition to vote at least
