@@ -6,11 +6,12 @@
 
 from enum import Enum, unique, auto
 from dataclasses import dataclass
-from typing import Optional, Union, Tuple, List, Callable, Dict, Iterable
+from typing import Optional, Union, Tuple, List, Callable, Dict, Iterable, Generic
 import numpy as np
 
 from VIAYN.project_types import Agent, VoteBoundGetter, A, S
 from VIAYN.samples.agents import (
+    VotingMechanism,
     BetSelectionMechanism,
     PredictionSelectionMechanism,
     VotingMechanism,
@@ -29,10 +30,12 @@ class AgentsEnum(Enum):
     constant = auto()
     # random agent returns random predictions that are specified with length N
     random = auto()
+    composite = auto()
+    # agent with voting, bet selection and prediction selection specified separately
 
 
 @dataclass(frozen=True)
-class AgentFactorySpec:
+class AgentFactorySpec(Generic[A, S]):
     """
     Typed Spec to input to [AgentFactory.create] to create an [Agent]
     
@@ -72,6 +75,9 @@ class AgentFactorySpec:
     prediction: Optional[Union[float, List[float]]] = None
     bet: Optional[Union[float, List[float]]] = None
     N: Optional[int] = None
+    vote_lookup: Dict[S, Union[VotingMechanism[S], float]] = None
+    bet_lookup: Dict[S, Union[BetSelectionMechanism[A, S], List[float], float]] = None
+    prediction_lookup: Dict[S, Union[PredictionSelectionMechanism[A, S], List[float], float]] = None
     
     def __post_init__(self):
         # constant agent uses these params in addition to vote at least
@@ -83,6 +89,11 @@ class AgentFactorySpec:
             assert(self.N is not None)
             assert(self.totalVotesBound is not None)
             assert(self.bet is not None)
+        elif self.agentType == AgentsEnum.composite:
+            assert self.vote_lookup is not None
+            assert self.bet_lookup is not None
+            assert self.prediction_lookup is not None
+            # there should probably be some more checks that we do here
         else:
             raise TypeError(self.agentType)
 
