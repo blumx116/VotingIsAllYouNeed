@@ -5,12 +5,13 @@
 # @Last Modified time: 2020-12-06 14:54:12
 from abc import ABC, abstractmethod
 from copy import copy
-from typing import List, Callable, Optional, Generic
+from typing import List, Callable, Optional, Generic, Dict, Union, Tuple
 
 import numpy as np
 from numpy.random import Generator, default_rng
 
 from VIAYN.project_types import Agent, A, S, ActionBet, AnonymizedHistoryItem
+from VIAYN.utils import policy_lookup
 
 
 """
@@ -90,6 +91,20 @@ class StaticVotingMechanism(Generic[S], VotingMechanism[S]):
         return self.constant_vote
 
 
+class LookupBasedVotingMechanism(VotingMechanism[S], Generic[S]):
+    def __init__(self,
+            lookup: Dict[S, Union[VotingMechanism[S], float]]):
+        self.delegation_lookup: Dict[S, VotingMechanism[S]] = {
+            s: voter if isinstance(voter, VotingMechanism) else
+            StaticVotingMechanism(voter)
+            for s, voter in lookup.items()
+        }
+
+    def vote(self, state: S) -> float:
+        assert state in self.delegation_lookup
+        return self.delegation_lookup[state].vote(state)
+
+
 class BetSelectionMechanism(Generic[A, S], ABC):
     """
     Abstract class for independent subcomponent of an agent that handles betting
@@ -157,6 +172,20 @@ class StaticBetSelectionMech(Generic[A, S], BetSelectionMechanism [A, S]):
         """
         return copy(self.constant_bet)
         # copies so that the og bet isn't changed if someone edits the bet
+
+
+class LookupBasedBetSelectionMech(BetSelectionMechanism[A, S], Generic[A, S]):
+    def __init__(self,
+            lookup: Dict[Tuple[Optional[S], Optional[A], Optional[float]], Union[BetSelectionMechanism[A, S], List[float]]]):
+        self.lookup: Dict[Tuple[Optional[S], Optional[A], Optional[float]], BetSelectionMechanism[A, S]] = {
+            key: bets if isinstance(bets, BetSelectionMechanism)
+            else StaticBetSelectionMech(bets)
+            for key, bets in lookup.items()}
+
+    def select_bet_amount(self, state: S, action: A, money: float) -> List[float]:
+        key: Tuple[S, A, float] = (state, action, money)
+        mechanism: BetSelectionMechanism[S, A, float] = policy_lookup(key, self.lookup)
+        return mechanism.select_bet_amount(state, action, money)
 
 
 class PredictionSelectionMechanism(Generic[A, S], ABC):
@@ -273,6 +302,23 @@ class StaticPredSelectionMech(Generic[A, S], PredictionSelectionMechanism[A, S])
             the same constant prediction every time
         """
         return copy(self.constant_prediction)
+
+
+class LookupBasedPredSelectionMech(PredictionSelectionMechanism[A, S], Generic[A, S]):
+    def __init__(self,
+            lookup: Dict[Tuple[Optional[S], Optional[A], Optional[float]],
+                         Union[PredictionSelectionMechanism[A, S], List[float]]]):
+        self.lookup: Dict[Tuple[Optional[S], Optional[A], Optional[float]],
+                         PredictionSelectionMechanism[A, S]] = {
+            key: value if isinstance(value, PredictionSelectionMechanism)
+            else StaticPredSelectionMech(value)
+            for key, value in lookup.items()
+        }
+
+    def select_prediction(self, state: S, action: A, money: float) -> List[float]:
+        key: Tuple[S, A, float] = (state, action, money)
+        delegate: PredictionSelectionMechanism[A, S] = policy_lookup(key, self.lookup)
+        return delegate.select_prediction(state, action, money)
 
 
 class BettingMechanism(Generic[A, S], ABC):
