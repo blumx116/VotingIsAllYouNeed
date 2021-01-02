@@ -4,7 +4,7 @@
 # @Last Modified by:   Suhail.Alnahari
 # @Last Modified time: 2020-12-10 14:59:06
 from copy import copy
-from typing import Dict, List, Sequence, TypeVar, Optional, Callable
+from typing import Dict, List, Sequence, TypeVar, Optional, Callable, Any
 
 import numpy as np
 
@@ -88,3 +88,89 @@ def argmax(args: Sequence[T], fn: Callable[[T], float]) -> Optional[T]:
 
 def dict_argmax(dictionary: Dict[T, float]) -> Optional[T]:
     return argmax(list(dictionary.keys()), lambda key: dictionary[key])
+
+def iterable_matches(item: Sequence, filter: Sequence) -> int:
+    """
+    This is a bit of a weird function to match sequences with filters.
+    It's currently intended to be used for look-up in a dictionary with optional arguments.
+
+    Here are some examples:
+    iterable_matches((s1, a1), (s1, a1)) => 2
+    iterable_matches((s1, a1), (s1, a2)) => -1
+    iterable_matches((s1, a1), (s1, None)) => 1
+
+    in short, it checks if every non-None element of the filter is equal to the
+    corresponding element of the item. If not, it returns -1. If yes, then it
+    returns the number of non-None values in the filter.
+
+    This is useful for making policies of varying strictness for look-up in a dictionary.
+    Given a lookup of the form Dict[filter: Tuple, value: whatever], you can iterate through the items
+    to find the key that matches the strictes filter (the filter that returns the highest value from
+    iterable matches). See policy_lookup
+
+    Parameters
+    ----------
+    item: Sequence
+        item to check
+    filter: Sequence
+        each element of the filter should have the same type as
+        the corresponding element of item or be None
+
+    Returns
+    -------
+    n_matches: int
+        returns -1 if there are any non-None elements of filter
+        that 'item' doesn't match.
+        Otherwise, returns the number of non-None elements of filter
+    """
+    assert len(item) == len(filter)
+    assert len(filter) > 0
+    n_matches: int = 0
+    for item_elem, filter_elem in zip(item, filter):
+        if filter_elem is not None:
+            if item_elem == filter_elem:
+                n_matches += 1
+            else:
+                return -1
+    return n_matches
+
+
+K = TypeVar("K", bound=Sequence)
+
+
+def policy_lookup(key: K, lookup: Dict[K, V]) -> Optional[V]:
+    """
+    Assumes the key argument and the keys of lookup are both sequences of the same types.
+    Keys of lookup are interpreted as filters
+
+    Iterates through the elements of lookup and tries to find the most restrictive filter that
+    still matches the key argument.
+
+    Returns the corresponding value in lookup. If no such value found, returns None
+
+    Parameters
+    ----------
+    key: K (Sequence)
+    lookup: Dict[K, V]]
+        keys like key except may contain Nones
+        interpreted as filters of varying strictness
+
+    Returns
+    -------
+    best_match: Optional[V]
+         the value corresponding to the strictest filter that
+         'key' was able to fulfil. None if no filters were fulfilled
+    """
+    best_matching_val: Optional[V] = None
+    best_match_score: Optional[float] = None
+
+    k: K
+    v: V
+    for k, v in lookup.items():
+        score: float = iterable_matches(key, k)
+        if score >= 0:
+            if best_match_score is None or \
+                    score > best_match_score:
+                best_match_score = score
+                best_matching_val = v
+    return best_matching_val
