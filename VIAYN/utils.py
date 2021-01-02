@@ -11,12 +11,12 @@ import numpy as np
 from VIAYN.project_types import A, S, WeightedBet
 
 T = TypeVar("T")
-V = TypeVar("V", int, float, complex, str)
+U = TypeVar("U", int, float, complex, str)
 
 
 def add_dictionaries(
-        first: Dict[T, V],
-        second: Dict[T, V]) -> Dict[T, V]:
+        first: Dict[T, U],
+        second: Dict[T, U]) -> Dict[T, U]:
     """
     Combines two dictionaries. If a key is found in both dictionaries,
         the values are added
@@ -30,9 +30,9 @@ def add_dictionaries(
     -------
         combined : Dict[T, V]
     """
-    result: Dict[T, V] = copy(first)
+    result: Dict[T, U] = copy(first)
     key: T
-    value: V
+    value: U
     for key, value in second.items():
         if key in result:
             result[key] += value
@@ -136,6 +136,7 @@ def iterable_matches(item: Sequence, filter: Sequence) -> int:
 
 
 K = TypeVar("K", bound=Sequence)
+V = TypeVar("V")
 
 
 def policy_lookup(key: K, lookup: Dict[K, V]) -> Optional[V]:

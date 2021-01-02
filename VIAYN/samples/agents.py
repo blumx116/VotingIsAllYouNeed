@@ -184,7 +184,8 @@ class LookupBasedBetSelectionMech(BetSelectionMechanism[A, S], Generic[A, S]):
 
     def select_bet_amount(self, state: S, action: A, money: float) -> List[float]:
         key: Tuple[S, A, float] = (state, action, money)
-        mechanism: BetSelectionMechanism[S, A, float] = policy_lookup(key, self.lookup)
+        mechanism: Optional[BetSelectionMechanism[A, S]] = policy_lookup(key, self.lookup)
+        assert mechanism is not None
         return mechanism.select_bet_amount(state, action, money)
 
 
@@ -317,7 +318,8 @@ class LookupBasedPredSelectionMech(PredictionSelectionMechanism[A, S], Generic[A
 
     def select_prediction(self, state: S, action: A, money: float) -> List[float]:
         key: Tuple[S, A, float] = (state, action, money)
-        delegate: PredictionSelectionMechanism[A, S] = policy_lookup(key, self.lookup)
+        delegate: Optional[PredictionSelectionMechanism[A, S]] = policy_lookup(key, self.lookup)
+        assert delegate is not None
         return delegate.select_prediction(state, action, money)
 
 
@@ -482,4 +484,3 @@ class MorphicAgent(Generic[A, S], Agent[A, S]):
         self._tSnapshot = self.t
         self._currentAgent += 1
         self._currentAgent = self._currentAgent % len(self.agents)
-                
