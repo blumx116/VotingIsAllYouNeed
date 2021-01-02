@@ -12,6 +12,9 @@ import numpy as np
 from VIAYN.project_types import Agent, VoteBoundGetter, A, S
 from VIAYN.samples.agents import (
     VotingMechanism,
+    LookupBasedVotingMechanism,
+    LookupBasedBetSelectionMech,
+    LookupBasedPredSelectionMech,
     BetSelectionMechanism,
     PredictionSelectionMechanism,
     VotingMechanism,
@@ -168,6 +171,40 @@ class AgentFactory:
                 bet_selection=AgentFactory._create_static_bet_selection_(spec)))
 
     @staticmethod
+    def _create_lookup_vote_selection_(spec: AgentFactorySpec) -> VotingMechanism:
+        assert spec.vote_lookup is not None
+        return LookupBasedVotingMechanism(spec.vote_lookup)
+
+    @staticmethod
+    def _create_lookup_pred_selection_(spec: AgentFactorySpec) -> PredictionSelectionMechanism:
+        assert spec.prediction_lookup is not None
+        return LookupBasedPredSelectionMech({
+            key: value if not isinstance(value, float)
+            else AgentFactory._repeat_if_float_(value, spec.N)
+            for key, value in spec.prediction_lookup.items()
+        })
+
+    @staticmethod
+    def _create_lookup_bet_selection_(spec: AgentFactorySpec) -> BetSelectionMechanism:
+        assert spec.bet_lookup is not None
+        return LookupBasedBetSelectionMech({
+            key: value if not isinstance(value, float)
+            else AgentFactory._repeat_if_float_(value, spec.N)
+            for key, value in spec.bet_lookup.items()
+        })
+
+    @staticmethod
+    def _create_composite_agent_(
+            spec: AgentFactorySpec) -> Agent:
+        return CompositeAgent(
+            voting_mechanism=AgentFactory._create_lookup_vote_selection_(spec),
+            betting_mechanism=CompositeBettingMechanism(
+                prediction_selection=AgentFactory._create_lookup_pred_selection_(spec),
+                bet_selection=AgentFactory._create_lookup_bet_selection_(spec)
+            )
+        )
+
+    @staticmethod
     def _repeat_if_float_(
             value: Union[float, List[float]],
             n: Optional[int] = None) -> List[float]:
@@ -189,7 +226,7 @@ class AgentFactory:
             assert n is not None
             assert 0 <= value <= 1
             values: List[float] = [value*1.0/n] * n
-            # fixing float errors 
+            # fixing float errors
             epsilon =  0.0000001
             while sum(values) > value:
                 values[-1] -= epsilon
@@ -227,5 +264,6 @@ class AgentFactory:
 
     _creators_: Dict[AgentsEnum, Callable[[AgentFactorySpec], Agent]] = {
         AgentsEnum.random: lambda x: AgentFactory._create_random_agent_(x),
-        AgentsEnum.constant: lambda x: AgentFactory._create_static_agent_(x)
+        AgentsEnum.constant: lambda x: AgentFactory._create_static_agent_(x),
+        AgentsEnum.composite: lambda x: AgentFactory._create_composite_agent_(x)
     }
