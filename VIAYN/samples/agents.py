@@ -11,7 +11,7 @@ import numpy as np
 from numpy.random import Generator, default_rng
 
 from VIAYN.project_types import Agent, A, S, ActionBet, AnonymizedHistoryItem
-from VIAYN.utils import policy_lookup
+from VIAYN.utils import behaviour_lookup_from_dict
 
 
 """
@@ -184,7 +184,7 @@ class LookupBasedBetSelectionMech(BetSelectionMechanism[A, S], Generic[A, S]):
 
     def select_bet_amount(self, state: S, action: A, money: float) -> List[float]:
         key: Tuple[S, A, float] = (state, action, money)
-        mechanism: Optional[BetSelectionMechanism[A, S]] = policy_lookup(key, self.lookup)
+        mechanism: Optional[BetSelectionMechanism[A, S]] = behaviour_lookup_from_dict(key, self.lookup)
         assert mechanism is not None
         return mechanism.select_bet_amount(state, action, money)
 
@@ -318,7 +318,7 @@ class LookupBasedPredSelectionMech(PredictionSelectionMechanism[A, S], Generic[A
 
     def select_prediction(self, state: S, action: A, money: float) -> List[float]:
         key: Tuple[S, A, float] = (state, action, money)
-        delegate: Optional[PredictionSelectionMechanism[A, S]] = policy_lookup(key, self.lookup)
+        delegate: Optional[PredictionSelectionMechanism[A, S]] = behaviour_lookup_from_dict(key, self.lookup)
         assert delegate is not None
         return delegate.select_prediction(state, action, money)
 

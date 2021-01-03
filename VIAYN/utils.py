@@ -139,7 +139,7 @@ K = TypeVar("K", bound=Sequence)
 V = TypeVar("V")
 
 
-def policy_lookup(key: K, lookup: Dict[K, V]) -> Optional[V]:
+def behaviour_lookup_from_dict(key: K, lookup: Dict[K, V]) -> Optional[V]:
     """
     Assumes the key argument and the keys of lookup are both sequences of the same types.
     Keys of lookup are interpreted as filters
