@@ -224,13 +224,61 @@ def test_argmax(arr,vals,expected):
 
 
 @pytest.mark.parametrize("item,filter,expected", [
-    ((),(),0)
+    # All items in item are non-None
+    (('a',1,'b'),(None,None,None),0), # nothing matches
+    (('a',1,'b'),('a',None,None),1), # 1 matches
+    (('a',1,'b'),('a',1,None),2), # 2 matches
+    (('a',1,'b'),('a',1,'b'),3), # All match
+    (('a',1,'b'),(None,1,'b'),2), # 2 matches backwards
+    (('a',1,'b'),(None,None,'b'),1), # 1 match backwards
+    (('a',1,'b'),(None,1,None),1), # 1 match
+
+    # There exists a None
+    ((None,None,None),(None,None,None),0), # nothing matches
+    (('a',None,'b'),('a',None,None),1), # 1 matches
+    (('a',1,None),('a',1,None),2), # 2 matches
+    ((None,1,'b'),(None,1,'b'),2), # 2 matches backwards
+    ((None,None,'b'),(None,None,'b'),1), # 1 match backwards
+    ((None,1,None),(None,1,None),1), # 1 match
 ])
 def test_iterable_matches(item,filter,expected):
-    pass
+    """
+    Checks that [U.iterable_matches] works as documented.
 
-@pytest.mark.parametrize("key,lookup,expected", [
-    ((),(),0)
+    item: Sequence
+        item to check
+    filter: Sequence
+        possible values that could be matched to [item]
+    expected: int
+        expected n_matches from the result of [U.iterable_matches]
+    """
+    assert U.iterable_matches(item,filter) == expected
+
+@pytest.mark.parametrize("key,expected", [
+    (('a', 1,'b'),3),
+    (('a',2,'c'),4),
+    (('a',2,'d'),6),
+    (('a',2,'b'),3),
+    (('d',3,'f'),None),
+    (('d',3,'k'),7),
 ])
-def test_behaviour_lookup_from_dict(key,lookup,expected):
-    pass
+def test_behaviour_lookup_from_dict(key,expected):
+    """
+    Checks that [U.behaviour_lookup_from_dict] works as documented.
+
+    key: Sequence
+        item to check
+    expected: int
+        expected best_matching_val from the result of [U.behaviour_lookup_from_dict]
+    """
+    keyVal: Dict = {
+        (None,None,None):0,
+        ('a',None,None):1,
+        ('a',1,None):2,
+        ('a',1,'b'):3,
+        (None,2,'c'):4,
+        (None,None,'d'):5,
+        (None,2,'d'):6,
+        ('a',1,'k'):7
+    }
+    assert U.behaviour_lookup_from_dict(key,keyVal) == expected
