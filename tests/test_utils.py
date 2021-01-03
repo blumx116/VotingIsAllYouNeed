@@ -221,3 +221,16 @@ def test_weighted_mean_shouldFail(bets,predictions,moneys,expected,gen_weighted_
 ])
 def test_argmax(arr,vals,expected):
     assert(U.argmax(arr,lambda x: vals[x]) == expected)
+
+
+@pytest.mark.parametrize("item,filter,expected", [
+    ((),(),0)
+])
+def test_iterable_matches(item,filter,expected):
+    pass
+
+@pytest.mark.parametrize("key,lookup,expected", [
+    ((),(),0)
+])
+def test_behaviour_lookup_from_dict(key,lookup,expected):
+    pass

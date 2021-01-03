@@ -86,6 +86,9 @@ def gen_agent():
         prediction: Optional[Union[float, List[float]]] = None,
         bet: Optional[Union[float, List[float]]] = None,
         N: Optional[int] = None,
+        vote_lookup: Optional[Dict[S, Union[VotingMechanism[S], float]]] = None,
+        bet_lookup: Optional[Dict[Tuple[Optional[S], Optional[A], Optional[float]],Union[BetSelectionMechanism[A, S], List[float], float]]] = None,
+        prediction_lookup: Optional[Dict[Tuple[Optional[S], Optional[A], Optional[float]],Union[PredictionSelectionMechanism[A, S], List[float], float]]] = None
         ):
         return factory.AgentFactory.create(
             factory.AgentFactorySpec(
@@ -95,7 +98,10 @@ def gen_agent():
                 seed,
                 prediction,
                 bet,
-                N
+                N,
+                vote_lookup,
+                bet_lookup,
+                prediction_lookup
             )
         )
     return _gen_agent_
