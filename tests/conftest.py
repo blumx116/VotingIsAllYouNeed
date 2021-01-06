@@ -12,7 +12,7 @@ data structures and methods used in our tests.
 from typing import (
     Optional, Generic, TypeVar, List,
     Iterable, Dict, Callable, Tuple,
-    Union
+    Union, Sequence
 ) 
 
 # 3rd party packages
@@ -69,6 +69,34 @@ def random_agent_config():
 
 def floatIsEqual(num1: float,num2: float,epsilon: float = 1e-6) -> bool:
     return abs(num1-num2) < epsilon
+
+def sequenceEqual(l1: Sequence[float], l2: Sequence[float], epsilon: float=1e-6) -> bool:
+    """
+    checks if all elements of a sequence of floats (or ints) are the same
+    returns false if length is not equal
+    NOTE: does not c heck shape
+    Parameters
+    ----------
+    l1: Sequence[float]
+        first list, tuple or np.ndarray to compare
+    l2: Sequence[float]
+        second list, tupl or np.ndarray to compare
+    epsilon: float >= 0
+        used for floatIsEqual
+
+    Returns
+    equal: bool
+    -------
+
+    """
+    if not len(l1) == len(l2):
+        return False
+    for el1, el2 in zip(l1, l2):
+        if not floatIsEqual(el1, el2, epsilon):
+            return False
+    return True
+
+
 
 @pytest.fixture
 def gen_agent():
