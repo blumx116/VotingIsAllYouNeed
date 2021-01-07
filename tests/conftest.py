@@ -22,11 +22,15 @@ import numpy as np
 # local source
 from VIAYN.project_types import (
     ActionBet, A, WeightedBet, Agent, HistoryItem,
-    VoteBoundGetter, VoteRange
+    VoteBoundGetter, VoteRange,S
 )
 import VIAYN.samples.factory as factory
 import VIAYN.samples.vote_ranges as vote_range
-
+from VIAYN.samples.agents import (
+    VotingMechanism,
+    BetSelectionMechanism,
+    PredictionSelectionMechanism
+)
 
 @pytest.fixture
 def constant_agent_config():
@@ -113,7 +117,15 @@ def gen_agent():
         seed: Optional[int] = None,
         prediction: Optional[Union[float, List[float]]] = None,
         bet: Optional[Union[float, List[float]]] = None,
-        N: Optional[int] = None,
+        N: Optional[int] = 1,
+        vote_lookup: Optional[Dict[
+            Optional[S], Union[VotingMechanism[S], float]]] = {None:0.},
+        bet_lookup: Optional[Dict[
+            Tuple[Optional[S], Optional[A], Optional[float]],
+            Union[BetSelectionMechanism[A, S], List[float], float]]] = {(None,None,None):0.},
+        prediction_lookup: Optional[Dict[
+            Tuple[Optional[S], Optional[A], Optional[float]],
+            Union[PredictionSelectionMechanism[A, S], List[float], float]]] = {(None,None,None):0.}
         ):
         return factory.AgentFactory.create(
             factory.AgentFactorySpec(
@@ -123,7 +135,10 @@ def gen_agent():
                 seed,
                 prediction,
                 bet,
-                N
+                N,
+                vote_lookup,
+                bet_lookup,
+                prediction_lookup
             )
         )
     return _gen_agent_
