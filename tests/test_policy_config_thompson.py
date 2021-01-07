@@ -8,7 +8,7 @@ file: test_policy_config_thompson.py
 
 @created: 2020-12-06T20:08:39.389Z-06:00
 
-@last-modified: 2020-12-19T17:02:25.596Z-06:00
+@last-modified: 2021-01-07T13:20:14.992Z-06:00
 """
 
 # standard library
@@ -293,7 +293,7 @@ class constantDistribution(DiscreteDistribution):
     ([5,4,3,2,1,0],[[100000],[10000],[1000],[100],[10],[0]],5),
     # random configurations with 6 actions end
     # more distributions for some actions start
-    ([0,1,2],[[0],[0,1,2,3],[0]],None), # TODO: should fail
+    ([0,1,2],[[0],[0,1,2,3],[0]],None),
     # more distributions for some actions end
     # high reward later in the future start
     ([1,2],[[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,100000]],2),
@@ -321,8 +321,11 @@ def test_suggested_policy_config_select_action(arr,vals,expected,gen_policy_conf
     # test is ran 100 times to ensure consistency 
     # (constant distrib guarantees that to some extent)
     for _ in range(100):
-        res = policyConf.select_action(aggregate_bets)
-        assert(res == expected)
+        try:
+            res = policyConf.select_action(aggregate_bets)
+            assert(res == expected)
+        except:
+            assert expected==None
 
 @pytest.mark.parametrize("arr,vals,expected", [
     # random configurations with 6 actions start
@@ -332,7 +335,7 @@ def test_suggested_policy_config_select_action(arr,vals,expected,gen_policy_conf
     ([5,4,3,2,1,0],[[100000],[10000],[1000],[100],[10],[0]],5),
     # random configurations with 6 actions end
     # more distributions for some actions start
-    ([0,1,2],[[0],[0,1,2,3],[0]],None), # TODO: should fail
+    ([0,1,2],[[0],[0,1,2,3],[0]],None),
     # more distributions for some actions end
     # high reward later in the future start
     ([1,2],[[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,100000]],2),
@@ -358,13 +361,15 @@ def test_suggested_policy_config_action_probs(arr,vals,expected,gen_policy_conf)
     aggregate_bets : Dict[float,List[DiscreteDistribution]] = {}
     for k in range(len(arr)):
         aggregate_bets[arr[k]]= [constantDistribution(i) for i in vals[k]]
-    res = policyConf.action_probabilities(aggregate_bets)
-    for i in arr:
-        if (i == expected):
-            assert(floatIsEqual(res[i],1))
-            continue
-        assert(floatIsEqual(res[i],0))
-
+    try:
+        res = policyConf.action_probabilities(aggregate_bets)
+        for i in arr:
+            if (i == expected):
+                assert(floatIsEqual(res[i],1))
+                continue
+            assert(floatIsEqual(res[i],0))
+    except:
+        assert expected == None
 
 class OneGoodOneBadDistribution(DiscreteDistribution):
     def __init__(self,constant:float):
@@ -378,7 +383,7 @@ class OneGoodOneBadDistribution(DiscreteDistribution):
 
 @pytest.mark.parametrize("arr,vals,expected", [
     # more distributions for some actions start
-    ([0,1,2],[[0],[0,1,2,3],[0]],None), # TODO: should fail
+    ([0,1,2],[[0],[0,1,2,3],[0]],None),
     # more distributions for some actions end
     # high reward later in the future start
     ([1,2],[[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,100000]],1./2),
@@ -408,5 +413,8 @@ def test_suggested_policy_config_action_probs_uniform(arr,vals,expected,gen_poli
     for k in range(len(arr)):
         aggregate_bets[arr[k]]= [OneGoodOneBadDistribution(i) for i in vals[k]]
     res = policyConf.action_probabilities(aggregate_bets)
-    for i in arr:
-        assert(floatIsEqual(res[i],expected,0.001))
+    try:
+        for i in arr:
+            assert(floatIsEqual(res[i],expected,0.001))
+    except:
+        assert expected == None

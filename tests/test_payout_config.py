@@ -167,13 +167,14 @@ def test_payout_config_calculate_payout_from_loss(
     The other two parameters are test fixtures to help create
     objects easier.
     """
+    allLs: List[Weighted] = [P.Weighted(w,v) for w,v in allLs]
     pf: P.PayoutConfiguration = gen_payout_conf(
         enum
     )
     assert(
         floatIsEqual(
             pf.calculate_payout_from_loss(
-                bet, loss, list(map(lambda t: Weighted(*t), allLs)),t0,t1,aj,ai
+                bet, loss,allLs,t0,t1,aj,ai
             ),
             expected
         )

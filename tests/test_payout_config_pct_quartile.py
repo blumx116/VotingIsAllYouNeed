@@ -8,7 +8,7 @@ file: test_payout_config_pct_quartile.py
 
 @created: 2020-12-20T15:12:52.489Z-06:00
 
-@last-modified: 2020-12-21T16:06:11.630Z-06:00
+@last-modified: 2021-01-07T13:08:02.231Z-06:00
 """
 
 # standard library
@@ -199,6 +199,7 @@ def test_payout_config_calculate_payout_from_loss(
     The other two parameters are test fixtures to help create
     objects easier.
     """
+    allLs: List[Weighted] = [P.Weighted(w,v) for w,v in allLs]
     pf: P.PayoutConfiguration = gen_payout_conf(
         enum, UBCE.quartile95
     )
