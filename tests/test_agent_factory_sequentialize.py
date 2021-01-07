@@ -131,7 +131,7 @@ def test_super_long():
     Each agent lasts for 3 timesteps.
     """
     N_AGENTS: int = 10000
-    FREQ: int = 3.
+    FREQ: int = 3
 
     env = EnvFactory.create(EnvsFactorySpec(EnvsEnum.default, n_actions=3))
     state = env.state()
@@ -191,12 +191,12 @@ def test_recursive_case():
     agents = [AgentFactory.create(spec) for spec in specs]
     duplicate_agents = [AgentFactory.create(spec) for spec in specs]
 
-    comp1 = AgentFactory.sequentialize([agents[0], agents[1]], [3, 3])
-    comp2 = AgentFactory.sequentialize([agents[2], agents[3]], [3, 3])
-    big_comp = AgentFactory.sequentialize([comp1, comp2, agents[0]], [5, 4, 2])
+    comp1 = AgentFactory.sequentialize([duplicate_agents[0], duplicate_agents[1]], [3, 3])
+    comp2 = AgentFactory.sequentialize([duplicate_agents[2], duplicate_agents[3]], [3, 3])
+    big_comp = AgentFactory.sequentialize([comp1, comp2, duplicate_agents[0]], [5, 4, 2])
 
     delegates = ([agents[0]] * 3) + ([agents[1]] * 2) + ([agents[2]] * 3) + \
-                ([agents[3]] * 2) + ([agents[0]] * 10)
+                ([agents[3]] * 1) + ([agents[0]] * 2)
 
     for i in range(10):
         check_same_behaviour(big_comp, delegates[i], state, action)
@@ -211,7 +211,7 @@ def test_many_timesteps():
     -------
 
     """
-    env = EnvFactory.create(EnvFactory(EnvsEnum.default, n_actions=3))
+    env = EnvFactory.create(EnvsFactorySpec(EnvsEnum.default, n_actions=3))
     state = env.state()
     action = env.last_action
     vote_bounds = (lambda x: 0., lambda x: 3.)
