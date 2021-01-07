@@ -7,7 +7,7 @@ This file tests general utils we are using
 """
 
 # standard library
-from typing import List
+from typing import List, Dict
 
 # 3rd party packages
 import pytest
@@ -258,9 +258,9 @@ def test_iterable_matches(item,filter,expected):
     (('a', 1,'b'),3),
     (('a',2,'c'),4),
     (('a',2,'d'),6),
-    (('a',2,'b'),3),
-    (('d',3,'f'),None),
-    (('d',3,'k'),7),
+    (('a',2,'b'),1),
+    (('d',3,'f'),0),
+    (('d',3,'k'),0),
 ])
 def test_behaviour_lookup_from_dict(key,expected):
     """
