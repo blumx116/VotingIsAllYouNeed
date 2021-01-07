@@ -17,7 +17,7 @@ file: test_composite_agent.py
 
 @created: 2021-01-02T18:46:30.736Z-06:00
 
-@last-modified: 2021-01-03T20:13:38.675Z-06:00
+@last-modified: 2021-01-07T12:58:51.861Z-06:00
 """
 
 # standard library
@@ -63,8 +63,8 @@ def test_configured_vote(keys,lookup,gen_agent):
     (100,('a',1,4),0.3),
     (4,('a',2,5),0.4),
     (10,('a',2,10),0.6),
-    (1,('a',2,4),0.3),
-    (50,('d',3,1),0.7),
+    (1,('a',2,4),0.1),
+    (50,('d',3,1),0.0),
 ])
 def test_configured_bet(N,key,expected,gen_agent):
     """
