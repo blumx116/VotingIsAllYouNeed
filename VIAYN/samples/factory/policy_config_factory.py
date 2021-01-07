@@ -41,7 +41,7 @@ class PolicyConfigFactorySpec:
         random seed, only used in ThompsonPolicies at the moment
     """
     configType: PolicyConfigEnum
-    random_seed: Optional[int]
+    random_seed: Optional[int] = None
 
     def __post_init__(self):
         pass
