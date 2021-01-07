@@ -20,7 +20,7 @@ class EnvsEnum(Enum):
 @dataclass(frozen=True)
 class EnvsFactorySpec:
     envType: EnvsEnum
-    n_actions: Optional[int] = None # number is exact at each state
+    n_actions: Optional[int] = None  # number is exact at each state
 
     def __post_init__(self):
         if self.envType ==  EnvsEnum.default:
