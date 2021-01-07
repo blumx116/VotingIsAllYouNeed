@@ -7,7 +7,7 @@
 
 from dataclasses import dataclass
 from enum import Enum, unique, auto
-from typing import Dict, Callable
+from typing import Dict, Callable, Optional
 
 from VIAYN.project_types import PolicyConfiguration
 from VIAYN.samples.policy import (
@@ -37,8 +37,11 @@ class PolicyConfigFactorySpec:
         type of Policy Config corresponds to simple and suggested in requirements
         suggested general samples each action and timestep using Thompson while
         suggested samples each action after summing across time-steps
+    random_seed: Optional[int]
+        random seed, only used in ThompsonPolicies at the moment
     """
     configType: PolicyConfigEnum
+    random_seed: Optional[int]
 
     def __post_init__(self):
         pass
@@ -59,14 +62,12 @@ class PolicyConfigFactory:
     PolicyConfiguration
         created policy config based on spec
     """
-    lookup: Dict[PolicyConfigEnum, Callable[[], PolicyConfiguration]] = {
-        PolicyConfigEnum.simple: lambda: GreedyPolicyConfiguration(),
-        PolicyConfigEnum.suggested: lambda: ThompsonPolicyConfiguration2(),
-        PolicyConfigEnum.suggested_general: lambda: ThompsonPolicyConfiguration()
+    lookup: Dict[PolicyConfigEnum, Callable[[Optional[int]], PolicyConfiguration]] = {
+        PolicyConfigEnum.simple: lambda seed: GreedyPolicyConfiguration(),
+        PolicyConfigEnum.suggested: lambda seed: ThompsonPolicyConfiguration2(seed),
+        PolicyConfigEnum.suggested_general: lambda seed: ThompsonPolicyConfiguration(seed)
     }
 
     @staticmethod
     def create(spec: PolicyConfigFactorySpec) -> PolicyConfiguration:
-        return PolicyConfigFactory.lookup[spec.configType]()
-
-
+        return PolicyConfigFactory.lookup[spec.configType](spec.random_seed)

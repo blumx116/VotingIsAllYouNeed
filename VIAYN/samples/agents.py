@@ -461,26 +461,29 @@ class MorphicAgent(Generic[A, S], Agent[A, S]):
         assert min(switch_at) >-1
         assert len(agents) > 0
         assert len(agents) == len(switch_at)
+        self.t: int = 0
         self.agents: List[Agent[A,S]] = agents
         self.switch_at: List[int] = switch_at
         self._tSnapshot: int = 0
-        self._currentAgent: int = 0
+        self._currentAgentIdx: int = 0
 
     def vote(self, state: S) -> float:
-        assert 0 <= self._currentAgent < len(self.agents)
-        return self.agents[self._currentAgent].vote(state)
+        assert 0 <= self._currentAgentIdx < len(self.agents)
+        return self.agents[self._currentAgentIdx].vote(state)
 
     def bet(self, state: S, action: A, money: float) -> ActionBet:
-        assert 0 <= self._currentAgent < len(self.agents)
-        return self.agents[self._currentAgent].bet(state,action,money)
+        assert 0 <= self._currentAgentIdx < len(self.agents)
+        return self.agents[self._currentAgentIdx].bet(state, action, money)
 
     def view(self, info: AnonymizedHistoryItem) -> None:
-        Agent.view(self,info)
-        assert 0 <= self._currentAgent < len(self.switch_at)
-        if abs(self.t - self._tSnapshot) > self.switch_at[self._currentAgent]:
+        assert 0 <= self._currentAgentIdx < len(self.switch_at)
+        self.t += 1
+        self.agents[self._currentAgentIdx].view(info)
+        if abs(self.t - self._tSnapshot) >= self.switch_at[self._currentAgentIdx]:
             self._nextAgent()
 
     def _nextAgent(self) -> None:
         self._tSnapshot = self.t
-        self._currentAgent += 1
-        self._currentAgent = self._currentAgent % len(self.agents)
+        self._currentAgentIdx += 1
+        self._currentAgentIdx = self._currentAgentIdx % len(self.agents)
+                
