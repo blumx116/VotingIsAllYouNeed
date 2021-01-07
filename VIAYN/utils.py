@@ -5,6 +5,7 @@
 # @Last Modified time: 2020-12-10 14:59:06
 from copy import copy
 from typing import Dict, List, Sequence, TypeVar, Optional, Callable, Any
+from decimal import Decimal
 
 import numpy as np
 
@@ -175,3 +176,7 @@ def behaviour_lookup_from_dict(key: K, lookup: Dict[K, V]) -> Optional[V]:
                 best_match_score = score
                 best_matching_val = v
     return best_matching_val
+
+
+def is_numeric(val: Any) -> bool:
+    return isinstance(val, (float, int, Decimal))
