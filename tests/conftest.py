@@ -67,8 +67,8 @@ def random_agent_config():
     (10., 0),
 ]
 
-def floatIsEqual(num1: float,num2: float) -> bool:
-    return abs(num1-num2) < 0.000001
+def floatIsEqual(num1: float,num2: float,epsilon: float = 1e-6) -> bool:
+    return abs(num1-num2) < epsilon
 
 @pytest.fixture
 def gen_agent():
@@ -150,9 +150,9 @@ def gen_payout_conf():
     and creating it in one call instead of needing to create multiple objects 
     every time to create an payout config
     """
-    def _gen_payout_conf_(configType: factory.PayoutConfigEnum):
+    def _gen_payout_conf_(configType: factory.PayoutConfigEnum, upperBound: factory.UpperBoundConfigEnum = factory.UpperBoundConfigEnum.max):
         return factory.PayoutConfigFactory.create(
-            factory.PayoutConfigFactorySpec(configType)    
+            factory.PayoutConfigFactorySpec(configType, upperBound)    
         )
     return _gen_payout_conf_
 

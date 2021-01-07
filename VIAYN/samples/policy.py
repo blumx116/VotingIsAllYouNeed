@@ -168,7 +168,7 @@ class ThompsonPolicyConfiguration(Generic[A, S], ThompsonPolicyBase[A, List[Disc
                 prediction: float
                 bet_amount: float
                 for t, (prediction, bet_amount) in enumerate(zip(bet.prediction, bet.bet)):
-                    while t >= len(result[action]):
+                    while t >= len(aggregator):
                         # should be equivalent to using 'if'
                         aggregator.append([])
                     aggregator[t].append((prediction, bet_amount))
