@@ -93,7 +93,7 @@ class AgentFactorySpec(Generic[A, S]):
             assert(self.prediction is not None)
         # random agent uses these params in addition to vote at least
         elif self.agentType == AgentsEnum.random:
-            assert(self.N is not None)
+            assert(self.N > 0)
             assert(self.totalVotesBound is not None)
             assert(self.bet is not None)
         elif self.agentType == AgentsEnum.composite:
@@ -101,6 +101,7 @@ class AgentFactorySpec(Generic[A, S]):
             assert self.bet_lookup is not None
             assert self.prediction_lookup is not None
             # there should probably be some more checks that we do here
+            assert self.N > 0
         else:
             raise TypeError(self.agentType)
 
