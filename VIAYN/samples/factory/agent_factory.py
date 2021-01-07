@@ -26,6 +26,7 @@ from VIAYN.samples.agents import (
     RNGUniforPredSelectionMech,
     MorphicAgent
 )
+from VIAYN.utils import is_numeric
 
 @unique
 class AgentsEnum(Enum):
@@ -180,8 +181,8 @@ class AgentFactory:
     def _create_lookup_pred_selection_(spec: AgentFactorySpec) -> PredictionSelectionMechanism:
         assert spec.prediction_lookup is not None
         return LookupBasedPredSelectionMech({
-            key: value if not isinstance(value, float)
-            else AgentFactory._repeat_if_float_(value, spec.N)
+            key: value if not is_numeric(value)
+            else AgentFactory._repeat_if_float_(value, spec.N, normalize=False)
             for key, value in spec.prediction_lookup.items()
         })
 
@@ -189,8 +190,8 @@ class AgentFactory:
     def _create_lookup_bet_selection_(spec: AgentFactorySpec) -> BetSelectionMechanism:
         assert spec.bet_lookup is not None
         return LookupBasedBetSelectionMech({
-            key: value if not isinstance(value, float)
-            else AgentFactory._repeat_if_float_(value, spec.N)
+            key: value if not is_numeric(value)
+            else AgentFactory._repeat_if_float_(value, spec.N, normalize=True)
             for key, value in spec.bet_lookup.items()
         })
 
@@ -208,30 +209,41 @@ class AgentFactory:
     @staticmethod
     def _repeat_if_float_(
             value: Union[float, List[float]],
-            n: Optional[int] = None) -> List[float]:
+            n: Optional[int] = None,
+            normalize: bool = True) -> List[float]:
         """
         Utility method.
         If a float is passed in for 'value', returns [value] * N
         otherwise, just returns value, assuming it is a list
-        :param n: int
+
+        Parameters
+        ----------
+        n: int
             number of timesteps per prediction
             Only necessary if value is a float.
             Otherwise, just checks that 'value' has length N
-        :param value:
+        value: numeric
             prediction or bet. If float, same value used fro all timesteps
-        :return: values: List[float]
+        normalize: bool
+            whether to make all entries sum up to the original value
+
+        Returns
+        -------
+        values: List[float]
             values as a list, if conversion is necessary
         """
-        if isinstance(value, float):
+        if is_numeric(value):
             # repeat for each timestep
             assert n is not None
-            assert 0 <= value <= 1
-            values: List[float] = [value*1.0/n] * n
-            # fixing float errors
-            epsilon =  0.0000001
-            while sum(values) > value:
-                values[-1] -= epsilon
-            return values
+            if normalize:
+                values: List[float] = [value*1.0/n] * n
+                # fixing float errors
+                epsilon = 0.0000001
+                while sum(values) > value:
+                    values[-1] -= epsilon
+                return values
+            else:
+                return [float(value)] * n
         else:
             assert isinstance(value, Iterable)
             if n is not None:

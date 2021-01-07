@@ -113,7 +113,7 @@ def test_configured_bet(N,key,expected,gen_agent):
     assert len(a.bet(key[0],key[1],key[2]).bet) == N 
     assert len(a.bet(key[0],key[1],key[2]).prediction) == N 
     assert floatIsEqual(sum(a.bet(key[0],key[1],key[2]).bet), expected)
-    assert floatIsEqual(sum(a.bet(key[0],key[1],key[2]).prediction), expected*10)
+    assert floatIsEqual(sum(a.bet(key[0],key[1],key[2]).prediction), expected*N*10)
 
 # @pytest.mark.parametrize("keys,lookup,expected", [
 #     ([()],{},[0.0])
