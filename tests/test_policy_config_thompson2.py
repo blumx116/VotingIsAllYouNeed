@@ -8,7 +8,7 @@ file: test_policy_config_thompson.py
 
 @created: 2020-12-06T20:08:39.389Z-06:00
 
-@last-modified: 2020-12-19T17:15:18.303Z-06:00
+@last-modified: 2021-01-08T16:55:20.307Z-06:00
 """
 
 # standard library
@@ -271,9 +271,12 @@ def test_suggested_policy_config_select_action(arr,vals,expected,gen_policy_conf
         aggregate_bets[arr[k]]= constantDistribution(vals[k])
     # test is ran 100 times to ensure consistency 
     # (constant distrib guarantees that to some extent)
-    for _ in range(100):
-        res = policyConf.select_action(aggregate_bets)
-        assert(res == expected)
+    try:
+        for _ in range(100):
+            res = policyConf.select_action(aggregate_bets)
+            assert(res == expected)
+    except:
+        assert expected == None
 
 @pytest.mark.parametrize("arr,vals,expected", [
     # random configurations with 6 actions start
@@ -322,7 +325,7 @@ class OneGoodOneBadDistribution:
         self.constant: float = constant
         self.good: bool = False
     def sample(self) -> float:
-        self.good: bool = not(self.good)
+        self.good = not(self.good)
         if (self.good):
             return self.constant
         return -1*self.constant

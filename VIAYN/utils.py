@@ -4,13 +4,13 @@
 # @Last Modified by:   Suhail.Alnahari
 # @Last Modified time: 2020-12-10 14:59:06
 from copy import copy
-from typing import Dict, List, Sequence, TypeVar, Optional, Callable, Any
+from typing import Dict, List, Sequence, TypeVar, Optional, Callable, Tuple, Iterable, Any, Union
 from decimal import Decimal
 
 import numpy as np
 from numpy.random import Generator
 
-from VIAYN.project_types import A, S, WeightedBet
+from VIAYN.project_types import A, S, WeightedBet, Weighted
 
 T = TypeVar("T")
 U = TypeVar("U", int, float, complex, str)
@@ -94,6 +94,61 @@ def dict_argmax(dictionary: Dict[T, float], rng: Optional[Generator] = None) -> 
     inputs: List[T] = list(dictionary.keys())
     rng.shuffle(inputs)
     return argmax(inputs, lambda key: dictionary[key])
+
+# TODO: maybe make a weighted-specific file??
+def map_vals(weighted_elements: Iterable[Weighted], fn: Callable[[float], float]) -> List[Weighted]:
+    return [Weighted(w.weight, fn(w.val)) for w in weighted_elements]
+
+def total_weight(
+        weighted_vals: Iterable[Weighted]) -> float:
+    return float(np.sum([w.weight for w in weighted_vals]))
+
+def normalize_weight(
+        weighted_vals: Sequence[Weighted]) -> List[Weighted]:
+    # Can't be an iterable because we have to go through it twice
+    total: float = total_weight(weighted_vals)
+    return [Weighted(w.weight / total, w.val) for w in weighted_vals]
+
+def weighted_mean(
+        weighted_vals: List[Weighted]) -> float:
+    weighted_vals = normalize_weight(weighted_vals)
+    # TODO: could be spend up with np.mean???
+    return float(np.sum([w.weight * w.val for w in weighted_vals]))
+
+def weighted_quartile(
+        weighted_losses: List[Weighted],
+        quartile: float = 0.95) -> float:
+    """
+    Returns the lowest loss observed such that quartile% of the losses (by weight)
+    have lower loss than it
+
+    Parameters
+    ----------
+    weighted_losses
+    quartile: List[Tuple[float, float]]
+        [(weight >= 0, loss >= 0)]
+
+    Returns
+    -------
+    loss: float >= 0
+        the 95th quartile loss
+    """
+    assert 0 < quartile <= 1
+    sorted_indices: np.ndarray = np.argsort([w.val for w in weighted_losses])
+    weighted_losses = [weighted_losses[i] for i in sorted_indices]
+    # sort in order of increasing loss
+
+    weighted_losses = normalize_weight(weighted_losses)
+    # sort the losses in order of increasing loss
+
+    weight_so_far: float = 0.  # observed weight we have seen so far
+    for w in weighted_losses:
+        weight_so_far += w.weight
+        if weight_so_far >= quartile:
+            return w.val
+        # keep going until we've gone through quartile% of the losses by weight
+        # then return the first loss we see
+    raise Exception("should never get here")
 
 def iterable_matches(item: Sequence, filter: Sequence) -> int:
     """
@@ -185,3 +240,46 @@ def behaviour_lookup_from_dict(key: K, lookup: Dict[K, V]) -> Optional[V]:
 
 def is_numeric(val: Any) -> bool:
     return isinstance(val, (float, int, Decimal))
+
+def repeat_if_float(
+            value: Union[float, List[float]],
+            n: Optional[int] = None,
+            normalize: bool = True) -> List[float]:
+        """
+        Utility method.
+        If a float is passed in for 'value', returns [value] * N
+        otherwise, just returns value, assuming it is a list
+
+        Parameters
+        ----------
+        n: int
+            number of timesteps per prediction
+            Only necessary if value is a float.
+            Otherwise, just checks that 'value' has length N
+        value: numeric
+            prediction or bet. If float, same value used fro all timesteps
+        normalize: bool
+            whether to make all entries sum up to the original value
+
+        Returns
+        -------
+        values: List[float]
+            values as a list, if conversion is necessary
+        """
+        if is_numeric(value):
+            # repeat for each timestep
+            assert n is not None
+            if normalize:
+                values: List[float] = [value*1.0/n] * n
+                # fixing float errors
+                epsilon = 0.0000001
+                while sum(values) > value:
+                    values[-1] -= epsilon
+                return values
+            else:
+                return [float(value)] * n
+        else:
+            assert isinstance(value, Iterable)
+            if n is not None:
+                assert len(value) == n
+            return value

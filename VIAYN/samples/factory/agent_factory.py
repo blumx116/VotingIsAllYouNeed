@@ -26,7 +26,7 @@ from VIAYN.samples.agents import (
     RNGUniforPredSelectionMech,
     MorphicAgent
 )
-from VIAYN.utils import is_numeric
+from VIAYN.utils import is_numeric, repeat_if_float
 
 @unique
 class AgentsEnum(Enum):
@@ -139,8 +139,7 @@ class AgentFactory:
     def _create_static_bet_selection_(
             spec: AgentFactorySpec) -> BetSelectionMechanism:
         assert spec.bet is not None
-        return StaticBetSelectionMech(
-            AgentFactory._repeat_if_float_(spec.bet, spec.N))
+        return StaticBetSelectionMech(repeat_if_float(spec.bet, spec.N))
 
     @staticmethod
     def _create_static_vote_selection_(spec: AgentFactorySpec) -> VotingMechanism:
@@ -149,8 +148,7 @@ class AgentFactory:
     @staticmethod
     def _create_static_prediction_selection_(spec: AgentFactorySpec) -> PredictionSelectionMechanism:
         assert spec.prediction is not None
-        return StaticPredSelectionMech(
-            AgentFactory._repeat_if_float_(spec.prediction, spec.N))
+        return StaticPredSelectionMech(repeat_if_float(spec.prediction, spec.N))
 
     @staticmethod
     def _create_rng_uniform_prediction_selection_(spec: AgentFactorySpec) -> PredictionSelectionMechanism:
@@ -182,7 +180,7 @@ class AgentFactory:
         assert spec.prediction_lookup is not None
         return LookupBasedPredSelectionMech({
             key: value if not is_numeric(value)
-            else AgentFactory._repeat_if_float_(value, spec.N, normalize=False)
+            else repeat_if_float(value, spec.N, normalize=False)
             for key, value in spec.prediction_lookup.items()
         })
 
@@ -191,7 +189,7 @@ class AgentFactory:
         assert spec.bet_lookup is not None
         return LookupBasedBetSelectionMech({
             key: value if not is_numeric(value)
-            else AgentFactory._repeat_if_float_(value, spec.N, normalize=True)
+            else repeat_if_float(value, spec.N, normalize=True)
             for key, value in spec.bet_lookup.items()
         })
 
@@ -206,49 +204,6 @@ class AgentFactory:
             )
         )
 
-    @staticmethod
-    def _repeat_if_float_(
-            value: Union[float, List[float]],
-            n: Optional[int] = None,
-            normalize: bool = True) -> List[float]:
-        """
-        Utility method.
-        If a float is passed in for 'value', returns [value] * N
-        otherwise, just returns value, assuming it is a list
-
-        Parameters
-        ----------
-        n: int
-            number of timesteps per prediction
-            Only necessary if value is a float.
-            Otherwise, just checks that 'value' has length N
-        value: numeric
-            prediction or bet. If float, same value used fro all timesteps
-        normalize: bool
-            whether to make all entries sum up to the original value
-
-        Returns
-        -------
-        values: List[float]
-            values as a list, if conversion is necessary
-        """
-        if is_numeric(value):
-            # repeat for each timestep
-            assert n is not None
-            if normalize:
-                values: List[float] = [value*1.0/n] * n
-                # fixing float errors
-                epsilon = 0.0000001
-                while sum(values) > value:
-                    values[-1] -= epsilon
-                return values
-            else:
-                return [float(value)] * n
-        else:
-            assert isinstance(value, Iterable)
-            if n is not None:
-                assert len(value) == n
-            return value
     
     @staticmethod
     def sequentialize(agents: List[Agent[A,S]], switch_at: List[int]) -> Agent[A,S]:

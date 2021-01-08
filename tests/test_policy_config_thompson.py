@@ -8,7 +8,7 @@ file: test_policy_config_thompson.py
 
 @created: 2020-12-06T20:08:39.389Z-06:00
 
-@last-modified: 2020-12-19T17:02:25.596Z-06:00
+@last-modified: 2021-01-08T16:53:26.543Z-06:00
 """
 
 # standard library
@@ -294,7 +294,7 @@ class constantDistribution(DiscreteDistribution):
     ([5,4,3,2,1,0],[[100000],[10000],[1000],[100],[10],[0]],5),
     # random configurations with 6 actions end
     # more distributions for some actions start
-    ([0,1,2],[[0],[0,1,2,3],[0]],None), # TODO: should fail
+    ([0,1,2],[[0],[0,1,2,3],[0]],None),
     # more distributions for some actions end
     # high reward later in the future start
     ([1,2],[[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,100000]],2),
@@ -336,7 +336,7 @@ def test_suggested_policy_config_select_action(arr,vals,expected,gen_policy_conf
     ([5,4,3,2,1,0],[[100000],[10000],[1000],[100],[10],[0]],5),
     # random configurations with 6 actions end
     # more distributions for some actions start
-    ([0,1,2],[[0],[0,1,2,3],[0]],None), # TODO: should fail
+    ([0,1,2],[[0],[0,1,2,3],[0]],None),
     # more distributions for some actions end
     # high reward later in the future start
     ([1,2],[[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,100000]],2),
@@ -388,7 +388,7 @@ class OneGoodOneBadDistribution(DiscreteDistribution):
 
 @pytest.mark.parametrize("arr,vals,expected", [
     # more distributions for some actions start
-    ([0,1,2],[[0],[0,1,2,3],[0]],None), # TODO: should fail
+    ([0,1,2],[[0],[0,1,2,3],[0]],None),
     # more distributions for some actions end
     # high reward later in the future start
     ([1,2],[[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,100000]],1./2),
