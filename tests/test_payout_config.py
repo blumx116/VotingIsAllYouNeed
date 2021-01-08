@@ -32,7 +32,7 @@ from VIAYN.samples.factory import PayoutConfigEnum as PCE
 #     total_payouts: Dict[Agent[A, S], float] = {}
 #     for action in record.available_actions():
 #         abets: Dict[Agent[A, S], WeightedBet] = \
-#             {wb.cast_by: wb.to_action_bet() for wb in record.predictions[action]}
+#             {wb.cast_by: wb for wb in record.predictions[action]}
 #         losses: Dict[Agent[A, S], float] = \
 #             { agent: config.calculate_loss(abet, t_cast_on, t_current, welfare_score)
 #                 for agent, abet in abets.items()}
@@ -85,7 +85,8 @@ def test_payout_config_calculate_loss(
     pf: P.PayoutConfiguration = gen_payout_conf(
         enum
     )
-    wb: P.WeightedBet  = gen_weighted_bet(pred,pred)
+    bet : List[float] = [1 if t1==(i+1) else 0 for i in range(len(pred)) ]
+    wb: P.WeightedBet  = gen_weighted_bet(bet,pred)
     assert(floatIsEqual(pf.calculate_loss(wb,t0,t1,R),expected))
 
 @pytest.mark.parametrize("enum,bet,t1,t0,loss,allLs,aj,ai,expected", [
