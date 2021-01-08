@@ -43,6 +43,7 @@ class PolicyConfigFactorySpec:
     configType: PolicyConfigEnum
     random_seed: Optional[int] = None
 
+
     def __post_init__(self):
         pass
 
