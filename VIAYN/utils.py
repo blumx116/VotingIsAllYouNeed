@@ -8,6 +8,7 @@ from typing import Dict, List, Sequence, TypeVar, Optional, Callable, Any
 from decimal import Decimal
 
 import numpy as np
+from numpy.random import Generator
 
 from VIAYN.project_types import A, S, WeightedBet
 
@@ -87,8 +88,12 @@ def argmax(args: Sequence[T], fn: Callable[[T], float]) -> Optional[T]:
     return max_arg
 
 
-def dict_argmax(dictionary: Dict[T, float]) -> Optional[T]:
-    return argmax(list(dictionary.keys()), lambda key: dictionary[key])
+def dict_argmax(dictionary: Dict[T, float], rng: Optional[Generator] = None) -> Optional[T]:
+    if rng is None:
+        rng = np.random.default_rng()
+    inputs: List[T] = list(dictionary.keys())
+    rng.shuffle(inputs)
+    return argmax(inputs, lambda key: dictionary[key])
 
 def iterable_matches(item: Sequence, filter: Sequence) -> int:
     """
