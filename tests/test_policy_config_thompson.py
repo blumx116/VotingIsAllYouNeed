@@ -8,11 +8,11 @@ file: test_policy_config_thompson.py
 
 @created: 2020-12-06T20:08:39.389Z-06:00
 
-@last-modified: 2021-01-07T13:20:14.992Z-06:00
+@last-modified: 2021-01-08T16:53:26.543Z-06:00
 """
 
 # standard library
-from typing import List
+from typing import List, Dict
 
 # 3rd party packages
 import pytest
@@ -75,7 +75,7 @@ from VIAYN.DiscreteDistribution import DiscreteDistribution
         [[0,0.2,0.3,0.4]],
         [[2,5,4,5]],
         [2],
-        [[2],[5],[4],[5]],
+        [[-np.inf],[5],[4],[5]],
         [[1],[1],[1],[1]]
     ),
     # only one agent bets, and not on every timestep end
@@ -85,13 +85,13 @@ from VIAYN.DiscreteDistribution import DiscreteDistribution
         [[2,5,4,5],[4,2,8,3]],
         [2,5],
         [
-            [2,4],
+            [-np.inf],
             [5,2],
             [4,8],
             [5,3]
         ],
         [
-            [0.5,0.5],
+            [1.],
             [0.4/1.9,1.5/1.9],
             [0.6/2.6,2/2.6],
             [0.8/1.8,1/1.8]
@@ -123,7 +123,8 @@ def test_suggested_policy_config_single_action(
     """
     This test checks that aggregate bets in policy config
     satsifies our definition of suggested general aggregation 
-    for at most a 3 agent system
+    for at most a 3 agent system.
+    This checks that the probabilities of the induced DiscreteDistribution are correct
 
     [bets] is the bet percentage of each agent in a certain timestep
     [predictions] is the corresponding prediction for each bet
@@ -200,23 +201,23 @@ def test_suggested_policy_config_single_action(
         [[0,0.2,0.3,0.4]],
         [[2,5,4,5]],
         [2],
-        [[2],[5],[4],[5]],
+        [[-np.inf],[5],[4],[5]],
         [[1],[1],[1],[1]]
     ),
     # only one agent bets, and not on every timestep end
     # multiple agents bet, and not on every timestep start
         (
-        [[0,0.2,0.3,0.4],[0,0.3,0.4,0.2]],
+        [[0,0.2,0.3,0.4],[0.1,0.3,0.4,0.2]],
         [[2,5,4,5],[4,2,8,3]],
         [2,5],
         [
-            [2,4],
+            [2,4],  # This might fail, just [4,] is valid too
             [5,2],
             [4,8],
             [5,3]
         ],
         [
-            [0.5,0.5],
+            [0., 1.0], # if above is [4,], this should change to [1.0,]
             [0.4/1.9,1.5/1.9],
             [0.6/2.6,2/2.6],
             [0.8/1.8,1/1.8]
@@ -307,7 +308,7 @@ class constantDistribution(DiscreteDistribution):
 def test_suggested_policy_config_select_action(arr,vals,expected,gen_policy_conf):
     """
     This test checks that select action in policy config
-    satsifies our definition of suggested general select action
+    satisfies our definition of suggested general select action
 
     [arr] is the list of actions available
     [vals] is the list of list values for each constant distribution [arr]
@@ -320,18 +321,18 @@ def test_suggested_policy_config_select_action(arr,vals,expected,gen_policy_conf
         aggregate_bets[arr[k]]= [constantDistribution(i) for i in vals[k]]
     # test is ran 100 times to ensure consistency 
     # (constant distrib guarantees that to some extent)
-    for _ in range(100):
-        try:
+    try:
+        for _ in range(100):
             res = policyConf.select_action(aggregate_bets)
             assert(res == expected)
-        except:
-            assert expected==None
+    except:
+        assert expected is None
 
 @pytest.mark.parametrize("arr,vals,expected", [
     # random configurations with 6 actions start
     ([0,1,2,3,4,5],[[0],[0],[0],[0],[0],[100]],5),
     ([5,4,3,2,1,0],[[0],[0],[0],[0],[0],[100]],0),
-    ([0,1,2,3,4,5],[[0],[10],[10000],[1000],[10000],[100]],2),
+    ([0,1,2,3,4,5],[[0],[10],[100000],[1000],[10000],[100]],2),
     ([5,4,3,2,1,0],[[100000],[10000],[1000],[100],[10],[0]],5),
     # random configurations with 6 actions end
     # more distributions for some actions start
@@ -361,15 +362,19 @@ def test_suggested_policy_config_action_probs(arr,vals,expected,gen_policy_conf)
     aggregate_bets : Dict[float,List[DiscreteDistribution]] = {}
     for k in range(len(arr)):
         aggregate_bets[arr[k]]= [constantDistribution(i) for i in vals[k]]
-    try:
+
+    if expected is not None:
         res = policyConf.action_probabilities(aggregate_bets)
         for i in arr:
             if (i == expected):
                 assert(floatIsEqual(res[i],1))
                 continue
             assert(floatIsEqual(res[i],0))
-    except:
-        assert expected == None
+    else:
+        with pytest.raises(Exception):
+            res = policyConf.action_probabilities(aggregate_bets)
+
+
 
 class OneGoodOneBadDistribution(DiscreteDistribution):
     def __init__(self,constant:float):
@@ -412,9 +417,10 @@ def test_suggested_policy_config_action_probs_uniform(arr,vals,expected,gen_poli
     aggregate_bets : Dict[float,List[DiscreteDistribution]] = {}
     for k in range(len(arr)):
         aggregate_bets[arr[k]]= [OneGoodOneBadDistribution(i) for i in vals[k]]
-    res = policyConf.action_probabilities(aggregate_bets)
-    try:
+    if expected is not None:
+        res = policyConf.action_probabilities(aggregate_bets)
         for i in arr:
-            assert(floatIsEqual(res[i],expected,0.001))
-    except:
-        assert expected == None
+            assert(floatIsEqual(res[i],expected,0.01))
+    else:
+        with pytest.raises(Exception):
+            policyConf.action_probabilities(aggregate_bets)

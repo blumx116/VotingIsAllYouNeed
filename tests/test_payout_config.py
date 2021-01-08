@@ -53,7 +53,7 @@ from VIAYN.samples.factory import PayoutConfigEnum as PCE
 #     for agent in total_payouts:
 #         assert agent in other_payouts
 #         assert total_payouts[agent] == other_payouts[agent]
-       
+
 @pytest.mark.parametrize("enum,pred,t1,t0,R,expected", [
     # (PCE.simple,[],1,0,0,None), # TODO: should throw on creation of WeightedBet
     (PCE.simple,[3],1,0,1,4), # single timestep predictions

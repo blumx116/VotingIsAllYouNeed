@@ -72,6 +72,9 @@ def random_agent_config():
 ]
 
 def floatIsEqual(num1: float,num2: float,epsilon: float = 1e-6) -> bool:
+    for edge_case in [np.isnan, np.isposinf, np.isneginf]:
+        if edge_case(num1):
+            return edge_case(num2)
     return abs(num1-num2) < epsilon
 
 def sequenceEqual(l1: Sequence[float], l2: Sequence[float], epsilon: float=1e-6) -> bool:
