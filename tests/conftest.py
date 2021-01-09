@@ -82,6 +82,7 @@ def sequenceEqual(l1: Sequence[float], l2: Sequence[float], epsilon: float=1e-6)
     checks if all elements of a sequence of floats (or ints) are the same
     returns false if length is not equal
     NOTE: does not c heck shape
+    
     Parameters
     ----------
     l1: Sequence[float]

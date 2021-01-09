@@ -28,6 +28,7 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
     Optional base class that other PayoutConfigurations can extend from.
     Present so that we can avoid having duplicate code.
     """
+
     def __init__(self,
             upper_bound_fn: Callable[[List[Weighted]], float]):
         self.upper_bound: Callable[[List[Weighted]], float] = upper_bound_fn
@@ -41,20 +42,22 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
             baseline: float) -> float:
         """
         How much less loss you got than the baseline
+        
         Parameters
         ----------
         loss: float
             the loss to compare to the baseline (lower is better)
         baseline: float
-            baseline to compare against
+            baseline to compare against  
             if you do worse than this, return 0
 
         Returns
         -------
         advantage: float
-            how much better the loss was than the baseline
+            how much better the loss was than the baseline  
             (higher is better)
         """
+        
         # TODO: maybe vectorize this?
         # TODO: oh, the things I do for typechecker
         return float(np.max((0, baseline - loss)))
@@ -166,6 +169,7 @@ class PayoutConfigBase(Generic[A, S], PayoutConfiguration[A, S]):
         ----------
         weighted_losses: List[Weighted]]
             [(bet_amount, loss)] each pair corresponds to an agent
+        
         Returns
         -------
         payout: List[float]
@@ -229,6 +233,7 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
         ----------
         weighted_losses: List[Weighted]
             [(bet_amount, loss)] each pair corresponds to an agent
+        
         Returns
         -------
         payout: List[float]
@@ -246,6 +251,7 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
         payout = weight_i * (max_loss - loss_i) / (max_loss - weighted_mean_loss)
         where weighted mean is calculated by weights
     """
+
     def __init__(self,
             upper_bound_fn: Callable[[List[Weighted]], float]):
         super().__init__(upper_bound_fn)
@@ -289,6 +295,7 @@ class SuggestedPayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
         ----------
         weighted_losses: List[Weighted]
             [(bet_amount, loss)] each pair corresponds to an agent
+        
         Returns
         -------
         payout: List[float]

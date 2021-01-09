@@ -72,6 +72,7 @@ def weighted_mean_of_bets(bets: List[WeightedBet[A, S]]) -> List[float]:
 def argmax(args: Sequence[T], fn: Callable[[T], float]) -> Optional[T]:
     """
     Breaks ties with the first element found
+    
     Parameters
     ----------
     args

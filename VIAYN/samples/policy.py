@@ -19,6 +19,7 @@ class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S])
     Predicted value is summed evenly across all timesteps.
     Those values are then weighted by the standard weights of people who cast them
     """
+
     def __init__(self, rng: Optional[Generator] = None):
         self.rng: Generator = rng if rng is not None else np.random.default_rng()
 
@@ -48,6 +49,7 @@ class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S])
             aggregate_bets: Dict[A, float]) -> A:
         """
         Deterministically take the action with the highest expected value
+        
         Parameters
         ----------
         aggregate_bets: Dict[A, float]
@@ -162,6 +164,7 @@ class ThompsonPolicyConfiguration(Generic[A, S], ThompsonPolicyBase[A, List[Disc
         All timesteps are then summed together, and the action with the highest total value is chosen.
 
     """
+
     def __init__(self,
             random_seed: Optional[int] = None):
         super().__init__(random_seed)
@@ -223,6 +226,7 @@ class ThompsonPolicyConfiguration2(Generic[A, S], ThompsonPolicyBase[A, Discrete
     Then, samples the discrete distribution for each action & selects the action with the highest
     sampled value.
     """
+
     def __init__(self,
             random_seed: Optional[int] = None):
         self.rng: Generator = default_rng(random_seed)

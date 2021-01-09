@@ -105,6 +105,7 @@ def train(
     tsteps_per_episode: int >= 0
         Runs each episode until either episode.done() is true or r
         tsteps_per_episode is exceeded
+    
     Returns
     -------
     result: TrainResult[A, S]
@@ -278,6 +279,7 @@ def select_action(
         used for aggregating the bets & making decisions based on those
         bets
         really just uses config.policy_manager
+    
     Returns
     -------
     action: A
@@ -394,6 +396,7 @@ def get_agent_bets(
         decisions
     actions: List[A]
         the available actions at this timestep
+    
     Returns
     -------
     placed_bets: Dict[A, List[WeightedBets[A, S]]]

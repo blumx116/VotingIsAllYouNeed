@@ -51,7 +51,6 @@ class VotingConfigFactory:
     """
     Creates different types of Voting Configs Based on spec
 
-
     Parameters
     ----------
     spec: VotingConfigFactorySpec

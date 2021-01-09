@@ -44,6 +44,7 @@ class VoteRange(ABC):
     def contains(value: float) -> bool:
         """
         Checks whether or not 'value' is valid for this vote range.
+        
         Parameters
         ----------
         value: float
