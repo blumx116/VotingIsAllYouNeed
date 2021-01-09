@@ -1,11 +1,16 @@
 from abc import abstractmethod
 from typing import Generic, List, Dict, Optional, Tuple
 
+import numpy as np
 from numpy.random import default_rng, Generator
 
 from VIAYN.project_types import PolicyConfiguration, A, B, S, WeightedBet
 from VIAYN.utils import weighted_mean_of_bets, argmax, dict_argmax
 from VIAYN.DiscreteDistribution import  DiscreteDistribution
+
+
+DevolvedDiscreteDistribution: DiscreteDistribution = DiscreteDistribution.from_weighted_vals([-np.inf], [1],
+                                                                                             np.random.default_rng())
 
 
 class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S]):
@@ -14,6 +19,9 @@ class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S])
     Predicted value is summed evenly across all timesteps.
     Those values are then weighted by the standard weights of people who cast them
     """
+    def __init__(self, rng: Optional[Generator] = None):
+        self.rng: Generator = rng if rng is not None else np.random.default_rng()
+
     def validate_bet(self, bet: WeightedBet[A, S]) -> bool:
         # TODO: this should probably do some actual validation
         # but I don't want it to be duplicated with other validations
@@ -50,7 +58,7 @@ class GreedyPolicyConfiguration(Generic[A, S], PolicyConfiguration[A, float, S])
         action: A
             the selected action
         """
-        result: Optional[A] = dict_argmax(aggregate_bets)
+        result: Optional[A] = dict_argmax(aggregate_bets, self.rng)
         assert result is not None
         return result
 
@@ -90,7 +98,7 @@ class ThompsonPolicyBase(Generic[A, B, S], PolicyConfiguration[A, B, S]):
         random_seed: Optional[int]
             random_seed for the generator used for sampling
         """
-        self.random: Generator = default_rng(random_seed)
+        self.rng: Generator = default_rng(random_seed)
 
     def validate_bet(self, bet: WeightedBet[A, S]) -> bool:
         # TODO: this should probably do some actual validation
@@ -156,7 +164,7 @@ class ThompsonPolicyConfiguration(Generic[A, S], ThompsonPolicyBase[A, List[Disc
     """
     def __init__(self,
             random_seed: Optional[int] = None):
-        self.random: Generator = default_rng(random_seed)
+        super().__init__(random_seed)
 
     def aggregate_bets(self,
             predictions: Dict[A, List[WeightedBet[A, S]]]) -> Dict[A, List[DiscreteDistribution]]:
@@ -173,26 +181,34 @@ class ThompsonPolicyConfiguration(Generic[A, S], ThompsonPolicyBase[A, List[Disc
                 prediction: float
                 bet_amount: float
                 for t, (prediction, bet_amount) in enumerate(zip(bet.prediction, bet.bet)):
-                    while t >= len(result[action]):
+                    while t >= len(aggregator):
                         # should be equivalent to using 'if'
                         aggregator.append([])
-                    aggregator[t].append((prediction, bet_amount))
+                    aggregator[t].append((prediction, bet_amount * bet.money))
 
-            # instantiate distributions for this action from aggrator
-            distributions: List[DiscreteDistribution] = [DiscreteDistribution.from_weighted_vals(
-                vals=[prediction for prediction, _ in aggregator[t]],
-                weights=[bet_amount for _, bet_amount in aggregator[t]],
-                random_seed=self.random)
-                for t in range(len(aggregator))]
+            # instantiate distributions for this action from aggregator
+            distributions: List[DiscreteDistribution] = []
+            for t in range(len(aggregator)):
+                preds: List[float] = [prediction for prediction, _ in aggregator[t]]
+                bet_amounts: List[float] = [bet_amount for _, bet_amount in aggregator[t]]
+                distrib: DiscreteDistribution
+                if sum(bet_amounts) > 0:
+                    distrib = DiscreteDistribution.from_weighted_vals(
+                        vals=preds, weights=bet_amounts, random_seed=self.rng)
+                else:
+                    distrib = DevolvedDiscreteDistribution
+                distributions.append(distrib)
             result[action] = distributions
         return result
 
     def select_action(self,
             aggregate_bets: Dict[A, List[DiscreteDistribution]]) -> A:
+        assert len(np.unique(list(map(len, aggregate_bets.values())))) == 1
+        # check that all of the lists have equal length
         def sample_sum(distributions: List[DiscreteDistribution]) -> float:
             return sum([distribution.sample() for distribution in distributions])
         scores: Dict[A, float] = {action: sample_sum(dists) for action, dists in aggregate_bets.items()}
-        chosen: Optional[A] = dict_argmax(scores)
+        chosen: Optional[A] = dict_argmax(scores, self.rng)
         assert chosen is not None
         return chosen
 
@@ -209,22 +225,25 @@ class ThompsonPolicyConfiguration2(Generic[A, S], ThompsonPolicyBase[A, Discrete
     """
     def __init__(self,
             random_seed: Optional[int] = None):
-        self.random: Generator = default_rng(random_seed)
+        self.rng: Generator = default_rng(random_seed)
 
     def aggregate_bets(self,
                    predictions: Dict[A, List[WeightedBet[A, S]]]) -> Dict[A, DiscreteDistribution]:
         result: Dict[A, DiscreteDistribution] = {}
         action: A
         for action in predictions:
-            result[action] = DiscreteDistribution.from_weighted_vals(
-                vals=[sum(bet.prediction) for bet in predictions[action]],
-                weights=[bet.bet[0] for bet in predictions[action]],
-                random_seed=self.random)
+            if sum(map(lambda bet: bet.bet[0], predictions[action])) == 0.:
+                result[action] = DevolvedDiscreteDistribution
+            else:
+                result[action] = DiscreteDistribution.from_weighted_vals(
+                    vals=[sum(bet.prediction) for bet in predictions[action]],
+                    weights=[bet.bet[0] * bet.money for bet in predictions[action]],
+                    random_seed=self.rng)
         return result
 
     def select_action(self,
             aggregate_bets: Dict[A, DiscreteDistribution]) -> A:
         scores: Dict[A, float] = {action: dist.sample() for action, dist in aggregate_bets.items()}
-        chosen: Optional[A] = dict_argmax(scores)
+        chosen: Optional[A] = dict_argmax(scores, self.rng)
         assert chosen is not None
         return chosen

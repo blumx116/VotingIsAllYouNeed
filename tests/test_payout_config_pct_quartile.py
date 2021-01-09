@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on 2020-12-09 20:10:07
-@author: suhail
+file: test_payout_config_pct_quartile.py
 
-This file tests payout configurations
+@author: Suhail.Alnahari
+
+@description: this file tests the 95% quartile payout mechanism
+
+@created: 2020-12-20T15:12:52.489Z-06:00
+
+@last-modified: 2021-01-08T18:00:53.514Z-06:00
 """
 
 # standard library
@@ -19,48 +24,14 @@ import VIAYN.project_types as P
 import VIAYN.samples.factory as fac
 import VIAYN.samples.vote_ranges as vote_range
 from VIAYN.project_types import PayoutConfiguration, HistoryItem, A, S, ActionBet, Agent, WeightedBet
-from VIAYN.samples.factory import PayoutConfigEnum as PCE
+from VIAYN.samples.factory import PayoutConfigEnum as PCE, UpperBoundConfigEnum as UBCE
 
-# def payout_config_isomorphism(
-#         config: PayoutConfiguration,
-#         record: HistoryItem,
-#         welfare_score: float,
-#         t_current: int):
-#     t_cast_on: int = record.t_enacted
-#     selected_action: A
-#     action: A
-#     total_payouts: Dict[Agent[A, S], float] = {}
-#     for action in record.available_actions():
-#         abets: Dict[Agent[A, S], WeightedBet] = \
-#             {wb.cast_by: wb.to_action_bet() for wb in record.predictions[action]}
-#         losses: Dict[Agent[A, S], float] = \
-#             { agent: config.calculate_loss(abet, t_cast_on, t_current, welfare_score)
-#                 for agent, abet in abets.items()}
-#         loss_list: List[float] = [loss for agent, loss in losses.items()]
-#         payouts: Dict[Agent[A, S], float] = \
-#             {agent : config.calculate_payout_from_loss(
-#                 loss_to_evaluate=loss, all_losses=loss_list,
-#                 t_cast_on=t_cast_on, t_current=t_current,
-#                 action_bet_on=action, action_selected=selected_action)
-#             for agent, loss in losses.items()}
-#         for agent in payouts:
-#             if agent not in total_payouts:
-#                 total_payouts[agent] = 0.
-#             total_payouts[agent] += payouts[agent]
 
-#     other_payouts = config.calculate_all_payouts(record, welfare_score, t_current)
-#     assert len(other_payouts) == len(total_payouts)
-#     for agent in total_payouts:
-#         assert agent in other_payouts
-#         assert total_payouts[agent] == other_payouts[agent]
-       
 @pytest.mark.parametrize("enum,pred,t1,t0,R,expected", [
-    # (PCE.simple,[],1,0,0,None), # TODO: should throw on creation of WeightedBet
     (PCE.simple,[3],1,0,1,4), # single timestep predictions
     (PCE.simple,[0,3],2,0,1,4), # two timestep predictions
     (PCE.simple,[10,10,10,3,10,10,10],4,0,1,4), # multiple timestep good prediction
     (PCE.simple,[10,10,10,3,10,10,10],3,0,1,81), # multiple timestep bad prediction
-    # (PCE.suggested,[],1,0,0,None),   # TODO: should throw on creation of WeightedBet
     (PCE.suggested,[3],1,0,1,4),  # single timestep predictions
     (PCE.suggested,[0,3],2,0,1,4), # two timestep predictions
     (PCE.suggested,[10,10,10,3,10,10,10],4,0,1,4), # multiple timestep good prediction
@@ -73,7 +44,7 @@ def test_payout_config_calculate_loss(
     """
     This test checks that calculate loss in payout config
     satisfies our definition of simple and suggested payouts
-    for one agent
+    for one agent is not affected by setting the new upperbound
 
     [enum] is the specifier for which payout config to use, given to the factory
     [wb] is the weighted bet the agent created at [t0] generated from [pred].
@@ -83,61 +54,90 @@ def test_payout_config_calculate_loss(
     objects easier.
     """
     pf: P.PayoutConfiguration = gen_payout_conf(
-        enum
+        enum, UBCE.quartile95
     )
-    wb: P.WeightedBet  = gen_weighted_bet(pred,pred)
+    bet : List[float] = [1 if t1==(i+1) else 0 for i in range(len(pred)) ]
+    wb: P.WeightedBet  = gen_weighted_bet(bet,pred)
     assert(floatIsEqual(pf.calculate_loss(wb,t0,t1,R),expected))
 
 @pytest.mark.parametrize("enum,bet,t1,t0,loss,allLs,aj,ai,expected", [
     # testing random bets and weights with main bet = 1
     (
-        PCE.simple,1,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
-        10*1
-    ),
-    # testing random bets and weights with main bet = 5
-    (
         PCE.simple,5,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
-        10*5
+        5
     ),
     # testing random bets and weights with high loss
     (
-        PCE.simple,5,1,0,10,[(5,0),(4,1),(0.01,10)],1,1,
+        PCE.simple,0.01,1,0,10,[(5,0),(4,1),(0.01,10)],1,1,
         0
     ),
     # testing random bets and weights with average loss
     (
-        PCE.simple,5,1,0,5,[(5,0),(4,5),(0.01,10)],1,1,
-        5*5
+        PCE.simple,4,1,0,5,[(5,0),(4,5),(0.01,10)],1,1,
+        0
     ),
     # testing random weights and bets with equal losses
     (
         PCE.simple,5,1,0,5,[(5,5),(4,5),(0.01,5)],1,1,
         5
     ),
+    # Checking behavior start
+    # 1st group
+    (
+        PCE.simple,90,1,0,0,[(90,0),(5,2),(5,10)],1,1,
+        90*2
+    ),
+    # if one above fails this should pass
+    # (
+    #     PCE.simple,9,1,0,0,[(9,0),(5,2),(5,10)],1,1,
+    #     (9+5+5)*10
+    # ),
+    (
+        PCE.simple,5,1,0,2,[(90,0),(5,2),(5,10)],1,1,
+        0
+    ),
+    (
+        PCE.simple,5,1,0,10,[(90,0),(5,2),(5,10)],1,1,
+        0
+    ),
+    # 2nd group
+    (
+        PCE.simple,5.001,1,0,2,[(90,0),(5.001,2),(4.999,10)],1,1,
+        0
+    ),
+    (
+        PCE.simple,4.999,1,0,10,[(90,0),(5.001,2),(4.999,10)],1,1,
+        0
+    ),
+    (
+        PCE.simple,4.999,1,0,2,[(90,0),(4.999,2),(5.001,10)],1,1,
+        39.992
+    ),
+    # Checking behavior end
     # testing payout with one agent
     (
         PCE.simple,5,1,0,5,[(5,5)],1,1,
         5
     ),
-    # testing random bets and weights with main bet = 1
-    (
-        PCE.suggested,1,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
-        1*(10/(10-((5*0+4*1+10*0.01)/(5+4+0.01))))
-    ),
     # testing random bets and weights with main bet = 5
     (
         PCE.suggested,5,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
-        5*(10/(10-((5*0+4*1+10*0.01)/(5+4+0.01))))
+        (5+4+0.01)*(1/(1+(1-1)))
     ),
     # testing random bets and weights with high loss
     (
-        PCE.suggested,5,1,0,10,[(5,0),(4,1),(0.01,10)],1,1,
+        PCE.suggested,0.01,1,0,10,[(5,0),(4,1),(0.01,10)],1,1,
         0
     ),
-    # testing random bets and weights with average loss
+    # testing random bets and weights with average loss max confidence loss agent
     (
-        PCE.suggested,5,1,0,5,[(5,0),(4,5),(0.01,10)],1,1,
-        5*(5/(10-((5*0+4*5+10*0.01)/(5+4+0.01))))
+        PCE.suggested,4,1,0,5,[(5,0),(4,5),(0.01,10)],1,1,
+        0
+    ),
+    # testing random bets and weights with average loss winner
+    (
+        PCE.suggested,5,1,0,0,[(5,0),(4,5),(0.01,10)],1,1,
+        5+4+0.01
     ),
     # testing random weights and bets with equal losses
     (
@@ -149,6 +149,39 @@ def test_payout_config_calculate_loss(
         PCE.suggested,5,1,0,5,[(5,5)],1,1,
         5
     ),
+    # Checking behavior start
+    # 1st group
+    (
+        PCE.suggested,90,1,0,0,[(90,0),(5,2),(5,10)],1,1,
+        90+5+5
+    ),
+    (
+        PCE.suggested,5,1,0,2,[(90,0),(5,2),(5,10)],1,1,
+        0
+    ),
+    (
+        PCE.suggested,5,1,0,10,[(90,0),(5,2),(5,10)],1,1,
+        0
+    ),
+    # 2nd group
+    (
+        PCE.suggested,90,1,0,0,[(90,0),(5.001,2),(4.999,10)],1,1,
+        90+5.001+4.999
+    ),
+    (
+        PCE.suggested,5.001,1,0,2,[(90,0),(5.001,2),(4.999,10)],1,1,
+        0
+    ),
+    (
+        PCE.suggested,4.999,1,0,10,[(90,0),(5.001,2),(4.999,10)],1,1,
+        0
+    ),
+    # order doesn't matter
+    (
+        PCE.suggested,4.999,1,0,2,[(90,0),(4.999,2),(5.001,10)],1,1,
+        4.254504293653563
+    ),
+    # Checking behavior end
 ])
 def test_payout_config_calculate_payout_from_loss(
     enum,bet,t1,t0,loss,allLs,aj,ai,expected,
@@ -157,7 +190,7 @@ def test_payout_config_calculate_payout_from_loss(
     """
     This test checks that calculate payout for a given loss in payout 
     config satisfies our definition of simple and suggested payouts
-    for one agent
+    for one agent is not affected by setting the new upperbound
 
     [enum] is the specifier for which payout config to use, given to the factory
     [bet] is the money the agent bet at [t1].
@@ -167,8 +200,10 @@ def test_payout_config_calculate_payout_from_loss(
     The other two parameters are test fixtures to help create
     objects easier.
     """
+    allLs: List[Weighted] = [P.Weighted(w,v) for w,v in allLs]
+    np.random.shuffle(allLs)
     pf: P.PayoutConfiguration = gen_payout_conf(
-        enum
+        enum, UBCE.quartile95
     )
     assert(
         floatIsEqual(
@@ -507,6 +542,36 @@ def test_payout_config_calculate_payout_from_loss(
         ],
         {'A1': 5.75,'A2': 3.45,'A3': 0.0}
     ),
+    # agent with a lot of money wants to cheat the system
+    (
+        PCE.suggested,
+        1.5,
+        'a2',1,
+        [
+            ([0.5,0.25,0.25],[5,4,6],'a1',5,'A1'),
+            ([0.2,0.4,0.4],[3,7,9],'a2',3,'A2'),
+            ([0.9,0.05,0.05],[1,5,11],'a1',3,'A2'),
+            ([0.3,0.4,0.3],[1,7,10],'a2',5,'A1'),
+            ([0.4,0.1,0.1],[3,0,5.5],'a1',15,'A3'),
+            ([0.005,0.4,0.3],[24,7.4,8.5],'a2',15,'A3'),
+        ],
+        {'A1': 2.175,'A2': 0.0,'A3': 0.0}
+    ),
+    # agent with a lot of money wants to cheat the system
+    (
+        PCE.suggested,
+        3,
+        'a2',1,
+        [
+            ([0.5,0.25,0.25],[5,4,6],'a1',5,'A1'),
+            ([0.2,0.4,0.4],[3,7,9],'a2',3,'A2'),
+            ([0.9,0.05,0.05],[1,5,11],'a1',3,'A2'),
+            ([0.3,0.4,0.3],[1,7,10],'a2',5,'A1'),
+            ([0.4,0.1,0.1],[3,0,5.5],'a1',15,'A3'),
+            ([0.005,0.4,0.3],[24,7.4,8.5],'a2',15,'A3'),
+        ],
+        {'A1': 0.0,'A2': 2.175,'A3': 0.0}
+    ),
 ])
 def test_payout_config_calculate_all_payouts(
     enum, # factory spec variable
@@ -519,7 +584,7 @@ def test_payout_config_calculate_all_payouts(
     """
     This test checks that calculate all payouts for a given history item
     in payout config satisfies our definition of simple and suggested payouts
-    for one agent
+    for one agent is not affected by setting the new upperbound
 
     [enum] is the specifier for which payout config to use, given to the factory
     [welfare_score] is the total happiness for all agents at [t_current].
@@ -530,7 +595,7 @@ def test_payout_config_calculate_all_payouts(
     """
     
     pf: P.PayoutConfiguration = gen_payout_conf(
-        enum
+        enum, UBCE.quartile95
     )
     predsDict: Dict[A, List[WeightedBet[A, S]]] = {}
     
@@ -564,5 +629,3 @@ def test_payout_config_calculate_all_payouts(
                 expected[agent]
             )
         )
-
-

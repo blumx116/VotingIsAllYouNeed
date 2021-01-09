@@ -22,6 +22,15 @@ VoteBoundGetter = Callable[[int], float]
 # type alias for the type of VotingConfiguration.max_possible_vote_total
 
 
+@dataclass(frozen=True)
+class Weighted:
+    weight: float
+    val: float
+
+    def __post_init__(self):
+        assert self.weight > 0
+
+
 class VoteRange(ABC):
     """
     Type of possible voting. e.g. Yes/No = {0, 1},
@@ -88,8 +97,19 @@ class ActionBet:
     Minimal version of a bet containing only the parts that are
     directly under the control of the agent
     """
-    bet: List[float]  # percentage of money to be bet @ each timestep
-    prediction: List[float]  # the predictions about the welfare score @ each timestep
+    bet: List[float]  # percentage of money to be bet @ each timestep (bij)
+    prediction: List[float]  # the predictions about the welfare score @ each timestep (pij)
+
+    def __post_init__(self):
+        assert len(self.bet) == len(self.prediction)
+        assert len(self.bet) != 0
+        assert sum(self.bet) <= 1
+        for b in self.bet:
+            assert b >= 0
+
+            
+class AnonymizedHistoryItem:
+     pass 
 
 
 class Agent(Generic[A, S], ABC):
@@ -118,31 +138,27 @@ class Agent(Generic[A, S], ABC):
     input amount of money (personally)
     """
 
+    def view(self, info: AnonymizedHistoryItem) -> None:
+        pass
+
 
 @dataclass(frozen=True)
-class WeightedBet(Generic[A, S]):
+class WeightedBet(Generic[A, S],ActionBet):
     """
     Like ActionBet, but with additional metadata about the bet
     that the Agent should NOT be able to control
     """
-    bet: List[float]  # bij
-    prediction: List[float]  # pij
     action: A  # j # the action that the bet was placed on
     money: float  # m_i^(t) # the amount of money the agent has at time of bet
     cast_by: Agent[A, S] # which agent it was cast by
 
     def __post_init__(self):
-        assert len(self.bet) == len(self.prediction)
-        assert len(self.bet) != 0
+        ActionBet.__post_init__(self)
+        # check for weighted bet requirements below
 
     def weight(self) -> List[float]:
         return [bet * self.money for bet in self.bet]
-
-    def to_action_bet(self) -> ActionBet:
-        return ActionBet(bet=self.bet, prediction=self.prediction)
-        # TODO: kill me, please
-
-
+        
 class Environment(Generic[A, S]):
     """
     Generic interface that aligns with OpenAI's Gym
@@ -358,8 +374,8 @@ class PayoutConfiguration(Generic[A, S], Configuration[A, S]):
     def calculate_payout_from_loss(self,
             bet_amount_to_evaluate: float,
             loss_to_evaluate: float,
-            all_losses: List[Tuple[float, float]], # [(weight, loss)]
-            t_cast_on: int, # timestep info lets us discount by timestep
+            all_losses: List[Weighted],  # [(weight, loss)]
+            t_cast_on: int,  # timestep info lets us discount by timestep
             t_current: int,
             action_bet_on: A,
             action_selected: A) -> float:

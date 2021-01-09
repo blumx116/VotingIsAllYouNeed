@@ -7,7 +7,7 @@ from VIAYN.samples.factory.env_factory import (
 )
 
 from VIAYN.samples.factory.payout_config_factory import (
-    PayoutConfigEnum, PayoutConfigFactorySpec, PayoutConfigFactory
+    PayoutConfigEnum, PayoutConfigFactorySpec, PayoutConfigFactory, UpperBoundConfigEnum
 )
 
 from VIAYN.samples.factory.policy_config_factory import (
