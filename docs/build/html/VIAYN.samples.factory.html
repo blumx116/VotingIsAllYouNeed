@@ -70,12 +70,36 @@
 <em class="property">static </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spec</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#VIAYN.samples.factory.agent_factory.AgentFactorySpec" title="VIAYN.samples.factory.agent_factory.AgentFactorySpec">VIAYN.samples.factory.agent_factory.AgentFactorySpec</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="VIAYN.html#VIAYN.project_types.Agent" title="VIAYN.project_types.Agent">VIAYN.project_types.Agent</a><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentFactory.create" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt id="VIAYN.samples.factory.agent_factory.AgentFactory.sequentialize">
+<em class="property">static </em><code class="sig-name descname">sequentialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">List<span class="p">[</span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.Agent" title="VIAYN.project_types.Agent">VIAYN.project_types.Agent</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">switch_at</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="VIAYN.html#VIAYN.project_types.Agent" title="VIAYN.project_types.Agent">VIAYN.project_types.Agent</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentFactory.sequentialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that creates an agent Manager that acts as an agent in [agents] for a certain
+number of time-steps</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agents</strong> (<em>List</em><em>[</em><a class="reference internal" href="VIAYN.html#VIAYN.project_types.Agent" title="VIAYN.project_types.Agent"><em>Agent</em></a><em>[</em><em>A</em><em>,</em><em>S</em><em>]</em><em>]</em>) – agents of the same type that will act in the order given in the list
+for [switch_at] time-steps each</p></li>
+<li><p><strong>switch_at</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – each element in the list corresponds to the amount of time-steps
+the agent at the corresponding position in [agents] will be acting for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>agent manager that plugs agents in and out sequentially based on
+the amount of time specified in [switch_at]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="VIAYN.html#VIAYN.project_types.Agent" title="VIAYN.project_types.Agent">Agent</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt id="VIAYN.samples.factory.agent_factory.AgentFactorySpec">
-<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.factory.agent_factory.</code><code class="sig-name descname">AgentFactorySpec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agentType</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#VIAYN.samples.factory.agent_factory.AgentsEnum" title="VIAYN.samples.factory.agent_factory.AgentsEnum">VIAYN.samples.factory.agent_factory.AgentsEnum</a></span></em>, <em class="sig-param"><span class="n">vote</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">totalVotesBound</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Tuple<span class="p">[</span>Callable<span class="p">[</span><span class="p">[</span>int<span class="p">]</span><span class="p">, </span>float<span class="p">]</span><span class="p">, </span>Callable<span class="p">[</span><span class="p">[</span>int<span class="p">]</span><span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prediction</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span>float<span class="p">, </span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bet</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span>float<span class="p">, </span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">N</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentFactorySpec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.factory.agent_factory.</code><code class="sig-name descname">AgentFactorySpec</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentFactorySpec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Generic</span></code></p>
 <p>Typed Spec to input to [AgentFactory.create] to create an [Agent]</p>
 <dl class="simple">
 <dt>Note: Typed spec was used instead of Dict for the factory to provide</dt><dd><p>more information to users.</p>
@@ -119,8 +143,18 @@ money wil be bet at time-step 5.</p></li>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="VIAYN.samples.factory.agent_factory.AgentFactorySpec.bet_lookup">
+<code class="sig-name descname">bet_lookup</code><em class="property">: Optional<span class="p">[</span>Dict<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>S<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>A<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">, </span>Union<span class="p">[</span><a class="reference internal" href="VIAYN.samples.html#VIAYN.samples.agents.BetSelectionMechanism" title="VIAYN.samples.agents.BetSelectionMechanism">VIAYN.samples.agents.BetSelectionMechanism</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span><span class="p">, </span>List<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentFactorySpec.bet_lookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="VIAYN.samples.factory.agent_factory.AgentFactorySpec.prediction">
 <code class="sig-name descname">prediction</code><em class="property">: Optional<span class="p">[</span>Union<span class="p">[</span>float<span class="p">, </span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentFactorySpec.prediction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.factory.agent_factory.AgentFactorySpec.prediction_lookup">
+<code class="sig-name descname">prediction_lookup</code><em class="property">: Optional<span class="p">[</span>Dict<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>S<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>A<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">, </span>Union<span class="p">[</span><a class="reference internal" href="VIAYN.samples.html#VIAYN.samples.agents.PredictionSelectionMechanism" title="VIAYN.samples.agents.PredictionSelectionMechanism">VIAYN.samples.agents.PredictionSelectionMechanism</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span><span class="p">, </span>List<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentFactorySpec.prediction_lookup" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -138,6 +172,11 @@ money wil be bet at time-step 5.</p></li>
 <code class="sig-name descname">vote</code><em class="property">: float</em><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentFactorySpec.vote" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="VIAYN.samples.factory.agent_factory.AgentFactorySpec.vote_lookup">
+<code class="sig-name descname">vote_lookup</code><em class="property">: Optional<span class="p">[</span>Dict<span class="p">[</span>S<span class="p">, </span>Union<span class="p">[</span><a class="reference internal" href="VIAYN.samples.html#VIAYN.samples.agents.VotingMechanism" title="VIAYN.samples.agents.VotingMechanism">VIAYN.samples.agents.VotingMechanism</a><span class="p">[</span>S<span class="p">]</span><span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentFactorySpec.vote_lookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -145,6 +184,11 @@ money wil be bet at time-step 5.</p></li>
 <em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.factory.agent_factory.</code><code class="sig-name descname">AgentsEnum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentsEnum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>An enumeration.</p>
+<dl class="py attribute">
+<dt id="VIAYN.samples.factory.agent_factory.AgentsEnum.composite">
+<code class="sig-name descname">composite</code><em class="property"> = 3</em><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentsEnum.composite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt id="VIAYN.samples.factory.agent_factory.AgentsEnum.constant">
 <code class="sig-name descname">constant</code><em class="property"> = 1</em><a class="headerlink" href="#VIAYN.samples.factory.agent_factory.AgentsEnum.constant" title="Permalink to this definition">¶</a></dt>
@@ -254,18 +298,45 @@ money wil be bet at time-step 5.</p></li>
 
 <dl class="py attribute">
 <dt id="VIAYN.samples.factory.payout_config_factory.PayoutConfigFactory.lookup">
-<code class="sig-name descname">lookup</code><em class="property">: Dict<span class="p">[</span><a class="reference internal" href="#VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum" title="VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum">VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum</a><span class="p">, </span>Callable<span class="p">[</span><span class="p">]</span><span class="p">, </span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.PayoutConfiguration" title="VIAYN.project_types.PayoutConfiguration">VIAYN.project_types.PayoutConfiguration</a><span class="p">]</span><span class="p">]</span></em><em class="property"> = {&lt;PayoutConfigEnum.simple: 1&gt;: &lt;function PayoutConfigFactory.&lt;lambda&gt;&gt;, &lt;PayoutConfigEnum.suggested: 2&gt;: &lt;function PayoutConfigFactory.&lt;lambda&gt;&gt;}</em><a class="headerlink" href="#VIAYN.samples.factory.payout_config_factory.PayoutConfigFactory.lookup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">lookup</code><em class="property">: Dict<span class="p">[</span><a class="reference internal" href="#VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum" title="VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum">VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum</a><span class="p">, </span>Callable<span class="p">[</span><span class="p">[</span>Callable<span class="p">[</span><span class="p">[</span>List<span class="p">[</span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.Weighted" title="VIAYN.project_types.Weighted">VIAYN.project_types.Weighted</a><span class="p">]</span><span class="p">]</span><span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">, </span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.PayoutConfiguration" title="VIAYN.project_types.PayoutConfiguration">VIAYN.project_types.PayoutConfiguration</a><span class="p">]</span><span class="p">]</span></em><em class="property"> = {&lt;PayoutConfigEnum.simple: 1&gt;: &lt;function PayoutConfigFactory.&lt;lambda&gt;&gt;, &lt;PayoutConfigEnum.suggested: 2&gt;: &lt;function PayoutConfigFactory.&lt;lambda&gt;&gt;}</em><a class="headerlink" href="#VIAYN.samples.factory.payout_config_factory.PayoutConfigFactory.lookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.factory.payout_config_factory.PayoutConfigFactory.upper_bound_lookup">
+<code class="sig-name descname">upper_bound_lookup</code><em class="property">: Dict<span class="p">[</span><a class="reference internal" href="#VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum" title="VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum">VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum</a><span class="p">, </span>Callable<span class="p">[</span><span class="p">[</span>List<span class="p">[</span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.Weighted" title="VIAYN.project_types.Weighted">VIAYN.project_types.Weighted</a><span class="p">]</span><span class="p">]</span><span class="p">, </span>float<span class="p">]</span><span class="p">]</span></em><em class="property"> = {&lt;UpperBoundConfigEnum.max: 1&gt;: &lt;function PayoutConfigBase.max_loss&gt;, &lt;UpperBoundConfigEnum.quartile95: 2&gt;: &lt;function PayoutConfigFactory.&lt;lambda&gt;&gt;}</em><a class="headerlink" href="#VIAYN.samples.factory.payout_config_factory.PayoutConfigFactory.upper_bound_lookup" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="VIAYN.samples.factory.payout_config_factory.PayoutConfigFactorySpec">
-<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.factory.payout_config_factory.</code><code class="sig-name descname">PayoutConfigFactorySpec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configType</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum" title="VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum">VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.factory.payout_config_factory.PayoutConfigFactorySpec" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.factory.payout_config_factory.</code><code class="sig-name descname">PayoutConfigFactorySpec</code><span class="sig-paren">(</span><em class="sig-param">configType: VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum</em>, <em class="sig-param">upperBound: VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum = &lt;UpperBoundConfigEnum.max: 1&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.factory.payout_config_factory.PayoutConfigFactorySpec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt id="VIAYN.samples.factory.payout_config_factory.PayoutConfigFactorySpec.configType">
 <code class="sig-name descname">configType</code><em class="property">: <a class="reference internal" href="#VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum" title="VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum">VIAYN.samples.factory.payout_config_factory.PayoutConfigEnum</a></em><a class="headerlink" href="#VIAYN.samples.factory.payout_config_factory.PayoutConfigFactorySpec.configType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.factory.payout_config_factory.PayoutConfigFactorySpec.upperBound">
+<code class="sig-name descname">upperBound</code><em class="property">: <a class="reference internal" href="#VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum" title="VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum">VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum</a></em><em class="property"> = 1</em><a class="headerlink" href="#VIAYN.samples.factory.payout_config_factory.PayoutConfigFactorySpec.upperBound" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.factory.payout_config_factory.</code><code class="sig-name descname">UpperBoundConfigEnum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt id="VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum.max">
+<code class="sig-name descname">max</code><em class="property"> = 1</em><a class="headerlink" href="#VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum.max" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum.quartile95">
+<code class="sig-name descname">quartile95</code><em class="property"> = 2</em><a class="headerlink" href="#VIAYN.samples.factory.payout_config_factory.UpperBoundConfigEnum.quartile95" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -318,14 +389,14 @@ money wil be bet at time-step 5.</p></li>
 
 <dl class="py attribute">
 <dt id="VIAYN.samples.factory.policy_config_factory.PolicyConfigFactory.lookup">
-<code class="sig-name descname">lookup</code><em class="property">: Dict<span class="p">[</span><a class="reference internal" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum" title="VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum">VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum</a><span class="p">, </span>Callable<span class="p">[</span><span class="p">]</span><span class="p">, </span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.PolicyConfiguration" title="VIAYN.project_types.PolicyConfiguration">VIAYN.project_types.PolicyConfiguration</a><span class="p">]</span><span class="p">]</span></em><em class="property"> = {&lt;PolicyConfigEnum.simple: 1&gt;: &lt;function PolicyConfigFactory.&lt;lambda&gt;&gt;, &lt;PolicyConfigEnum.suggested: 2&gt;: &lt;function PolicyConfigFactory.&lt;lambda&gt;&gt;, &lt;PolicyConfigEnum.suggested_general: 3&gt;: &lt;function PolicyConfigFactory.&lt;lambda&gt;&gt;}</em><a class="headerlink" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigFactory.lookup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">lookup</code><em class="property">: Dict<span class="p">[</span><a class="reference internal" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum" title="VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum">VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum</a><span class="p">, </span>Callable<span class="p">[</span><span class="p">[</span>Optional<span class="p">[</span>int<span class="p">]</span><span class="p">]</span><span class="p">, </span><a class="reference internal" href="VIAYN.html#VIAYN.project_types.PolicyConfiguration" title="VIAYN.project_types.PolicyConfiguration">VIAYN.project_types.PolicyConfiguration</a><span class="p">]</span><span class="p">]</span></em><em class="property"> = {&lt;PolicyConfigEnum.simple: 1&gt;: &lt;function PolicyConfigFactory.&lt;lambda&gt;&gt;, &lt;PolicyConfigEnum.suggested: 2&gt;: &lt;function PolicyConfigFactory.&lt;lambda&gt;&gt;, &lt;PolicyConfigEnum.suggested_general: 3&gt;: &lt;function PolicyConfigFactory.&lt;lambda&gt;&gt;}</em><a class="headerlink" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigFactory.lookup" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="VIAYN.samples.factory.policy_config_factory.PolicyConfigFactorySpec">
-<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.factory.policy_config_factory.</code><code class="sig-name descname">PolicyConfigFactorySpec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configType</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum" title="VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum">VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigFactorySpec" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.samples.factory.policy_config_factory.</code><code class="sig-name descname">PolicyConfigFactorySpec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configType</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum" title="VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum">VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum</a></span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigFactorySpec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Typed Spec to input to [PolicyConfigFactory.create] to create an [PolicyConfig]</p>
 <dl class="simple">
@@ -334,14 +405,22 @@ money wil be bet at time-step 5.</p></li>
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>configType</strong> (<a class="reference internal" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum" title="VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum"><em>PolicyConfigEnum</em></a>) – type of Policy Config corresponds to simple and suggested in requirements
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configType</strong> (<a class="reference internal" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum" title="VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum"><em>PolicyConfigEnum</em></a>) – type of Policy Config corresponds to simple and suggested in requirements
 suggested general samples each action and timestep using Thompson while
-suggested samples each action after summing across time-steps</p>
+suggested samples each action after summing across time-steps</p></li>
+<li><p><strong>random_seed</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – random seed, only used in ThompsonPolicies at the moment</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt id="VIAYN.samples.factory.policy_config_factory.PolicyConfigFactorySpec.configType">
 <code class="sig-name descname">configType</code><em class="property">: <a class="reference internal" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum" title="VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum">VIAYN.samples.factory.policy_config_factory.PolicyConfigEnum</a></em><a class="headerlink" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigFactorySpec.configType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.samples.factory.policy_config_factory.PolicyConfigFactorySpec.random_seed">
+<code class="sig-name descname">random_seed</code><em class="property">: Optional<span class="p">[</span>int<span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#VIAYN.samples.factory.policy_config_factory.PolicyConfigFactorySpec.random_seed" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

@@ -207,10 +207,21 @@ Agent’s need to be able to do 2 things : predict &amp; bet</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="VIAYN.project_types.Agent.view">
+<code class="sig-name descname">view</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">info</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#VIAYN.project_types.AnonymizedHistoryItem" title="VIAYN.project_types.AnonymizedHistoryItem">VIAYN.project_types.AnonymizedHistoryItem</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#VIAYN.project_types.Agent.view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="VIAYN.project_types.Agent.vote">
 <em class="property">abstract </em><code class="sig-name descname">vote</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span><span class="p">:</span> <span class="n">S</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.project_types.Agent.vote" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt id="VIAYN.project_types.AnonymizedHistoryItem">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.project_types.</code><code class="sig-name descname">AnonymizedHistoryItem</code><a class="headerlink" href="#VIAYN.project_types.AnonymizedHistoryItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd></dl>
 
 <dl class="py class">
@@ -343,7 +354,7 @@ should be the same as the timestep corresponding to welfare score</p></li>
 
 <dl class="py method">
 <dt id="VIAYN.project_types.PayoutConfiguration.calculate_payout_from_loss">
-<em class="property">abstract </em><code class="sig-name descname">calculate_payout_from_loss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bet_amount_to_evaluate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">loss_to_evaluate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">all_losses</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">t_cast_on</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">t_current</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">action_bet_on</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">action_selected</span><span class="p">:</span> <span class="n">A</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.project_types.PayoutConfiguration.calculate_payout_from_loss" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">calculate_payout_from_loss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bet_amount_to_evaluate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">loss_to_evaluate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">all_losses</span><span class="p">:</span> <span class="n">List<span class="p">[</span><a class="reference internal" href="#VIAYN.project_types.Weighted" title="VIAYN.project_types.Weighted">VIAYN.project_types.Weighted</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">t_cast_on</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">t_current</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">action_bet_on</span><span class="p">:</span> <span class="n">A</span></em>, <em class="sig-param"><span class="n">action_selected</span><span class="p">:</span> <span class="n">A</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.project_types.PayoutConfiguration.calculate_payout_from_loss" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -447,15 +458,16 @@ because they are all technically floats</p>
 <dl class="py method">
 <dt id="VIAYN.project_types.VoteRange.contains">
 <em class="property">abstract static </em><code class="sig-name descname">contains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.project_types.VoteRange.contains" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks whether or not ‘value’ is valid for this vote range.
-:param value: the value to be checked
-:type value: float</p>
+<dd><p>Checks whether or not ‘value’ is valid for this vote range.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>valid</strong> – whether or not the vote is valid for this VoteRange</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – the value to be checked</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>valid</strong> – whether or not the vote is valid for this VoteRange</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -579,19 +591,30 @@ what the max/min possible vote totals are</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="VIAYN.project_types.Weighted">
+<em class="property">class </em><code class="sig-prename descclassname">VIAYN.project_types.</code><code class="sig-name descname">Weighted</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">weight</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">val</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.project_types.Weighted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="VIAYN.project_types.Weighted.val">
+<code class="sig-name descname">val</code><em class="property">: float</em><a class="headerlink" href="#VIAYN.project_types.Weighted.val" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="VIAYN.project_types.Weighted.weight">
+<code class="sig-name descname">weight</code><em class="property">: float</em><a class="headerlink" href="#VIAYN.project_types.Weighted.weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="VIAYN.project_types.WeightedBet">
 <em class="property">class </em><code class="sig-prename descclassname">VIAYN.project_types.</code><code class="sig-name descname">WeightedBet</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#VIAYN.project_types.WeightedBet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Generic</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Generic</span></code>, <a class="reference internal" href="#VIAYN.project_types.ActionBet" title="VIAYN.project_types.ActionBet"><code class="xref py py-class docutils literal notranslate"><span class="pre">VIAYN.project_types.ActionBet</span></code></a></p>
 <p>Like ActionBet, but with additional metadata about the bet
 that the Agent should NOT be able to control</p>
 <dl class="py attribute">
 <dt id="VIAYN.project_types.WeightedBet.action">
 <code class="sig-name descname">action</code><em class="property">: A</em><a class="headerlink" href="#VIAYN.project_types.WeightedBet.action" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="VIAYN.project_types.WeightedBet.bet">
-<code class="sig-name descname">bet</code><em class="property">: List<span class="p">[</span>float<span class="p">]</span></em><a class="headerlink" href="#VIAYN.project_types.WeightedBet.bet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -602,16 +625,6 @@ that the Agent should NOT be able to control</p>
 <dl class="py attribute">
 <dt id="VIAYN.project_types.WeightedBet.money">
 <code class="sig-name descname">money</code><em class="property">: float</em><a class="headerlink" href="#VIAYN.project_types.WeightedBet.money" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="VIAYN.project_types.WeightedBet.prediction">
-<code class="sig-name descname">prediction</code><em class="property">: List<span class="p">[</span>float<span class="p">]</span></em><a class="headerlink" href="#VIAYN.project_types.WeightedBet.prediction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="VIAYN.project_types.WeightedBet.to_action_bet">
-<code class="sig-name descname">to_action_bet</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#VIAYN.project_types.ActionBet" title="VIAYN.project_types.ActionBet">VIAYN.project_types.ActionBet</a><a class="headerlink" href="#VIAYN.project_types.WeightedBet.to_action_bet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -854,7 +867,7 @@ tsteps_per_episode is exceeded</p></li>
 <span id="viayn-utils-module"></span><h2>VIAYN.utils module<a class="headerlink" href="#module-VIAYN.utils" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="VIAYN.utils.add_dictionaries">
-<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">add_dictionaries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">first</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>T<span class="p">, </span>V<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">second</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>T<span class="p">, </span>V<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>T<span class="p">, </span>V<span class="p">]</span><a class="headerlink" href="#VIAYN.utils.add_dictionaries" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">add_dictionaries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">first</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>T<span class="p">, </span>U<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">second</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>T<span class="p">, </span>U<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>T<span class="p">, </span>U<span class="p">]</span><a class="headerlink" href="#VIAYN.utils.add_dictionaries" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Combines two dictionaries. If a key is found in both dictionaries,</dt><dd><p>the values are added</p>
 </dd>
@@ -880,20 +893,158 @@ V must implement __add__(V, V) -&gt; V</p>
 <dl class="py function">
 <dt id="VIAYN.utils.argmax">
 <code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">argmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>T<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">fn</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>T<span class="p">]</span><span class="p">, </span>float<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>T<span class="p">]</span><a class="headerlink" href="#VIAYN.utils.argmax" title="Permalink to this definition">¶</a></dt>
-<dd><p>Breaks ties with the first element found
-:param args:
-:param fn:</p>
+<dd><p>Breaks ties with the first element found</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – </p></li>
+<li><p><strong>fn</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="VIAYN.utils.behaviour_lookup_from_dict">
+<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">behaviour_lookup_from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">K</span></em>, <em class="sig-param"><span class="n">lookup</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>K<span class="p">, </span>V<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>V<span class="p">]</span><a class="headerlink" href="#VIAYN.utils.behaviour_lookup_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assumes the key argument and the keys of lookup are both sequences of the same types.
+Keys of lookup are interpreted as filters</p>
+<p>Iterates through the elements of lookup and tries to find the most restrictive filter that
+still matches the key argument.</p>
+<p>Returns the corresponding value in lookup. If no such value found, returns None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>K</em><em> (</em><em>Sequence</em><em>)</em>) – </p></li>
+<li><p><strong>lookup</strong> (<em>Dict</em><em>[</em><em>K</em><em>, </em><em>V</em><em>]</em><em>]</em>) – keys like key except may contain Nones
+interpreted as filters of varying strictness</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>best_match</strong> – the value corresponding to the strictest filter that
+‘key’ was able to fulfil. None if no filters were fulfilled</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Optional[V]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="VIAYN.utils.dict_argmax">
-<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">dict_argmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dictionary</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>T<span class="p">, </span>float<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>T<span class="p">]</span><a class="headerlink" href="#VIAYN.utils.dict_argmax" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">dict_argmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dictionary</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>T<span class="p">, </span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">rng</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.random._generator.Generator<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>T<span class="p">]</span><a class="headerlink" href="#VIAYN.utils.dict_argmax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="VIAYN.utils.is_numeric">
+<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">is_numeric</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#VIAYN.utils.is_numeric" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="VIAYN.utils.iterable_matches">
+<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">iterable_matches</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span><span class="p">:</span> <span class="n">Sequence</span></em>, <em class="sig-param"><span class="n">filter</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#VIAYN.utils.iterable_matches" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a bit of a weird function to match sequences with filters.
+It’s currently intended to be used for look-up in a dictionary with optional arguments.</p>
+<p>Here are some examples:
+iterable_matches((s1, a1), (s1, a1)) =&gt; 2
+iterable_matches((s1, a1), (s1, a2)) =&gt; -1
+iterable_matches((s1, a1), (s1, None)) =&gt; 1</p>
+<p>in short, it checks if every non-None element of the filter is equal to the
+corresponding element of the item. If not, it returns -1. If yes, then it
+returns the number of non-None values in the filter.</p>
+<p>This is useful for making policies of varying strictness for look-up in a dictionary.
+Given a lookup of the form Dict[filter: Tuple, value: whatever], you can iterate through the items
+to find the key that matches the strictes filter (the filter that returns the highest value from
+iterable matches). See policy_lookup</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item</strong> (<em>Sequence</em>) – item to check</p></li>
+<li><p><strong>filter</strong> (<em>Sequence</em>) – each element of the filter should have the same type as
+the corresponding element of item or be None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>n_matches</strong> – returns -1 if there are any non-None elements of filter
+that ‘item’ doesn’t match.
+Otherwise, returns the number of non-None elements of filter</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="VIAYN.utils.map_vals">
+<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">map_vals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">weighted_elements</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="#VIAYN.project_types.Weighted" title="VIAYN.project_types.Weighted">VIAYN.project_types.Weighted</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">fn</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>float<span class="p">]</span><span class="p">, </span>float<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference internal" href="#VIAYN.project_types.Weighted" title="VIAYN.project_types.Weighted">VIAYN.project_types.Weighted</a><span class="p">]</span><a class="headerlink" href="#VIAYN.utils.map_vals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="VIAYN.utils.normalize_weight">
+<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">normalize_weight</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">weighted_vals</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span><a class="reference internal" href="#VIAYN.project_types.Weighted" title="VIAYN.project_types.Weighted">VIAYN.project_types.Weighted</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference internal" href="#VIAYN.project_types.Weighted" title="VIAYN.project_types.Weighted">VIAYN.project_types.Weighted</a><span class="p">]</span><a class="headerlink" href="#VIAYN.utils.normalize_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="VIAYN.utils.repeat_if_float">
+<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">repeat_if_float</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>float<span class="p">, </span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#VIAYN.utils.repeat_if_float" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility method.
+If a float is passed in for ‘value’, returns [value] * N
+otherwise, just returns value, assuming it is a list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – number of timesteps per prediction
+Only necessary if value is a float.
+Otherwise, just checks that ‘value’ has length N</p></li>
+<li><p><strong>value</strong> (<em>numeric</em>) – prediction or bet. If float, same value used fro all timesteps</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em>) – whether to make all entries sum up to the original value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>values</strong> – values as a list, if conversion is necessary</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="VIAYN.utils.total_weight">
+<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">total_weight</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">weighted_vals</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="#VIAYN.project_types.Weighted" title="VIAYN.project_types.Weighted">VIAYN.project_types.Weighted</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.utils.total_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="VIAYN.utils.weighted_mean">
+<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">weighted_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">weighted_vals</span><span class="p">:</span> <span class="n">List<span class="p">[</span><a class="reference internal" href="#VIAYN.project_types.Weighted" title="VIAYN.project_types.Weighted">VIAYN.project_types.Weighted</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.utils.weighted_mean" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt id="VIAYN.utils.weighted_mean_of_bets">
 <code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">weighted_mean_of_bets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bets</span><span class="p">:</span> <span class="n">List<span class="p">[</span><a class="reference internal" href="#VIAYN.project_types.WeightedBet" title="VIAYN.project_types.WeightedBet">VIAYN.project_types.WeightedBet</a><span class="p">[</span>A<span class="p">, </span>S<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#VIAYN.utils.weighted_mean_of_bets" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt id="VIAYN.utils.weighted_quartile">
+<code class="sig-prename descclassname">VIAYN.utils.</code><code class="sig-name descname">weighted_quartile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">weighted_losses</span><span class="p">:</span> <span class="n">List<span class="p">[</span><a class="reference internal" href="#VIAYN.project_types.Weighted" title="VIAYN.project_types.Weighted">VIAYN.project_types.Weighted</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">quartile</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.95</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#VIAYN.utils.weighted_quartile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the lowest loss observed such that quartile% of the losses (by weight)
+have lower loss than it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>weighted_losses</strong> – </p></li>
+<li><p><strong>quartile</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – [(weight &gt;= 0, loss &gt;= 0)]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>loss</strong> – the 95th quartile loss</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float &gt;= 0</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="module-VIAYN">
