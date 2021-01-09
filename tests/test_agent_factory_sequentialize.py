@@ -130,7 +130,7 @@ def test_super_long():
     Literally just a test with a bajillion agents.
     Each agent lasts for 3 timesteps.
     """
-    N_AGENTS: int = 10000
+    N_AGENTS: int = 1000
     FREQ: int = 3
 
     env = EnvFactory.create(EnvsFactorySpec(EnvsEnum.default, n_actions=3))

@@ -8,7 +8,7 @@ file: test_payout_config_pct_quartile.py
 
 @created: 2020-12-20T15:12:52.489Z-06:00
 
-@last-modified: 2021-01-07T13:08:02.231Z-06:00
+@last-modified: 2021-01-08T18:00:53.514Z-06:00
 """
 
 # standard library
@@ -56,14 +56,15 @@ def test_payout_config_calculate_loss(
     pf: P.PayoutConfiguration = gen_payout_conf(
         enum, UBCE.quartile95
     )
-    wb: P.WeightedBet  = gen_weighted_bet(pred,pred)
+    bet : List[float] = [1 if t1==(i+1) else 0 for i in range(len(pred)) ]
+    wb: P.WeightedBet  = gen_weighted_bet(bet,pred)
     assert(floatIsEqual(pf.calculate_loss(wb,t0,t1,R),expected))
 
 @pytest.mark.parametrize("enum,bet,t1,t0,loss,allLs,aj,ai,expected", [
     # testing random bets and weights with main bet = 1
     (
         PCE.simple,5,1,0,0,[(5,0),(4,1),(0.01,10)],1,1,
-        (5+4+0.01)*1
+        5
     ),
     # testing random bets and weights with high loss
     (
@@ -83,8 +84,8 @@ def test_payout_config_calculate_loss(
     # Checking behavior start
     # 1st group
     (
-        PCE.simple,9,1,0,0,[(9,0),(5,2),(5,10)],1,1,
-        (9+5+5)*2
+        PCE.simple,90,1,0,0,[(90,0),(5,2),(5,10)],1,1,
+        90*2
     ),
     # if one above fails this should pass
     # (
@@ -92,25 +93,25 @@ def test_payout_config_calculate_loss(
     #     (9+5+5)*10
     # ),
     (
-        PCE.simple,5,1,0,2,[(9,0),(5,2),(5,10)],1,1,
+        PCE.simple,5,1,0,2,[(90,0),(5,2),(5,10)],1,1,
         0
     ),
     (
-        PCE.simple,5,1,0,10,[(9,0),(5,2),(5,10)],1,1,
+        PCE.simple,5,1,0,10,[(90,0),(5,2),(5,10)],1,1,
         0
     ),
     # 2nd group
     (
-        PCE.simple,5.001,1,0,2,[(9,0),(5.001,2),(4.999,10)],1,1,
+        PCE.simple,5.001,1,0,2,[(90,0),(5.001,2),(4.999,10)],1,1,
         0
     ),
     (
-        PCE.simple,4.999,1,0,10,[(9,0),(5.001,2),(4.999,10)],1,1,
+        PCE.simple,4.999,1,0,10,[(90,0),(5.001,2),(4.999,10)],1,1,
         0
     ),
     (
-        PCE.simple,4.999,1,0,2,[(9,0),(4.999,2),(5.001,10)],1,1,
-        0
+        PCE.simple,4.999,1,0,2,[(90,0),(4.999,2),(5.001,10)],1,1,
+        39.992
     ),
     # Checking behavior end
     # testing payout with one agent
@@ -151,34 +152,34 @@ def test_payout_config_calculate_loss(
     # Checking behavior start
     # 1st group
     (
-        PCE.suggested,9,1,0,0,[(9,0),(5,2),(5,10)],1,1,
-        9+5+5
+        PCE.suggested,90,1,0,0,[(90,0),(5,2),(5,10)],1,1,
+        90+5+5
     ),
     (
-        PCE.suggested,5,1,0,2,[(9,0),(5,2),(5,10)],1,1,
+        PCE.suggested,5,1,0,2,[(90,0),(5,2),(5,10)],1,1,
         0
     ),
     (
-        PCE.suggested,5,1,0,10,[(9,0),(5,2),(5,10)],1,1,
+        PCE.suggested,5,1,0,10,[(90,0),(5,2),(5,10)],1,1,
         0
     ),
     # 2nd group
     (
-        PCE.suggested,9,1,0,0,[(9,0),(5.001,2),(4.999,10)],1,1,
-        9+5.001+4.999
+        PCE.suggested,90,1,0,0,[(90,0),(5.001,2),(4.999,10)],1,1,
+        90+5.001+4.999
     ),
     (
-        PCE.suggested,5.001,1,0,2,[(9,0),(5.001,2),(4.999,10)],1,1,
+        PCE.suggested,5.001,1,0,2,[(90,0),(5.001,2),(4.999,10)],1,1,
         0
     ),
     (
-        PCE.suggested,4.999,1,0,10,[(9,0),(5.001,2),(4.999,10)],1,1,
+        PCE.suggested,4.999,1,0,10,[(90,0),(5.001,2),(4.999,10)],1,1,
         0
     ),
     # order doesn't matter
     (
-        PCE.suggested,4.999,1,0,2,[(9,0),(4.999,2),(5.001,10)],1,1,
-        0
+        PCE.suggested,4.999,1,0,2,[(90,0),(4.999,2),(5.001,10)],1,1,
+        4.254504293653563
     ),
     # Checking behavior end
 ])
@@ -200,6 +201,7 @@ def test_payout_config_calculate_payout_from_loss(
     objects easier.
     """
     allLs: List[Weighted] = [P.Weighted(w,v) for w,v in allLs]
+    np.random.shuffle(allLs)
     pf: P.PayoutConfiguration = gen_payout_conf(
         enum, UBCE.quartile95
     )
@@ -543,7 +545,7 @@ def test_payout_config_calculate_payout_from_loss(
     # agent with a lot of money wants to cheat the system
     (
         PCE.suggested,
-        4,
+        1.5,
         'a2',1,
         [
             ([0.5,0.25,0.25],[5,4,6],'a1',5,'A1'),

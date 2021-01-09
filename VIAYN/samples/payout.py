@@ -216,7 +216,7 @@ class SimplePayoutConfig(Generic[A, S], PayoutConfigBase[A, S]):
             if len(np.unique([w.val for w in all_losses])) == 1:
                 return bet_amount_to_evaluate
             return bet_amount_to_evaluate * \
-                (self.upper_bound(all_losses) - loss_to_evaluate)
+                self.advantage(loss_to_evaluate,self.upper_bound(all_losses))
         else:
             # no payout for non-selected actions
             return 0.
