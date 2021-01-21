@@ -5,12 +5,13 @@
 # @Last Modified time: 2020-12-06 14:54:12
 from abc import ABC, abstractmethod
 from copy import copy
-from typing import List, Callable, Optional, Generic
+from typing import List, Callable, Optional, Generic, Dict, Union, Tuple
 
 import numpy as np
 from numpy.random import Generator, default_rng
 
-from VIAYN.project_types import Agent, A, S, ActionBet
+from VIAYN.project_types import Agent, A, S, ActionBet, AnonymizedHistoryItem
+from VIAYN.utils import behaviour_lookup_from_dict
 
 
 """
@@ -36,6 +37,7 @@ class VotingMechanism(Generic[S], ABC):
     Abstract class for independent subcomponent of an agent that handles voting
     NOTE: not all agents must use voting mechanism, it's just a useful tool
     """
+    
     @abstractmethod
     def vote(self, state: S) -> float:
         """
@@ -52,6 +54,7 @@ class VotingMechanism(Generic[S], ABC):
             the vote for how much the agent likes the current state
             subject to rules in voting configuration
         """
+
         ...
 
 
@@ -59,17 +62,15 @@ class StaticVotingMechanism(Generic[S], VotingMechanism[S]):
     """
     Subcomponent of agent that results in the agent submitting the same
     vote, regardless of state or timestep
+    
+    Parameters
+    ----------
+    constant_vote: float >= 0
+        the vote that the agent will submit at each timestep  
+        subject to rules in voting configuration
     """
     def __init__(self,
             constant_vote: float):
-        """
-
-        Parameters
-        ----------
-        constant_vote: float >= 0
-            the vote that the agent will submit at each timestep
-            subject to rules in voting configuration
-        """
         self.constant_vote: float = constant_vote
 
     def vote(self, state: S) -> float:
@@ -87,7 +88,22 @@ class StaticVotingMechanism(Generic[S], VotingMechanism[S]):
             the vote for how much the agent likes the current state
             subject to rules in voting configuration
         """
+
         return self.constant_vote
+
+
+class LookupBasedVotingMechanism(VotingMechanism[S], Generic[S]):
+    def __init__(self,
+            lookup: Dict[S, Union[VotingMechanism[S], float]]):
+        self.delegation_lookup: Dict[S, VotingMechanism[S]] = {
+            s: voter if isinstance(voter, VotingMechanism) else
+            StaticVotingMechanism(voter)
+            for s, voter in lookup.items()
+        }
+
+    def vote(self, state: S) -> float:
+        assert state in self.delegation_lookup
+        return self.delegation_lookup[state].vote(state)
 
 
 class BetSelectionMechanism(Generic[A, S], ABC):
@@ -95,42 +111,45 @@ class BetSelectionMechanism(Generic[A, S], ABC):
     Abstract class for independent subcomponent of an agent that handles betting
     NOTE: not all agents must use betting mechanism, it's just a useful tool
     """
+
     @abstractmethod
     def select_bet_amount(self, state: S, action: A, money: float) -> List[float]:
         """
-                Creates a bet based on the current state, the action being bet on
-                    and the current amount of money the agent has
+        Creates a bet based on the current state, the action being bet on
+            and the current amount of money the agent has
 
-                Parameters
-                ----------
-                state: S
-                    the current state at the time of the bet
-                action: A
-                    the action the agent is betting on
-                money: float
-                    the amount of money the agent has at the time of the bet
+        Parameters
+        ----------
+        state: S
+            the current state at the time of the bet
+        action: A
+            the action the agent is betting on
+        money: float
+            the amount of money the agent has at the time of the bet
 
-                Returns
-                -------
-                bet: List[float]
-                    how much money to bet on each timestep of the prediction
-                    total should sum up to less than 1, the percentage of the agent's
-                    current total money
-                """
+        Returns
+        -------
+        bet: List[float]
+            how much money to bet on each timestep of the prediction
+            total should sum up to less than 1, the percentage of the agent's
+            current total money
+        """
+
         ...
 
 
 class StaticBetSelectionMech(Generic[A, S], BetSelectionMechanism [A, S]):
+    """
+    
+    Parameters
+    ----------
+    constant_bet: List[float]
+        the percentage of the agent's money to bet on each timestep of every prediction
+        each percentage should be represented as a value between 0 and 1
+    """
+        
     def __init__(self,
             constant_bet: List[float]):
-        """
-
-        Parameters
-        ----------
-        constant_bet: List[float]
-            the percentage of the agent's money to bet on each timestep of every prediction
-            each percentage should be represented as a value between 0 and 1
-        """
         for bet in constant_bet:
             assert 0 <= bet <= 1
         self.constant_bet: List[float] = constant_bet
@@ -155,8 +174,24 @@ class StaticBetSelectionMech(Generic[A, S], BetSelectionMechanism [A, S]):
             percentage of money bet @ for each timestep
             constant, as specified in constructor
         """
+
         return copy(self.constant_bet)
         # copies so that the og bet isn't changed if someone edits the bet
+
+
+class LookupBasedBetSelectionMech(BetSelectionMechanism[A, S], Generic[A, S]):
+    def __init__(self,
+            lookup: Dict[Tuple[Optional[S], Optional[A], Optional[float]], Union[BetSelectionMechanism[A, S], List[float]]]):
+        self.lookup: Dict[Tuple[Optional[S], Optional[A], Optional[float]], BetSelectionMechanism[A, S]] = {
+            key: bets if isinstance(bets, BetSelectionMechanism)
+            else StaticBetSelectionMech(bets)
+            for key, bets in lookup.items()}
+
+    def select_bet_amount(self, state: S, action: A, money: float) -> List[float]:
+        key: Tuple[S, A, float] = (state, action, money)
+        mechanism: Optional[BetSelectionMechanism[A, S]] = behaviour_lookup_from_dict(key, self.lookup)
+        assert mechanism is not None
+        return mechanism.select_bet_amount(state, action, money)
 
 
 class PredictionSelectionMechanism(Generic[A, S], ABC):
@@ -164,6 +199,7 @@ class PredictionSelectionMechanism(Generic[A, S], ABC):
     Abstract class for independent subcomponent of an agent that handles betting
     NOTE: not all agents must use betting mechanism, it's just a useful tool
     """
+
     @abstractmethod
     def select_prediction(self, state: S, action: A, money: float) -> List[float]:
         ...
@@ -173,29 +209,27 @@ class RNGUniforPredSelectionMech(Generic[A, S], PredictionSelectionMechanism[A, 
     """
     Uniformly selects a prediction within the valid range for each timestep.
     Intended to be used as part of a CompositeAgent
+    
+    Parameters
+    ----------
+    tsteps_per_prediction: int > 0
+        the number of timesteps that will be in each prediction
+        (i.e. the length of the result of select_prediction)
+    min_possible_prediction: Callable[[int], float]
+        gets the minimum possible prediction for dt: int steps in the future
+        called for each element of the prediction. OK to return inf & nan
+    max_possible_prediction: Callable[[int], float]
+        gets the maximum possible prediction for dt: int steps in the future
+        called for each element of the prediction. OK to return inf & nan
+    random_seed: int
+        seed for random number generator
     """
+
     def __init__(self,
             tsteps_per_prediction: int,
             min_possible_prediction: Callable[[int], float],
             max_possible_prediction: Callable[[int], float],
             random_seed: int):
-        """
-
-
-        Parameters
-        ----------
-        tsteps_per_prediction: int > 0
-            the number of timesteps that will be in each prediction
-            (i.e. the length of the result of select_prediction)
-        min_possible_prediction: Callable[[int], float]
-            gets the minimum possible prediction for dt: int steps in the future
-            called for each element of the prediction. OK to return inf & nan
-        max_possible_prediction: Callable[[int], float]
-            gets the maximum possible prediction for dt: int steps in the future
-            called for each element of the prediction. OK to return inf & nan
-        random_seed: int
-            seed for random number generator
-        """
         self.tsteps_per_prediction: int = tsteps_per_prediction  # length of prediction vector
         self.min_possible_prediction: Callable[[int], float] = min_possible_prediction
         self.max_possible_prediction: Callable[[int], float] = max_possible_prediction
@@ -207,6 +241,7 @@ class RNGUniforPredSelectionMech(Generic[A, S], PredictionSelectionMechanism[A, 
         """
         Makes a random prediction starting @ the next timestep
         Selected uniformly from range of possible predictions at that timestep
+        
         Parameters
         ----------
         state: S
@@ -215,11 +250,13 @@ class RNGUniforPredSelectionMech(Generic[A, S], PredictionSelectionMechanism[A, 
             ignored
         money: float
             ignored
+        
         Returns
         -------
         prediction: List[float]
             the predictions that the agent wants to put in the best at the current timestep
         """
+
         # TODO : bascially duplicate code with UniformBettingMechanism.bet
         prediction: List[float] = [0. for _ in range(self.tsteps_per_prediction)]
         # TODO : I think dt should start at one, as we'll always predicting about the future
@@ -242,16 +279,15 @@ class StaticPredSelectionMech(Generic[A, S], PredictionSelectionMechanism[A, S])
     """
     Places the same prediction for every timestep.
     No guarantees that that prediction is always valid
+    
+    Parameters
+    ----------
+    constant_prediction: List[float]
+        the predictiosn that will be returned each timestep
     """
+
     def __init__(self,
             constant_prediction: List[float]):
-        """
-
-        Parameters
-        ----------
-        constant_prediction: List[float]
-            the predictiosn that will be returned each timestep
-        """
         self.constant_prediction: List[float] = constant_prediction
 
     def select_prediction(self, state: S, action: A, money: float) -> List[float]:
@@ -272,7 +308,26 @@ class StaticPredSelectionMech(Generic[A, S], PredictionSelectionMechanism[A, S])
         prediction: List[float]
             the same constant prediction every time
         """
+
         return copy(self.constant_prediction)
+
+
+class LookupBasedPredSelectionMech(PredictionSelectionMechanism[A, S], Generic[A, S]):
+    def __init__(self,
+            lookup: Dict[Tuple[Optional[S], Optional[A], Optional[float]],
+                         Union[PredictionSelectionMechanism[A, S], List[float]]]):
+        self.lookup: Dict[Tuple[Optional[S], Optional[A], Optional[float]],
+                         PredictionSelectionMechanism[A, S]] = {
+            key: value if isinstance(value, PredictionSelectionMechanism)
+            else StaticPredSelectionMech(value)
+            for key, value in lookup.items()
+        }
+
+    def select_prediction(self, state: S, action: A, money: float) -> List[float]:
+        key: Tuple[S, A, float] = (state, action, money)
+        delegate: Optional[PredictionSelectionMechanism[A, S]] = behaviour_lookup_from_dict(key, self.lookup)
+        assert delegate is not None
+        return delegate.select_prediction(state, action, money)
 
 
 class BettingMechanism(Generic[A, S], ABC):
@@ -280,6 +335,7 @@ class BettingMechanism(Generic[A, S], ABC):
     Abstract class for independent subcomponent of an agent that handles betting & predictions
     NOTE: not all agents must use betting mechanism, it's just a useful tool
     """
+
     @abstractmethod
     def bet(self, state: S, action: A, money: float) -> ActionBet:
         """
@@ -292,6 +348,7 @@ class BettingMechanism(Generic[A, S], ABC):
             the action that is being bet on
         money: float
             the amount of money when the bet is being case
+        
         Returns
         -------
         bet: ActionBet
@@ -305,6 +362,7 @@ class CompositeBettingMechanism(Generic[A, S], BettingMechanism[A, S]):
     """
     Composite class that just delegates to bet_selection & prediction_selection
     """
+
     def __init__(self,
             bet_selection: BetSelectionMechanism[A, S],
             prediction_selection: PredictionSelectionMechanism[A, S]):
@@ -323,6 +381,7 @@ class UniformBettingMechanism(Generic[A, S], BettingMechanism[A, S]):
     """
     TODO: this should use RNGUniformPredSelectionMech
     """
+
     def __init__(self,
             constant_bet: List[float],
             tsteps_per_prediction: int,
@@ -338,6 +397,7 @@ class UniformBettingMechanism(Generic[A, S], BettingMechanism[A, S]):
     def bet(self, state: S, action: A, money: float) -> ActionBet:
         """
         Essentially delegates to RNGUniformPredSelectionMech and StaticBetSelectionMech
+        
         Parameters
         ----------
         state: S
@@ -352,6 +412,7 @@ class UniformBettingMechanism(Generic[A, S], BettingMechanism[A, S]):
         bet: ActionBet
             bet amount & prediction
         """
+
         bet: List[float] = copy(self.constant_bet)
         prediction: List[float] = [0. for _ in range(self.tsteps_per_prediction)]
         for dt in range(self.tsteps_per_prediction):
@@ -366,19 +427,20 @@ class UniformBettingMechanism(Generic[A, S], BettingMechanism[A, S]):
 
 
 class CompositeAgent(Generic[A, S], Agent[A, S]):
+    """
+    Just delegates to the respective mechanisms
+
+    Parameters
+    ----------
+    betting_mechanism: BettingMechanism[A, S]
+        used for bet()
+    voting_mechanism: VotingMechanism[S]
+        used for vote()
+    """
+
     def __init__(self,
             betting_mechanism: BettingMechanism[A, S],
             voting_mechanism: VotingMechanism[S]):
-        """
-        Just delegates to the respective mechanisms
-
-        Parameters
-        ----------
-        betting_mechanism: BettingMechanism[A, S]
-            used for bet()
-        voting_mechanism: VotingMechanism[S]
-            used for vote()
-        """
         self.betting_mechanism: BettingMechanism = betting_mechanism
         self.voting_mechanism: VotingMechanism = voting_mechanism
 
@@ -387,3 +449,56 @@ class CompositeAgent(Generic[A, S], Agent[A, S]):
 
     def bet(self, state: S, action: A, money: float) -> ActionBet:
         return self.betting_mechanism.bet(state, action, money)
+
+class MorphicAgent(Generic[A, S], Agent[A, S]):
+    """
+    Agent that acts as a specific agent depending on
+    how many view calls switch_at specifies
+
+    agent starts being agents[0] for switch_at[0] number
+    of [view()] calls, then switched to agents[1]...etc
+
+    The last agent circles back to the first and this mechanism
+    continues forever
+
+    Parameters
+    ----------
+    agents: List[Agent[A,S]]
+        list of agents that act for [switch_at] timesteps
+    switch_at: List[int]
+        list of time-steps that specify how long each agent can act for
+    """
+
+    def __init__(self,
+            agents: List[Agent[A,S]],
+            switch_at: List[int]):
+        # assert len(np.unique(switch_at)) == len(switch_at)
+        assert min(switch_at) >-1
+        assert len(agents) > 0
+        assert len(agents) == len(switch_at)
+        self.t: int = 0
+        self.agents: List[Agent[A,S]] = agents
+        self.switch_at: List[int] = switch_at
+        self._tSnapshot: int = 0
+        self._currentAgentIdx: int = 0
+
+    def vote(self, state: S) -> float:
+        assert 0 <= self._currentAgentIdx < len(self.agents)
+        return self.agents[self._currentAgentIdx].vote(state)
+
+    def bet(self, state: S, action: A, money: float) -> ActionBet:
+        assert 0 <= self._currentAgentIdx < len(self.agents)
+        return self.agents[self._currentAgentIdx].bet(state, action, money)
+
+    def view(self, info: AnonymizedHistoryItem) -> None:
+        assert 0 <= self._currentAgentIdx < len(self.switch_at)
+        self.t += 1
+        self.agents[self._currentAgentIdx].view(info)
+        if abs(self.t - self._tSnapshot) >= self.switch_at[self._currentAgentIdx]:
+            self._nextAgent()
+
+    def _nextAgent(self) -> None:
+        self._tSnapshot = self.t
+        self._currentAgentIdx += 1
+        self._currentAgentIdx = self._currentAgentIdx % len(self.agents)
+                

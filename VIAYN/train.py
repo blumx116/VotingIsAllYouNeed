@@ -10,7 +10,8 @@ import numpy as np
 
 from VIAYN.project_types import (
     Agent, Environment, SystemConfiguration, VotingConfiguration, A, S, B, VoteRange,
-    HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration, PolicyConfiguration)
+    HistoryItem, WeightedBet, ActionBet, Action, PayoutConfiguration, PolicyConfiguration,
+    AnonymizedHistoryItem)
 from VIAYN.utils import add_dictionaries
 
 
@@ -104,6 +105,7 @@ def train(
     tsteps_per_episode: int >= 0
         Runs each episode until either episode.done() is true or r
         tsteps_per_episode is exceeded
+    
     Returns
     -------
     result: TrainResult[A, S]
@@ -172,7 +174,12 @@ def train(
             # essentially 'refunds' bets on any actions that were not selected
 
             env.step(action)
-            
+
+            # update agent history
+            ahi = AnonymizedHistoryItem()
+            for agent in agents:
+                agent.view(ahi)
+
             current_history.append(
                 HistoryItem(
                     selected_action=action,
@@ -272,6 +279,7 @@ def select_action(
         used for aggregating the bets & making decisions based on those
         bets
         really just uses config.policy_manager
+    
     Returns
     -------
     action: A
@@ -388,6 +396,7 @@ def get_agent_bets(
         decisions
     actions: List[A]
         the available actions at this timestep
+    
     Returns
     -------
     placed_bets: Dict[A, List[WeightedBets[A, S]]]

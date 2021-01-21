@@ -21,6 +21,7 @@ class StaticEnvironment(Environment[IntAction, IntAction]):
     An environment with nothing but a set of actions, denoted as integers
     The state is just the idx of the last action chosen
     """
+    
     def __init__(self,
             n_actions: int):
         assert n_actions > 0

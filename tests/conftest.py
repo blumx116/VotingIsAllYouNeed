@@ -12,7 +12,7 @@ data structures and methods used in our tests.
 from typing import (
     Optional, Generic, TypeVar, List,
     Iterable, Dict, Callable, Tuple,
-    Union
+    Union, Sequence
 ) 
 
 # 3rd party packages
@@ -22,11 +22,15 @@ import numpy as np
 # local source
 from VIAYN.project_types import (
     ActionBet, A, WeightedBet, Agent, HistoryItem,
-    VoteBoundGetter, VoteRange
+    VoteBoundGetter, VoteRange,S
 )
 import VIAYN.samples.factory as factory
 import VIAYN.samples.vote_ranges as vote_range
-
+from VIAYN.samples.agents import (
+    VotingMechanism,
+    BetSelectionMechanism,
+    PredictionSelectionMechanism
+)
 
 @pytest.fixture
 def constant_agent_config():
@@ -38,16 +42,16 @@ def constant_agent_config():
     return [
     (ActionBet([0.],[5.]) , 5.),
     (ActionBet([0.],[4.]) , 5.),
-    (ActionBet([0.5],[1.]) , 5.),
+    (ActionBet([0.5],[0.25]) , 5.),
     (ActionBet([0.5],[0.]), 0.),
-    (ActionBet([0.5],[2.]), 2.),
-    (ActionBet([0.5],[2.]), 1.),
-    (ActionBet([0.5],[7.]), 10.),
-    (ActionBet([0.,0.43,0.1215,0.8,1.],[4.,1,4,1,4]), 9.),
-    (ActionBet([0.,0.1215,0.8,1.],[4.,4,1,4]), 1.),
-    (ActionBet([0.,0.43,0.1215,0.8],[4.,1,4,1]), 2.),
-    (ActionBet([0.,0.43,0.8,1.],[4.,1,4,4]), 7.),
-    (ActionBet([0.1215,0.8,1.],[1,1,4]), 5.),
+    (ActionBet([0.5],[0.499]), 2.),
+    (ActionBet([0.0],[0.0]), 1.),
+    (ActionBet([0.5],[0.2]), 10.),
+    (ActionBet([0.,0.43,0.1215,0.1],[4.,1,4,1]), 9.),
+    (ActionBet([0.,0.1215,0.5,0.2],[4.,4,1,4]), 1.),
+    (ActionBet([0.,0.43,0.1215,0.0],[4.,1,4,1]), 2.),
+    (ActionBet([0.,0.13,0.8,0.05],[4.,1,4,4]), 7.),
+    (ActionBet([0.1215,0.5,0.2],[1,1,4]), 5.),
     (ActionBet([0.,1.],[1,4]), 9.5)
 ]
 
@@ -67,8 +71,40 @@ def random_agent_config():
     (10., 0),
 ]
 
-def floatIsEqual(num1: float,num2: float) -> bool:
-    return abs(num1-num2) < 0.000001
+def floatIsEqual(num1: float,num2: float,epsilon: float = 1e-6) -> bool:
+    for edge_case in [np.isnan, np.isposinf, np.isneginf]:
+        if edge_case(num1):
+            return edge_case(num2)
+    return abs(num1-num2) < epsilon
+
+def sequenceEqual(l1: Sequence[float], l2: Sequence[float], epsilon: float=1e-6) -> bool:
+    """
+    checks if all elements of a sequence of floats (or ints) are the same
+    returns false if length is not equal
+    NOTE: does not c heck shape
+    
+    Parameters
+    ----------
+    l1: Sequence[float]
+        first list, tuple or np.ndarray to compare
+    l2: Sequence[float]
+        second list, tupl or np.ndarray to compare
+    epsilon: float >= 0
+        used for floatIsEqual
+
+    Returns
+    equal: bool
+    -------
+
+    """
+    if not len(l1) == len(l2):
+        return False
+    for el1, el2 in zip(l1, l2):
+        if not floatIsEqual(el1, el2, epsilon):
+            return False
+    return True
+
+
 
 @pytest.fixture
 def gen_agent():
@@ -85,7 +121,15 @@ def gen_agent():
         seed: Optional[int] = None,
         prediction: Optional[Union[float, List[float]]] = None,
         bet: Optional[Union[float, List[float]]] = None,
-        N: Optional[int] = None,
+        N: Optional[int] = 1,
+        vote_lookup: Optional[Dict[
+            Optional[S], Union[VotingMechanism[S], float]]] = {None:0.},
+        bet_lookup: Optional[Dict[
+            Tuple[Optional[S], Optional[A], Optional[float]],
+            Union[BetSelectionMechanism[A, S], List[float], float]]] = {(None,None,None):0.},
+        prediction_lookup: Optional[Dict[
+            Tuple[Optional[S], Optional[A], Optional[float]],
+            Union[PredictionSelectionMechanism[A, S], List[float], float]]] = {(None,None,None):0.}
         ):
         return factory.AgentFactory.create(
             factory.AgentFactorySpec(
@@ -95,7 +139,10 @@ def gen_agent():
                 seed,
                 prediction,
                 bet,
-                N
+                N,
+                vote_lookup,
+                bet_lookup,
+                prediction_lookup
             )
         )
     return _gen_agent_
@@ -150,9 +197,9 @@ def gen_payout_conf():
     and creating it in one call instead of needing to create multiple objects 
     every time to create an payout config
     """
-    def _gen_payout_conf_(configType: factory.PayoutConfigEnum):
+    def _gen_payout_conf_(configType: factory.PayoutConfigEnum, upperBound: factory.UpperBoundConfigEnum = factory.UpperBoundConfigEnum.max):
         return factory.PayoutConfigFactory.create(
-            factory.PayoutConfigFactorySpec(configType)    
+            factory.PayoutConfigFactorySpec(configType, upperBound)    
         )
     return _gen_payout_conf_
 

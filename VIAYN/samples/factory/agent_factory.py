@@ -6,9 +6,15 @@
 
 from enum import Enum, unique, auto
 from dataclasses import dataclass
-from typing import Optional, Union, Tuple, List, Callable, Dict, Iterable
-from VIAYN.project_types import Agent, VoteBoundGetter
+from typing import Optional, Union, Tuple, List, Callable, Dict, Iterable, Generic
+import numpy as np
+
+from VIAYN.project_types import Agent, VoteBoundGetter, A, S
 from VIAYN.samples.agents import (
+    VotingMechanism,
+    LookupBasedVotingMechanism,
+    LookupBasedBetSelectionMech,
+    LookupBasedPredSelectionMech,
     BetSelectionMechanism,
     PredictionSelectionMechanism,
     VotingMechanism,
@@ -17,8 +23,10 @@ from VIAYN.samples.agents import (
     StaticVotingMechanism,
     StaticBetSelectionMech,
     StaticPredSelectionMech,
-    RNGUniforPredSelectionMech
+    RNGUniforPredSelectionMech,
+    MorphicAgent
 )
+from VIAYN.utils import is_numeric, repeat_if_float
 
 @unique
 class AgentsEnum(Enum):
@@ -26,10 +34,12 @@ class AgentsEnum(Enum):
     constant = auto()
     # random agent returns random predictions that are specified with length N
     random = auto()
+    composite = auto()
+    # agent with voting, bet selection and prediction selection specified separately
 
 
 @dataclass(frozen=True)
-class AgentFactorySpec:
+class AgentFactorySpec(Generic[A, S]):
     """
     Typed Spec to input to [AgentFactory.create] to create an [Agent]
     
@@ -69,6 +79,13 @@ class AgentFactorySpec:
     prediction: Optional[Union[float, List[float]]] = None
     bet: Optional[Union[float, List[float]]] = None
     N: Optional[int] = None
+    vote_lookup: Optional[Dict[S, Union[VotingMechanism[S], float]]] = None
+    bet_lookup: Optional[Dict[
+        Tuple[Optional[S], Optional[A], Optional[float]],
+        Union[BetSelectionMechanism[A, S], List[float], float]]] = None
+    prediction_lookup: Optional[Dict[
+        Tuple[Optional[S], Optional[A], Optional[float]],
+        Union[PredictionSelectionMechanism[A, S], List[float], float]]] = None
     
     def __post_init__(self):
         # constant agent uses these params in addition to vote at least
@@ -77,9 +94,15 @@ class AgentFactorySpec:
             assert(self.prediction is not None)
         # random agent uses these params in addition to vote at least
         elif self.agentType == AgentsEnum.random:
-            assert(self.N is not None)
+            assert(self.N > 0)
             assert(self.totalVotesBound is not None)
             assert(self.bet is not None)
+        elif self.agentType == AgentsEnum.composite:
+            assert self.vote_lookup is not None
+            assert self.bet_lookup is not None
+            assert self.prediction_lookup is not None
+            # there should probably be some more checks that we do here
+            assert self.N > 0
         else:
             raise TypeError(self.agentType)
 
@@ -116,8 +139,7 @@ class AgentFactory:
     def _create_static_bet_selection_(
             spec: AgentFactorySpec) -> BetSelectionMechanism:
         assert spec.bet is not None
-        return StaticBetSelectionMech(
-            AgentFactory._repeat_if_float_(spec.bet, spec.N))
+        return StaticBetSelectionMech(repeat_if_float(spec.bet, spec.N))
 
     @staticmethod
     def _create_static_vote_selection_(spec: AgentFactorySpec) -> VotingMechanism:
@@ -126,8 +148,7 @@ class AgentFactory:
     @staticmethod
     def _create_static_prediction_selection_(spec: AgentFactorySpec) -> PredictionSelectionMechanism:
         assert spec.prediction is not None
-        return StaticPredSelectionMech(
-            AgentFactory._repeat_if_float_(spec.prediction, spec.N))
+        return StaticPredSelectionMech(repeat_if_float(spec.prediction, spec.N))
 
     @staticmethod
     def _create_rng_uniform_prediction_selection_(spec: AgentFactorySpec) -> PredictionSelectionMechanism:
@@ -150,33 +171,67 @@ class AgentFactory:
                 bet_selection=AgentFactory._create_static_bet_selection_(spec)))
 
     @staticmethod
-    def _repeat_if_float_(
-            value: Union[float, List[float]],
-            n: Optional[int] = None):
+    def _create_lookup_vote_selection_(spec: AgentFactorySpec) -> VotingMechanism:
+        assert spec.vote_lookup is not None
+        return LookupBasedVotingMechanism(spec.vote_lookup)
+
+    @staticmethod
+    def _create_lookup_pred_selection_(spec: AgentFactorySpec) -> PredictionSelectionMechanism:
+        assert spec.prediction_lookup is not None
+        return LookupBasedPredSelectionMech({
+            key: value if not is_numeric(value)
+            else repeat_if_float(value, spec.N, normalize=False)
+            for key, value in spec.prediction_lookup.items()
+        })
+
+    @staticmethod
+    def _create_lookup_bet_selection_(spec: AgentFactorySpec) -> BetSelectionMechanism:
+        assert spec.bet_lookup is not None
+        return LookupBasedBetSelectionMech({
+            key: value if not is_numeric(value)
+            else repeat_if_float(value, spec.N, normalize=True)
+            for key, value in spec.bet_lookup.items()
+        })
+
+    @staticmethod
+    def _create_composite_agent_(
+            spec: AgentFactorySpec) -> Agent:
+        return CompositeAgent(
+            voting_mechanism=AgentFactory._create_lookup_vote_selection_(spec),
+            betting_mechanism=CompositeBettingMechanism(
+                prediction_selection=AgentFactory._create_lookup_pred_selection_(spec),
+                bet_selection=AgentFactory._create_lookup_bet_selection_(spec)
+            )
+        )
+
+    
+    @staticmethod
+    def sequentialize(agents: List[Agent[A,S]], switch_at: List[int]) -> Agent[A,S]:
         """
-        Utility method.
-        If a float is passed in for 'value', returns [value] * N
-        otherwise, just returns value, assuming it is a list
-        :param n: int
-            number of timesteps per prediction
-            Only necessary if value is a float.
-            Otherwise, just checks that 'value' has length N
-        :param value:
-            prediction or bet. If float, same value used fro all timesteps
-        :return: values: List[float]
-            values as a list, if conversion is necessary
+        Method that creates an agent Manager that acts as an agent in [agents] for a certain
+        number of time-steps
+
+        Parameters
+        ----------
+        agents: List[Agent[A,S]]
+            agents of the same type that will act in the order given in the list
+            for [switch_at] time-steps each
+        switch_at: List[int]
+            each element in the list corresponds to the amount of time-steps
+            the agent at the corresponding position in [agents] will be acting for
+
+        Returns
+        -------
+        Agent
+            agent manager that plugs agents in and out sequentially based on 
+            the amount of time specified in [switch_at]
         """
-        if isinstance(value, float):
-            # repeat for each timestep
-            assert n is not None
-            return [value] * n
-        else:
-            assert isinstance(value, Iterable)
-            if n is not None:
-                assert len(value) == n
-            return value
+        # assert len(np.unique(switch_at)) == len(switch_at)
+        return MorphicAgent(agents,switch_at)
+
 
     _creators_: Dict[AgentsEnum, Callable[[AgentFactorySpec], Agent]] = {
         AgentsEnum.random: lambda x: AgentFactory._create_random_agent_(x),
-        AgentsEnum.constant: lambda x: AgentFactory._create_static_agent_(x)
+        AgentsEnum.constant: lambda x: AgentFactory._create_static_agent_(x),
+        AgentsEnum.composite: lambda x: AgentFactory._create_composite_agent_(x)
     }
